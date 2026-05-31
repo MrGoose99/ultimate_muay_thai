@@ -1,0 +1,29 @@
+#pragma once
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
+#include <optional>
+#include "Level.hpp"
+#include "LevelOne.hpp"
+#include "LevelTwo.hpp"
+#include "Character.hpp"
+#include "Player.hpp"
+
+class Game
+{
+	bool status; // 1 for running, 0 for paused
+	std::unique_ptr<Level> level; //pointer to the current level
+	sf::Texture background; //background of the level
+	sf::RectangleShape background_shape; //shape of the background of the level
+	Player player; //player character
+
+public:
+	Game(bool = 1);
+	void checkEvents_paused(const std::optional<sf::Event>& event); //checking for events when the game is paused
+	void checkEvents_running(const std::optional<sf::Event>& event, sf::RenderWindow& window, sf::Time& dt); //checking for events when the game is running
+	bool getStatus() const; //returning the status of the game
+	void draw(sf::RenderWindow& window); //drawing the game
+	void run(); //running the game
+	void pause(); //pausing the game
+	void animations_update(sf::Time& dt); //updating the animations of the characters
+	void position_update(sf::Time& dt); //updating elements positions
+};

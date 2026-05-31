@@ -1,0 +1,1 @@
+User asked about class attributes constants in header and initialization. Project files located and will read relevant headers for deeper analysis. Noted to also read headers for deeper understanding. Will read headers now

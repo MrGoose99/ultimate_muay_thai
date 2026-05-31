@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="ultimate_muay_thai/ultimate_muay_thai.vcxproj" Id="b2662628-fc47-4667-8a11-6badfbb79a2e" />
+</Solution>
