@@ -14,8 +14,11 @@ Game::Game(bool s)
 	else status = s;
 }
 
-void Game::checkEvents_paused(const std::optional<sf::Event>& event)
+void Game::checkEvents_paused(const std::optional<sf::Event>& event, sf::RenderWindow& window)
 {
+	if (event->is<sf::Event::Closed>()) // closing the window by every possible way (but not from keyboard)
+		window.close();
+
 	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 	{
 		if (keyPressed->scancode == sf::Keyboard::Scancode::P)
@@ -47,6 +50,8 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 			level->camera.zoom(1.2f);
 		if (keyPressed->scancode == sf::Keyboard::Scancode::NumpadPlus)
 			level->camera.zoom(0.8f);
+		if (keyPressed->scancode == sf::Keyboard::Scancode::P)
+			pause();
 		player.check_player_events(event, dt);
 	}
 	
@@ -64,10 +69,11 @@ void Game::draw(sf::RenderWindow& window)
 		//PLAYER
 		window.draw(player);
 		//window.draw(player.get_debug_shape()); // debugging player hitbox
+		//window.draw(player.get_debug_2_shape());
 	}
 }
 
-bool Game::getStatus() const
+bool Game::get_status() const
 {
 	return status;
 }
@@ -98,6 +104,7 @@ void Game::position_update(sf::Time& dt)
 		player.character_moving(dt, 375.f, 100.f, level->get_collision_array());
 		player.check_velocity(dt, level->get_collision_array());
 		player.character_position_update();
+		player.attack(dt);
 
 		//LEVEL
 		level->set_camera_center(player.get_player_center());

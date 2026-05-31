@@ -17,17 +17,20 @@ int main()
 		dt = clock.restart(); // clock is restarting every frame
 		while (const optional<Event> event = window.pollEvent()) //events checking (can't be a methode because of SFML limitations)
 		{
-			if (game.getStatus() == 1)
+			if (game.get_status() == 1)
 			{
 				game.checkEvents_running(event, window, dt);
 			}	
 			else
 			{
-				game.checkEvents_paused(event);
+				game.checkEvents_paused(event, window);
 			}
 		}
-		game.animations_update(dt); //checking animations update every frame
-		game.position_update(dt); //checking positions every frame
+		if (game.get_status() == 1)
+		{
+			game.animations_update(dt); //checking animations update every frame
+			game.position_update(dt); //checking positions every frame
+		}
 		window.clear(sf::Color::Black);
 		game.draw(window);
 		window.display();

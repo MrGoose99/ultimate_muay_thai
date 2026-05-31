@@ -18,13 +18,14 @@ Player::Player()
 	character_sprite.setPosition(character_position);
 	character_sprite.setTextureRect(get_frame_position(0));
 	hitbox.size = { 64,128 };
-	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y };
+	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y};
 	right_side = true;
 	moving_normal = 0;
 	moving_fight = 0;
 	is_falling = 0;
 	is_jumping = 0;
 	on_ground = 0;
+
 
 
 }
@@ -70,12 +71,27 @@ void Player::update_character_animation(sf::Time& dt)
 		}
 		else if(on_ground)
 		{
-			if (animation_stage == 0)
-				character_sprite.setTextureRect(get_frame_position(2));
-			else if (animation_stage == 1)
-				character_sprite.setTextureRect(get_frame_position(3));
+			if (attack_state == AttackState::None)
+			{
+				if (animation_stage == 0)
+					character_sprite.setTextureRect(get_frame_position(2));
+				else if (animation_stage == 1)
+					character_sprite.setTextureRect(get_frame_position(3));
+			}
+			else
+			{
+				switch (animation_stage)
+				{
+				case 1:character_sprite.setTextureRect(get_frame_position(15)); break;
+				case 2:character_sprite.setTextureRect(get_frame_position(16)); break;
+				case 3:character_sprite.setTextureRect(get_frame_position(17)); break;
+				case 4:character_sprite.setTextureRect(get_frame_position(18)); break;
+				case 5:character_sprite.setTextureRect(get_frame_position(19)); break;
+				case 6:character_sprite.setTextureRect(get_frame_position(20)); break;
+				default: break;
+				}
+			}
 		}
-		
 	}
 	else
 	{
@@ -128,14 +144,43 @@ void Player::update_frame_status(sf::Time& dt)
 	}
 	else if (is_fighting && !is_blocking  && on_ground && moving_normal == 0 && moving_fight == 0) // default fighting
 	{
-		if (animation_stage > 1) animation_stage = 0;
-		if(time_animation >= sf::seconds(0.5f))
-		{ 
-			if (animation_stage == 1)
-				animation_stage = 0;
-			else animation_stage = 1;
-			time_animation = sf::seconds(0.f);
+		if (attack_state == AttackState::None)
+		{
+			if (animation_stage > 1) animation_stage = 0;
+			if (time_animation >= sf::seconds(0.5f))
+			{
+				if (animation_stage == 1)
+					animation_stage = 0;
+				else animation_stage = 1;
+				time_animation = sf::seconds(0.f);
+			}
 		}
+		else
+		{
+			if (attack_state == AttackState::Attack1)
+			{
+				if (attack_time <= sf::seconds(0.15f))
+				{
+					animation_stage = 1;
+				}
+				else animation_stage = 2;
+			}
+			else if (attack_state == AttackState::Attack2)
+			{
+				if (attack_time <= sf::seconds(0.15f))
+				{
+					animation_stage = 3;
+				}
+				else animation_stage = 4;
+			}
+			else if (attack_state == AttackState::Attack3)
+			{
+				if (attack_time <= sf::seconds(0.15f))
+					animation_stage = 5;
+				else animation_stage = 6;
+			}
+		}
+		
 	}
 	else if (is_fighting && !is_blocking && on_ground && moving_normal == 0 && moving_fight > 0) //moving fighting
 	{
@@ -222,11 +267,55 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				is_fighting = false;
 			else is_fighting = true;
 		}
-		if(is_fighting)
-			if (keyPressed->scancode == sf::Keyboard::Scancode::B)
+		if (is_fighting)
+		{
+			if (keyPressed->scancode == sf::Keyboard::Scancode::H && moving_fight == 0)
 			{
-				is_blocking = true;
+				switch (attack_state)
+				{
+				case AttackState::None:
+				{
+					attack_state = AttackState::Attack1;
+					attack_time = sf::seconds(0.f);
+					break;
+				}
+				case AttackState::Attack1:
+				{
+					if (attack_time >= sf::seconds(0.3f))
+					{
+						attack_state = AttackState::Attack2;
+						attack_time = sf::seconds(0.f);
+					}
+					break;
+				}
+				case AttackState::Attack2:
+				{
+					if (attack_time >= sf::seconds(0.3f))
+					{
+						attack_state = AttackState::Attack3;
+						attack_time = sf::seconds(0.f);
+					}
+					break;
+				}
+				case AttackState::Attack3:
+				{
+					if (attack_time >= sf::seconds(0.3f))
+					{
+						attack_state = AttackState::Attack1;
+						attack_time = sf::seconds(0.f);
+					}
+					break;
+				}
+				default:
+					break;
+				}
 			}
+			if (keyPressed->scancode == sf::Keyboard::Scancode::Y)
+			{
+				if (right_side) right_side = 0;
+				else right_side = 1;
+			}
+		}
 		if (keyPressed->scancode == sf::Keyboard::Scancode::W && !is_falling && !is_fighting && !is_jumping)
 		{
 				is_jumping = 1;
@@ -253,7 +342,7 @@ void Player::check_pressed()
 		}
 		else moving_normal = 0;
 	}
-	else if(is_fighting && !is_falling && !is_jumping)
+	else if(is_fighting && !is_falling && !is_jumping && !is_blocking)
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
 		{
@@ -279,5 +368,4 @@ sf::Vector2f Player::get_player_center()
 {
 	return sf::Vector2f{ hitbox.position.x + (hitbox.size.x / 2), hitbox.position.y + (hitbox.size.y / 2) };
 }
-
 

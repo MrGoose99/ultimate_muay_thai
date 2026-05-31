@@ -63,7 +63,7 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 	{
 		if (moving_fight == 2)
 		{
-			sf::Vector2f next_pos = { character_position.x + speed_fight * dt.asSeconds(), character_position.y };
+			sf::Vector2f next_pos = {character_position.x + speed_fight * dt.asSeconds(), character_position.y };
 			if (!check_character_collision(next_pos, 16, collision_array))
 			character_position = next_pos;
 		}
@@ -100,19 +100,29 @@ const unsigned int Character::get_tile_number(unsigned int tiles_in_row)
 void Character::character_position_update()
 {
 	character_sprite.setPosition(character_position);
-	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y };
+	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y};
 }
 
 sf::RectangleShape Character::get_debug_shape()
 {
 	return debug;
 }
+sf::RectangleShape Character::get_debug_2_shape()
+{
+	return debug2;
+}
 
 bool Character::check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::array<bool,128> collision_array)
 {
+	//debug rects
 	debug.setSize(hitbox.size);
 	debug.setPosition(hitbox.position);
 	debug.setFillColor(sf::Color::Red);
+	debug2.setSize(attackbox.size);
+	debug2.setPosition(attackbox.position);
+	if (attackbox_active) debug2.setFillColor(sf::Color::Red);
+	else debug2.setFillColor(sf::Color::Green);
+
 	sf::FloatRect checking_rect = { {position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, position.y}, hitbox.size };
 	int left = checking_rect.position.x / 128.f;
 	int right = (checking_rect.position.x + hitbox.size.x) / 128.f;
@@ -162,6 +172,23 @@ void Character::check_velocity(sf::Time& dt, std::array<bool, 128> collision_arr
 	}
 	is_falling = (!on_ground && velocity_y > 0.f);
 	is_jumping = (!on_ground && velocity_y < 0.f);
-	
+}
 
+void Character::attack(sf::Time& dt)
+{
+	attackbox.size = { hitbox.size.x/2, hitbox.size.y / 6 };
+	if (right_side) attackbox.position = { hitbox.position.x + hitbox.size.x, hitbox.position.y + hitbox.size.y / 5 };
+	else attackbox.position = { hitbox.position.x - hitbox.size.x/2, hitbox.position.y + hitbox.size.y / 5 };
+	attack_time += dt;
+	if (attack_state != AttackState::None)
+	{
+		if (attack_time >= sf::seconds(0.15f) && attack_time <= sf::seconds(0.3f))
+		{
+			attackbox_active = 1;
+		}
+		else attackbox_active = 0;
+	}
+	else attackbox_active = 0;
+
+	if (attack_time >= sf::seconds(0.45f)) attack_state = AttackState::None;
 }

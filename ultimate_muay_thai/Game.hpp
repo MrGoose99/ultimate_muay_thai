@@ -18,9 +18,9 @@ class Game
 
 public:
 	Game(bool = 1);
-	void checkEvents_paused(const std::optional<sf::Event>& event); //checking for events when the game is paused
+	void checkEvents_paused(const std::optional<sf::Event>& event, sf::RenderWindow& window); //checking for events when the game is paused
 	void checkEvents_running(const std::optional<sf::Event>& event, sf::RenderWindow& window, sf::Time& dt); //checking for events when the game is running
-	bool getStatus() const; //returning the status of the game
+	bool get_status() const; //returning the status of the game
 	void draw(sf::RenderWindow& window); //drawing the game
 	void run(); //running the game
 	void pause(); //pausing the game
