@@ -65,13 +65,15 @@ void Game::draw(sf::RenderWindow& window)
 		//LEVEL
 		window.setView(window.getDefaultView()); //camera not moving
 		window.draw(level->get_background());
-		window.draw(hud);
 		window.setView(level->camera); //camera is moving
 		window.draw(level->get_tilemap());
 		//PLAYER
 		window.draw(player);
 		//window.draw(player.get_debug_shape()); // debugging player hitbox
 		//window.draw(player.get_debug_2_shape()); //debugging player attackbox
+		//HUD
+		window.setView(window.getDefaultView());
+		window.draw(hud);
 	}
 }
 
@@ -111,5 +113,8 @@ void Game::position_update(sf::Time& dt)
 
 		//LEVEL
 		level->set_camera_center(player.get_player_center());
+
+		//HUD
+		hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points());
 	}
 }

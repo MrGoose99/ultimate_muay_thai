@@ -247,3 +247,13 @@ void Character::attack(sf::Time& dt)
 		attack_time = sf::seconds(0.f);
 	}
 }
+
+short int Character::get_hp()
+{
+	return hp;
+}
+
+short int Character::get_max_hp()
+{
+	return max_hp;
+}

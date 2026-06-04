@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Character.hpp"
+#include "HUD.hpp"
 
 class Player : public Character
 {
@@ -14,8 +15,13 @@ protected:
 	bool attack_flag = { 0 };
 	int attack_dir = { 0 }; //0 - middle, 1 high, 2 - low
 
+	//SPECIAL
+	short int special_points;
+	short int max_special_points;
+
 public:
 	friend class Level;
+	friend class HUD;
 	
 	//constructor//////////////////////////////////////////////////////////////////////////////////////
 	Player();
@@ -28,6 +34,7 @@ public:
 	//checking events//////////////////////////////////////////////////////////////////////////////////////
 	void check_player_events(const std::optional<sf::Event>& event, sf::Time& dt); //checking events related to the player
 	void check_pressed(); //checking pressed buttons
+
 	
 	//getters//////////////////////////////////////////////////////////////////////////////////////
 	bool get_is_fighting() const; //returning the fighting status of the player
@@ -35,6 +42,8 @@ public:
 	bool get_is_blocking() const; //returning the blocking status of the player
 	sf::Vector2f get_player_position();
 	sf::Vector2f get_player_center();
+	const short int get_special_points();
+	const short int get_max_special_points();
 
 	//setters//////////////////////////////////////////////////////////////////////////////////////
 	void set_is_fighting(const bool status); //setting the fighting status of the player

@@ -15,6 +15,7 @@ protected:
 
 	//stats//////////////////////////////////////////////////////////////////////////////////////
 	short int hp; //health points
+	short int max_hp; //maximum health points
 
 	//moving//////////////////////////////////////////////////////////////////////////////////////
 	int moving_normal; //is character moving: 0 - not moving, 1 - moving left, 2 - moving right
@@ -87,6 +88,8 @@ public:
 	//getters//////////////////////////////////////////////////////////////////////////////////////
 	sf::IntRect get_frame_position(short int frame_number); //returning the position of the frame in the texture based on the frame number and total frames in the animation
 	sf::Sprite& get_character_sprite(); //returning the character sprite
+	short int get_hp(); //returning the health points of the character
+	short int get_max_hp(); //returning the maximum health points of the character
 	
 	//setters//////////////////////////////////////////////////////////////////////////////////////
 	void set_character(std::filesystem::path& texture, std::string& char_name, sf::Vector2f& pos); //setting character texture, name and position

@@ -25,9 +25,14 @@ Player::Player()
 	is_falling = 0;
 	is_jumping = 0;
 	on_ground = 0;
+	
+	//HP
+	hp = 10;
+	max_hp = 10;
 
-
-
+	//SPECIAL POINTS
+	special_points = 0;
+	max_special_points = 20;
 }
 
 void Player::update_character_animation(sf::Time& dt)
@@ -388,6 +393,26 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				on_ground = 0;
 				velocity_y = -1000.f;
 		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Numpad1)
+		{
+			hp--;
+			if (hp < 0) hp = 0;
+		}
+		else if (keyPressed->scancode == sf::Keyboard::Scancode::Numpad2)
+		{
+			hp++;
+			if (hp > max_hp) hp = max_hp;
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Numpad4)
+		{
+			special_points--;
+			if (special_points < 0) special_points = 0;
+		}
+		else if (keyPressed->scancode == sf::Keyboard::Scancode::Numpad5)
+		{
+			special_points++;
+			if (special_points > max_special_points) special_points = max_special_points;
+		}
 	}
 }
 void Player::check_pressed()
@@ -451,3 +476,12 @@ sf::Vector2f Player::get_player_center()
 	return sf::Vector2f{ hitbox.position.x + (hitbox.size.x / 2), hitbox.position.y + (hitbox.size.y / 2) };
 }
 
+const short int Player::get_special_points()
+{
+	return special_points;
+}
+
+const short int Player::get_max_special_points()
+{
+	return max_special_points;
+}
