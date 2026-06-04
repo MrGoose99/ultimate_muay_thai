@@ -1,0 +1,20 @@
+#pragma once
+#include <SFML/Graphics.hpp>
+#include <iostream>
+
+class HUD : public sf::Drawable, public sf::Transformable
+{
+private:
+	//visuals//////////////////////////////////////////////////////////////////////////////////////
+	sf::Texture hud_texture{ "textures/HUD.png" }; //texture of the HUD
+	sf::Sprite hud_shape{ hud_texture }; //shape of the HUD
+
+
+public:
+	//constructor//////////////////////////////////////////////////////////////////////////////////////
+	HUD();
+
+	//drawing//////////////////////////////////////////////////////////////////////////////////////
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override; //drawing the HUD
+
+};

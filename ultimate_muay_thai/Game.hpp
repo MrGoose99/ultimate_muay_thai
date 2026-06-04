@@ -7,11 +7,13 @@
 #include "LevelTwo.hpp"
 #include "Character.hpp"
 #include "Player.hpp"
+#include "HUD.hpp"
 
 class Game
 {
 	bool status; // 1 for running, 0 for paused
 	std::unique_ptr<Level> level; //pointer to the current level
+	HUD hud; //HUD of the game (at the moment same for every lvl)
 	sf::Texture background; //background of the level
 	sf::RectangleShape background_shape; //shape of the background of the level
 	Player player; //player character

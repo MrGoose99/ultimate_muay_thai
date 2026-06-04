@@ -7,6 +7,7 @@
 #include "LevelOne.hpp"
 #include "LevelTwo.hpp"
 #include <cmath>
+#include "HUD.hpp"
 
 Game::Game(bool s)
 {
@@ -62,14 +63,15 @@ void Game::draw(sf::RenderWindow& window)
 	if (level != nullptr)
 	{
 		//LEVEL
-		window.setView(window.getDefaultView());
+		window.setView(window.getDefaultView()); //camera not moving
 		window.draw(level->get_background());
-		window.setView(level->camera);
+		window.draw(hud);
+		window.setView(level->camera); //camera is moving
 		window.draw(level->get_tilemap());
 		//PLAYER
 		window.draw(player);
 		//window.draw(player.get_debug_shape()); // debugging player hitbox
-		//window.draw(player.get_debug_2_shape());
+		//window.draw(player.get_debug_2_shape()); //debugging player attackbox
 	}
 }
 
@@ -91,6 +93,7 @@ void Game::pause()
 void Game::animations_update(sf::Time& dt)
 {
 	if(level != nullptr)
+		//PLAYER
 		player.update_frame_status(dt);
 		player.update_character_animation(dt);
 		player.check_pressed(); 

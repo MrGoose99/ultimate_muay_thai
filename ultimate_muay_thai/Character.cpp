@@ -27,11 +27,11 @@ sf::IntRect Character::get_frame_position(short int frame_number)
 
 void Character::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	states.transform *= getTransform(); //applying the transform of the tilemap
+	states.transform *= getTransform(); 
 
-	states.texture = &character_texture; //applying the character texture
+	states.texture = &character_texture;
 
-	target.draw(character_sprite, states); //drawing the tilemap
+	target.draw(character_sprite, states); 
 }
 
 void Character::character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::array<bool, 128> collision_array)
@@ -100,7 +100,7 @@ const unsigned int Character::get_tile_number(unsigned int tiles_in_row)
 void Character::character_position_update()
 {
 	character_sprite.setPosition(character_position);
-	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y};
+	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y + character_sprite.getLocalBounds().size.y / 8 };
 }
 
 sf::RectangleShape Character::get_debug_shape()
@@ -122,8 +122,9 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 	debug2.setPosition(attackbox.position);
 	if (attackbox_active) debug2.setFillColor(sf::Color::Red);
 	else debug2.setFillColor(sf::Color::Green);
+	////////////////
 
-	sf::FloatRect checking_rect = { {position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, position.y}, hitbox.size };
+	sf::FloatRect checking_rect = { {position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, position.y + character_sprite.getLocalBounds().size.y / 8}, hitbox.size};
 	int left = checking_rect.position.x / 128.f;
 	int right = (checking_rect.position.x + hitbox.size.x) / 128.f;
 	int top = checking_rect.position.y / 128.f;
@@ -176,12 +177,12 @@ void Character::check_velocity(sf::Time& dt, std::array<bool, 128> collision_arr
 
 void Character::attack(sf::Time& dt)
 {
-	attackbox.size = { hitbox.size.x/2, hitbox.size.y / 6 };
-	if (right_side) attackbox.position = { hitbox.position.x + hitbox.size.x, hitbox.position.y + hitbox.size.y / 5 };
-	else attackbox.position = { hitbox.position.x - hitbox.size.x/2, hitbox.position.y + hitbox.size.y / 5 };
 	attack_time += dt;
-	if (attack_state != AttackState::None)
+	if (meele_attack_state != MeeleAttackState::None && kick_attack_state == KickAttackState::None)
 	{
+		attackbox.size = { hitbox.size.x / 2, hitbox.size.y / 6 };
+		if (right_side) attackbox.position = { hitbox.position.x + hitbox.size.x, hitbox.position.y + hitbox.size.y / 7 };
+		else attackbox.position = { hitbox.position.x - hitbox.size.x / 2, hitbox.position.y + hitbox.size.y / 7 };
 		if (attack_time >= sf::seconds(0.15f) && attack_time <= sf::seconds(0.3f))
 		{
 			attackbox_active = 1;
@@ -190,5 +191,59 @@ void Character::attack(sf::Time& dt)
 	}
 	else attackbox_active = 0;
 
-	if (attack_time >= sf::seconds(0.45f)) attack_state = AttackState::None;
+	if (kick_attack_state != KickAttackState::None && meele_attack_state == MeeleAttackState::None)
+	{
+		switch (kick_attack_state)
+		{
+		case KickAttackState::AttackMiddle:
+			attackbox.size = { hitbox.size.x / 2, hitbox.size.y / 6 };
+			if (right_side)
+				attackbox.position = { hitbox.position.x + hitbox.size.x, hitbox.position.y + hitbox.size.y / 2 };
+			else
+				attackbox.position = { hitbox.position.x - hitbox.size.x / 2, hitbox.position.y + hitbox.size.y / 2 };
+
+			if (attack_time >= sf::seconds(0.15f) && attack_time <= sf::seconds(0.3f))
+				attackbox_active = 1;
+			else
+				attackbox_active = 0;
+			break;
+
+		case KickAttackState::AttackHigh:
+			attackbox.size = { hitbox.size.x / 2, hitbox.size.y / 6 };
+			if (right_side)
+				attackbox.position = { hitbox.position.x + hitbox.size.x, hitbox.position.y + hitbox.size.y / 7 };
+			else
+				attackbox.position = { hitbox.position.x - hitbox.size.x / 2, hitbox.position.y + hitbox.size.y / 7};
+
+			if (attack_time >= sf::seconds(0.25f) && attack_time <= sf::seconds(0.35f))
+				attackbox_active = 1;
+			else
+				attackbox_active = 0;
+			break;
+
+		case KickAttackState::AttackLow:
+			attackbox.size = { hitbox.size.x / 2, hitbox.size.y / 6 };
+			if (right_side)
+				attackbox.position = { hitbox.position.x + hitbox.size.x, hitbox.position.y + hitbox.size.y / 6 * 5 };
+			else
+				attackbox.position = { hitbox.position.x - hitbox.size.x / 2, hitbox.position.y + hitbox.size.y / 6 * 5 };
+
+			if (attack_time <= sf::seconds(0.3f))
+				attackbox_active = 1;
+			else
+				attackbox_active = 0;
+			break;
+
+		default:
+			attackbox_active = 0;
+			break;
+		}
+	}
+
+	if (attack_time >= sf::seconds(0.45f))
+	{
+		meele_attack_state = MeeleAttackState::None;
+		kick_attack_state = KickAttackState::None;
+		attack_time = sf::seconds(0.f);
+	}
 }

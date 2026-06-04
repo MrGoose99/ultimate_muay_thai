@@ -13,6 +13,9 @@ protected:
 	sf::Time time_animation = sf::seconds(0.f); //time variable to control the animation of the character
 	sf::Sprite character_sprite{ character_texture }; //sprite of the character
 
+	//stats//////////////////////////////////////////////////////////////////////////////////////
+	short int hp; //health points
+
 	//moving//////////////////////////////////////////////////////////////////////////////////////
 	int moving_normal; //is character moving: 0 - not moving, 1 - moving left, 2 - moving right
 	int moving_fight; //is character moving when fight: 0 - not moving, 1 - moving left, 2 - moving right
@@ -28,15 +31,22 @@ protected:
 		
 	bool attackbox_active = { 0 }; //is attackbox_active
 	sf::Time attack_time = { sf::seconds(0.f) }; //time to change attack_stage
-	enum class AttackState
+	enum class MeeleAttackState
 	{
 		None,
 		Attack1,
 		Attack2,
 		Attack3
 	};
-	AttackState attack_state = AttackState::None;
-
+	MeeleAttackState meele_attack_state = MeeleAttackState::None;
+	enum class KickAttackState
+	{
+		None,
+		AttackHigh,
+		AttackMiddle,
+		AttackLow
+	};
+	KickAttackState kick_attack_state = KickAttackState::None;
 	//flags//////////////////////////////////////////////////////////////////////////////////////
 	bool right_side; //is character_sprite looking on the right?
 	bool is_fighting; //boolean variable to check if the player is in fighting mode or not
@@ -60,6 +70,7 @@ public:
 
 	//attack//////////////////////////////////////////////////////////////////////////////////////
 	void attack(sf::Time& dt);
+
 
 	//moving//////////////////////////////////////////////////////////////////////////////////////
 	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::array<bool, 128> collision_array);

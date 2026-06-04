@@ -12,6 +12,8 @@ protected:
 	bool moving_flag = { 0 }; //boolean variable to make loop of moving animation
 	bool is_blocking; //boolean variable to check if the player is blocking or not
 	bool attack_flag = { 0 };
+	int attack_dir = { 0 }; //0 - middle, 1 high, 2 - low
+
 public:
 	friend class Level;
 	

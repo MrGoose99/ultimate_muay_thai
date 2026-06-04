@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="HUD.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelOne.cpp" />
     <ClCompile Include="LevelTwo.cpp" />
@@ -167,6 +168,7 @@
   <ItemGroup>
     <ClInclude Include="Character.hpp" />
     <ClInclude Include="Game.hpp" />
+    <ClInclude Include="HUD.hpp" />
     <ClInclude Include="Level.hpp" />
     <ClInclude Include="LevelOne.hpp" />
     <ClInclude Include="LevelTwo.hpp" />

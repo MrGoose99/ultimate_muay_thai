@@ -18,8 +18,14 @@ LevelOne::LevelOne()
 
 
 	camera.setSize({ 1920,1080 });
-	
 
+	for (int i = 0; i < collision_array.size(); i++)
+	{
+		if (tilemap_array[i] > 0 && tilemap_array[i] <= 13)
+			collision_array[i] = 1;
+		else collision_array[i] = 0;
+	}
+	
 }
 
 void LevelOne::set_lvl_tiles()

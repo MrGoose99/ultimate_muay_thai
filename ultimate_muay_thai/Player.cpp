@@ -17,8 +17,8 @@ Player::Player()
 	character_position = { 100.f, 100.f };
 	character_sprite.setPosition(character_position);
 	character_sprite.setTextureRect(get_frame_position(0));
-	hitbox.size = { 64,128 };
-	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y};
+	hitbox.size = { 64,128 - 128/8};
+	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y + character_sprite.getLocalBounds().size.y / 7 };
 	right_side = true;
 	moving_normal = 0;
 	moving_fight = 0;
@@ -71,14 +71,14 @@ void Player::update_character_animation(sf::Time& dt)
 		}
 		else if(on_ground)
 		{
-			if (attack_state == AttackState::None)
+			if (meele_attack_state == MeeleAttackState::None && kick_attack_state == KickAttackState::None)
 			{
 				if (animation_stage == 0)
 					character_sprite.setTextureRect(get_frame_position(2));
 				else if (animation_stage == 1)
 					character_sprite.setTextureRect(get_frame_position(3));
 			}
-			else
+			else if (meele_attack_state != MeeleAttackState::None)
 			{
 				switch (animation_stage)
 				{
@@ -88,6 +88,18 @@ void Player::update_character_animation(sf::Time& dt)
 				case 4:character_sprite.setTextureRect(get_frame_position(18)); break;
 				case 5:character_sprite.setTextureRect(get_frame_position(19)); break;
 				case 6:character_sprite.setTextureRect(get_frame_position(20)); break;
+				default: break;
+				}
+			}
+			else if (kick_attack_state != KickAttackState::None)
+			{
+				switch (animation_stage)
+				{
+				case 1:character_sprite.setTextureRect(get_frame_position(21)); break;
+				case 2:character_sprite.setTextureRect(get_frame_position(22)); break;
+				case 3:character_sprite.setTextureRect(get_frame_position(23)); break;
+				case 4:character_sprite.setTextureRect(get_frame_position(24)); break;
+				case 5:character_sprite.setTextureRect(get_frame_position(25)); break;
 				default: break;
 				}
 			}
@@ -144,7 +156,7 @@ void Player::update_frame_status(sf::Time& dt)
 	}
 	else if (is_fighting && !is_blocking  && on_ground && moving_normal == 0 && moving_fight == 0) // default fighting
 	{
-		if (attack_state == AttackState::None)
+		if (meele_attack_state == MeeleAttackState::None && kick_attack_state == KickAttackState::None)
 		{
 			if (animation_stage > 1) animation_stage = 0;
 			if (time_animation >= sf::seconds(0.5f))
@@ -155,9 +167,9 @@ void Player::update_frame_status(sf::Time& dt)
 				time_animation = sf::seconds(0.f);
 			}
 		}
-		else
+		else if(meele_attack_state != MeeleAttackState::None)
 		{
-			if (attack_state == AttackState::Attack1)
+			if (meele_attack_state == MeeleAttackState::Attack1)
 			{
 				if (attack_time <= sf::seconds(0.15f))
 				{
@@ -165,7 +177,7 @@ void Player::update_frame_status(sf::Time& dt)
 				}
 				else animation_stage = 2;
 			}
-			else if (attack_state == AttackState::Attack2)
+			else if (meele_attack_state == MeeleAttackState::Attack2)
 			{
 				if (attack_time <= sf::seconds(0.15f))
 				{
@@ -173,11 +185,42 @@ void Player::update_frame_status(sf::Time& dt)
 				}
 				else animation_stage = 4;
 			}
-			else if (attack_state == AttackState::Attack3)
+			else if (meele_attack_state == MeeleAttackState::Attack3)
 			{
 				if (attack_time <= sf::seconds(0.15f))
 					animation_stage = 5;
 				else animation_stage = 6;
+			}
+		}
+		else if (kick_attack_state != KickAttackState::None)
+		{
+			switch (kick_attack_state)
+			{
+			case KickAttackState::AttackHigh:
+				{
+				if (attack_time <= sf::seconds(0.15f))
+					animation_stage = 1;
+				else if (attack_time <= sf::seconds(0.25f) && attack_time >= sf::seconds(0.15f))
+					animation_stage = 2;
+				else if (attack_time >= sf::seconds(0.25f))
+					animation_stage = 3;
+				break;
+				}
+			case KickAttackState::AttackMiddle:
+			{
+				if(attack_time < sf::seconds(0.15f))
+					animation_stage = 1;
+				else if (attack_time >= sf::seconds(0.15f))
+					animation_stage = 4;
+			}
+			break;
+			case KickAttackState::AttackLow:
+			{
+				animation_stage = 5;
+				break;
+			}
+			default:
+				break;
 			}
 		}
 		
@@ -271,43 +314,66 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 		{
 			if (keyPressed->scancode == sf::Keyboard::Scancode::H && moving_fight == 0)
 			{
-				switch (attack_state)
+				kick_attack_state = KickAttackState::None;
+				switch (meele_attack_state)
 				{
-				case AttackState::None:
+				case MeeleAttackState::None:
 				{
-					attack_state = AttackState::Attack1;
+					meele_attack_state = MeeleAttackState::Attack1;
 					attack_time = sf::seconds(0.f);
 					break;
 				}
-				case AttackState::Attack1:
+				case MeeleAttackState::Attack1:
 				{
 					if (attack_time >= sf::seconds(0.3f))
 					{
-						attack_state = AttackState::Attack2;
+						meele_attack_state = MeeleAttackState::Attack2;
 						attack_time = sf::seconds(0.f);
 					}
 					break;
 				}
-				case AttackState::Attack2:
+				case MeeleAttackState::Attack2:
 				{
 					if (attack_time >= sf::seconds(0.3f))
 					{
-						attack_state = AttackState::Attack3;
+						meele_attack_state = MeeleAttackState::Attack3;
 						attack_time = sf::seconds(0.f);
 					}
 					break;
 				}
-				case AttackState::Attack3:
+				case MeeleAttackState::Attack3:
 				{
 					if (attack_time >= sf::seconds(0.3f))
 					{
-						attack_state = AttackState::Attack1;
+						meele_attack_state = MeeleAttackState::Attack1;
 						attack_time = sf::seconds(0.f);
 					}
 					break;
 				}
 				default:
 					break;
+				}
+			}
+			if (keyPressed->scancode == sf::Keyboard::Scancode::J)
+			{
+				meele_attack_state = MeeleAttackState::None;
+				if (kick_attack_state == KickAttackState::None)
+				{
+					if (attack_dir == 0)
+					{
+						kick_attack_state = KickAttackState::AttackMiddle;
+						attack_time = sf::seconds(0.f);
+					}
+					else if (attack_dir == 1)
+					{
+						kick_attack_state = KickAttackState::AttackHigh;
+						attack_time = sf::seconds(0.f);
+					}
+					else if (attack_dir == 2)
+					{
+						kick_attack_state = KickAttackState::AttackLow;
+						attack_time = sf::seconds(0.f);
+					}
 				}
 			}
 			if (keyPressed->scancode == sf::Keyboard::Scancode::Y)
@@ -326,7 +392,13 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 }
 void Player::check_pressed()
 {
-	is_blocking = is_fighting && sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::B);
+	if (is_fighting && sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::B))
+	{
+		is_blocking = 1;
+		moving_fight = 0;
+		moving_normal = 0;
+	}
+	else is_blocking = 0;
 
 	if (!is_fighting)
 	{
@@ -355,6 +427,16 @@ void Player::check_pressed()
 			moving_normal = 0;
 		}
 		else moving_fight = 0;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W))
+		{
+			attack_dir = 1;
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S))
+		{
+			attack_dir = 2;
+		}
+		else attack_dir = 0;
 	}
 
 }
