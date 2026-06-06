@@ -72,7 +72,6 @@ public:
 	//attack//////////////////////////////////////////////////////////////////////////////////////
 	void attack(sf::Time& dt);
 
-
 	//moving//////////////////////////////////////////////////////////////////////////////////////
 	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::array<bool, 128> collision_array);
 	void character_falling(sf::Time& dt, const float falling_speed, std::array<bool,128> collision_array);
@@ -88,6 +87,8 @@ public:
 	//getters//////////////////////////////////////////////////////////////////////////////////////
 	sf::IntRect get_frame_position(short int frame_number); //returning the position of the frame in the texture based on the frame number and total frames in the animation
 	sf::Sprite& get_character_sprite(); //returning the character sprite
+	sf::FloatRect& get_character_hitbox(); //returning the character hitbox
+	sf::Vector2f& get_character_position(); //returning the character position
 	short int get_hp(); //returning the health points of the character
 	short int get_max_hp(); //returning the maximum health points of the character
 	

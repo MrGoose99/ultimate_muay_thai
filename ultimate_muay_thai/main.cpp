@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include "Game.hpp"
+#include <ctime>
+#include <cstdlib>
 
 using namespace std;
 using namespace sf;
@@ -12,6 +14,7 @@ int main()
 	Clock clock;
 	clock.start();
 	Time dt;
+	srand(time(NULL));
 	while (window.isOpen())
 	{
 		dt = clock.restart(); // clock is restarting every frame

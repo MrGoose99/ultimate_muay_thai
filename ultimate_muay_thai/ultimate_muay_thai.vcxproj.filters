@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Pliki źródłowe\Level">
+      <UniqueIdentifier>{91afe3f7-c17b-4d3d-830f-74e5fcc3caf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Interactive">
+      <UniqueIdentifier>{81c247bb-9a75-4b06-a64b-0777a46902d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Character">
+      <UniqueIdentifier>{8507989f-9174-45cd-a118-616ab56d755d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\Level">
+      <UniqueIdentifier>{b63ccd40-b3d8-43bc-8f89-de77de6029fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\Interactive">
+      <UniqueIdentifier>{96fc35bd-758f-4acf-bd27-00332151b2da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\Character">
+      <UniqueIdentifier>{713e9372-a433-49e6-9748-e794c94f0912}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -21,51 +39,69 @@
     <ClCompile Include="Game.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="LevelOne.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
-    <ClCompile Include="Level.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelTwo.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
     <ClCompile Include="TileMap.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="HUD.cpp">
       <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Pliki źródłowe\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelOne.cpp">
+      <Filter>Pliki źródłowe\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelTwo.cpp">
+      <Filter>Pliki źródłowe\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Interactive.cpp">
+      <Filter>Pliki źródłowe\Interactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Gem.cpp">
+      <Filter>Pliki źródłowe\Interactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Pliki źródłowe\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Pliki źródłowe\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Spiked_roller.cpp">
+      <Filter>Pliki źródłowe\Interactive</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Level.hpp">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelOne.hpp">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelTwo.hpp">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
     <ClInclude Include="TileMap.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Character.hpp">
+    <ClInclude Include="HUD.hpp">
       <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.hpp">
+      <Filter>Pliki nagłówkowe\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelOne.hpp">
+      <Filter>Pliki nagłówkowe\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelTwo.hpp">
+      <Filter>Pliki nagłówkowe\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Interactive.hpp">
+      <Filter>Pliki nagłówkowe\Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="Gem.hpp">
+      <Filter>Pliki nagłówkowe\Interactive</Filter>
     </ClInclude>
     <ClInclude Include="Player.hpp">
-      <Filter>Pliki nagłówkowe</Filter>
+      <Filter>Pliki nagłówkowe\Character</Filter>
     </ClInclude>
-    <ClInclude Include="HUD.hpp">
+    <ClInclude Include="Character.hpp">
+      <Filter>Pliki nagłówkowe\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Spiked_roller.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

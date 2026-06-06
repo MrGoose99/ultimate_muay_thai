@@ -63,10 +63,7 @@ void Game::draw(sf::RenderWindow& window)
 	if (level != nullptr)
 	{
 		//LEVEL
-		window.setView(window.getDefaultView()); //camera not moving
-		window.draw(level->get_background());
-		window.setView(level->camera); //camera is moving
-		window.draw(level->get_tilemap());
+		window.draw(*level);
 		//PLAYER
 		window.draw(player);
 		//window.draw(player.get_debug_shape()); // debugging player hitbox
@@ -112,9 +109,14 @@ void Game::position_update(sf::Time& dt)
 		player.attack(dt);
 
 		//LEVEL
+		level->update_interactive_objects(dt);
 		level->set_camera_center(player.get_player_center());
+
 
 		//HUD
 		hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points());
+
+		//Interactive
+		player.check_player_collisions_with_interactive(player.get_character_position(), level->get_tiles_in_row(), level->get_interactive_objects());
 	}
 }

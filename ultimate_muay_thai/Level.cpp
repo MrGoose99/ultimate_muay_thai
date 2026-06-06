@@ -1,6 +1,8 @@
 #include "Level.hpp"
 #include <iostream>
 #include "TileMap.hpp"
+#include <SFML/Graphics.hpp>
+#include "Interactive.hpp"
 
 
 void Level::set_lvl_background()
@@ -24,3 +26,9 @@ void Level::set_camera_center(sf::Vector2f center_pos)
 {
 	camera.setCenter({ round(center_pos.x), round(center_pos.y) });
 }
+
+const int Level::get_tiles_in_row()
+{
+	return tiles_in_row;
+}
+

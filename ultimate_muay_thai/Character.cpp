@@ -107,6 +107,7 @@ sf::RectangleShape Character::get_debug_shape()
 {
 	return debug;
 }
+
 sf::RectangleShape Character::get_debug_2_shape()
 {
 	return debug2;
@@ -164,6 +165,7 @@ void Character::check_velocity(sf::Time& dt, std::array<bool, 128> collision_arr
 		if (velocity_y > 0.f)
 		{
 			on_ground = 1;
+			character_position.y = std::ceil(character_position.y);
 		}
 		else
 		{
@@ -173,6 +175,8 @@ void Character::check_velocity(sf::Time& dt, std::array<bool, 128> collision_arr
 	}
 	is_falling = (!on_ground && velocity_y > 0.f);
 	is_jumping = (!on_ground && velocity_y < 0.f);
+	std::cout << "on_ground = " << on_ground << std::endl;
+
 }
 
 void Character::attack(sf::Time& dt)
@@ -256,4 +260,14 @@ short int Character::get_hp()
 short int Character::get_max_hp()
 {
 	return max_hp;
+}
+
+sf::FloatRect& Character::get_character_hitbox()
+{
+	return hitbox;
+}
+
+sf::Vector2f& Character::get_character_position()
+{
+	return character_position;
 }

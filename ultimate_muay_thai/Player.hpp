@@ -2,6 +2,9 @@
 #include <SFML/Graphics.hpp>
 #include "Character.hpp"
 #include "HUD.hpp"
+#include <array>
+#include <vector>
+#include "Interactive.hpp"
 
 class Player : public Character
 {
@@ -35,6 +38,8 @@ public:
 	void check_player_events(const std::optional<sf::Event>& event, sf::Time& dt); //checking events related to the player
 	void check_pressed(); //checking pressed buttons
 
+	//collisions//////////////////////////////////////////////////////////////////////////////////////
+	void check_player_collisions_with_interactive(sf::Vector2f position, const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects); //checking collisions of the player with interactive objects (for example, with a health pack)
 	
 	//getters//////////////////////////////////////////////////////////////////////////////////////
 	bool get_is_fighting() const; //returning the fighting status of the player

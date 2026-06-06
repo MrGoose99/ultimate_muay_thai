@@ -2,6 +2,8 @@
 #include "Character.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "Interactive.hpp"
+#include <vector>
 
 
 Player::Player()
@@ -415,6 +417,48 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 		}
 	}
 }
+
+void Player::check_player_collisions_with_interactive(sf::Vector2f position, const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
+{
+	sf::FloatRect checking_rect = { {position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, position.y + character_sprite.getLocalBounds().size.y / 8}, hitbox.size };
+	int left = checking_rect.position.x / 128.f;
+	int right = (checking_rect.position.x + hitbox.size.x) / 128.f;
+	int top = checking_rect.position.y / 128.f;
+	int bottom = (checking_rect.position.y + hitbox.size.y) / 128.f;
+
+
+	for(int y = top; y <= bottom; y++)
+		for (int x = left; x <= right; x++)
+		{
+			if (x < 0 || y < 0 || x >= tiles_in_row)
+			{
+				continue;
+			}
+			else if (interactive_objects[x + y * tiles_in_row]->get_status())
+			{
+				short int index = x + y * tiles_in_row;
+				if(checking_rect.findIntersection(interactive_objects[index]->get_object_sprite().getGlobalBounds()))
+				{
+					if (interactive_objects[index]->get_object_type() == "hp_gem" && hp < max_hp)
+					{
+						hp++;
+						if (hp > max_hp) hp = max_hp;
+						interactive_objects[index]->set_status(0);
+						return;
+					}
+					else if (interactive_objects[index]->get_object_type() == "special_gem" && special_points < max_special_points)
+					{
+						special_points++;
+						interactive_objects[index]->set_status(0);
+						return;
+					}
+				}
+
+			}
+		}
+	
+}
+
 void Player::check_pressed()
 {
 	if (is_fighting && sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::B))
