@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <array>
+#include "Interactive.hpp"
 
 class Character : public sf::Drawable, public sf::Transformable
 {
@@ -26,6 +27,7 @@ protected:
 	const float gravity = { 1800.f }; //gravitation
 	const float max_fall_speed = { 800.f }; //maximum speed of falling
 	float velocity_y = { 0.f }; //up/down moving
+	float velocity_x = { 0.f }; //left/right moving for special occasion
 
 	//attack////////////////////////////////////////////////////////////////////////////////////////
 	sf::FloatRect attackbox; //attack zone
@@ -73,12 +75,13 @@ public:
 	void attack(sf::Time& dt);
 
 	//moving//////////////////////////////////////////////////////////////////////////////////////
-	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::array<bool, 128> collision_array);
-	void character_falling(sf::Time& dt, const float falling_speed, std::array<bool,128> collision_array);
+	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects);
+	void character_falling(sf::Time& dt, const float falling_speed, std::array<bool,128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects);
 	const unsigned int get_tile_number(unsigned int tiles_in_row); //getting number of tile in tilemap (tile = 128x128)
 	void character_position_update(); //updating position of sprite and hitbox
-	bool check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::array<bool, 128> collision_array); //checking is position collide
-	void check_velocity(sf::Time& dt, std::array<bool, 128> collision_array);
+	bool check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects); //checking is position collide
+	void check_velocity_y(sf::Time& dt, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects);
+	void check_velocity_x(sf::Time& dt, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects);
 	
 	//debug//////////////////////////////////////////////////////////////////////////////////////
 	sf::RectangleShape get_debug_shape();

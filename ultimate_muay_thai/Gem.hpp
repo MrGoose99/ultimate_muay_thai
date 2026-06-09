@@ -26,4 +26,5 @@ public:
 	std::string get_object_type() override; //getting the type of the interactive object (for example, "gem", "heart", etc.)
 	sf::Sprite get_object_sprite() override; //getting the sprite of the interactive object
 
+
 };

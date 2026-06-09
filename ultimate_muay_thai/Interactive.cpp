@@ -9,3 +9,38 @@ bool Interactive::get_status()
 {
 	return status;
 }
+
+int Interactive::get_hp()&
+{
+	return hp;
+}
+
+void Interactive::decrease_hp(short int points)
+{
+	hp -= points;
+}
+
+const short int Interactive::get_tile_number()&
+{
+	return tile_number;
+}
+
+const short int Interactive::get_punched()&
+{
+	return punched;
+}
+
+void Interactive::set_punched(short int p)
+{
+	punched = p;
+}
+
+void Interactive::update_punched(sf::Time& dt)
+{
+	punched_time += dt;
+	if (punched_time >= sf::seconds(0.2f))
+	{
+		set_punched(0);
+		punched_time = sf::seconds(0.f);
+	}
+}

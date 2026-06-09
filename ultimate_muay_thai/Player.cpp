@@ -3,7 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Interactive.hpp"
+#include "Gem.hpp"	
 #include <vector>
+#include <cstdlib>
 
 
 Player::Player()
@@ -27,6 +29,8 @@ Player::Player()
 	is_falling = 0;
 	is_jumping = 0;
 	on_ground = 0;
+
+	velocity_x = 0;
 	
 	//HP
 	hp = 10;
@@ -35,6 +39,16 @@ Player::Player()
 	//SPECIAL POINTS
 	special_points = 0;
 	max_special_points = 20;
+
+	//knocked
+	knocked = 0;
+	time_knocked = sf::seconds(0.f);
+	transparenting_status = 0;
+	transparenting_time = sf::seconds(0.f);
+
+	//moving_block
+	moving_block = 0;
+	time_moving_block = sf::seconds(0.f);
 }
 
 void Player::update_character_animation(sf::Time& dt)
@@ -49,6 +63,19 @@ void Player::update_character_animation(sf::Time& dt)
 		character_sprite.setScale({ -1.0f, 1.0f });
 		character_sprite.setOrigin({ 128.f, 0.f });
 	}
+
+	sf::Color color = character_sprite.getColor();
+	if (transparenting_status == 0)
+	{
+		color.a = 255.f;
+		character_sprite.setColor(color);
+	}
+	else
+	{
+		color.a = 127.f;
+		character_sprite.setColor(color);
+	}
+
 
 
 	if (is_jumping)
@@ -140,7 +167,18 @@ void Player::update_frame_status(sf::Time& dt)
 	//std::cout << "moving_normal = " << moving_normal << std::endl << "moving_fight = " << moving_fight << std::endl;
 	//if(on_ground) std::cout << "on_ground = " << on_ground << std::endl;
 
-
+	if (knocked)
+	{
+		transparenting_time += dt;
+		if (transparenting_time >= sf::seconds(0.15f))
+		{
+			if(transparenting_status == 0)
+				transparenting_status = 1;
+			else transparenting_status = 0;
+			transparenting_time = sf::seconds(0.f);
+		}
+	}
+	else transparenting_status = 0;
 	if (is_jumping) //jumping
 	{
 		if (time_animation >= sf::seconds(0.3f))
@@ -319,7 +357,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 		}
 		if (is_fighting)
 		{
-			if (keyPressed->scancode == sf::Keyboard::Scancode::H && moving_fight == 0)
+			if (keyPressed->scancode == sf::Keyboard::Scancode::H && moving_fight == 0 && !is_blocking)
 			{
 				kick_attack_state = KickAttackState::None;
 				switch (meele_attack_state)
@@ -361,7 +399,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 					break;
 				}
 			}
-			if (keyPressed->scancode == sf::Keyboard::Scancode::J)
+			if (keyPressed->scancode == sf::Keyboard::Scancode::J && !is_blocking)
 			{
 				meele_attack_state = MeeleAttackState::None;
 				if (kick_attack_state == KickAttackState::None)
@@ -418,9 +456,9 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 	}
 }
 
-void Player::check_player_collisions_with_interactive(sf::Vector2f position, const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
+void Player::check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
 {
-	sf::FloatRect checking_rect = { {position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, position.y + character_sprite.getLocalBounds().size.y / 8}, hitbox.size };
+	sf::FloatRect checking_rect = { hitbox.position, hitbox.size };
 	int left = checking_rect.position.x / 128.f;
 	int right = (checking_rect.position.x + hitbox.size.x) / 128.f;
 	int top = checking_rect.position.y / 128.f;
@@ -437,12 +475,11 @@ void Player::check_player_collisions_with_interactive(sf::Vector2f position, con
 			else if (interactive_objects[x + y * tiles_in_row]->get_status())
 			{
 				short int index = x + y * tiles_in_row;
-				if(checking_rect.findIntersection(interactive_objects[index]->get_object_sprite().getGlobalBounds()))
+				if (checking_rect.findIntersection(interactive_objects[index]->get_object_sprite().getGlobalBounds()))
 				{
 					if (interactive_objects[index]->get_object_type() == "hp_gem" && hp < max_hp)
 					{
 						hp++;
-						if (hp > max_hp) hp = max_hp;
 						interactive_objects[index]->set_status(0);
 						return;
 					}
@@ -452,12 +489,47 @@ void Player::check_player_collisions_with_interactive(sf::Vector2f position, con
 						interactive_objects[index]->set_status(0);
 						return;
 					}
+					else if (interactive_objects[index]->get_object_type() == "spiked_roller")
+					{
+						if (!knocked)
+						{
+							hp--;
+							knocked = 1;
+						}
+						if (checking_rect.position.x < interactive_objects[index]->get_object_sprite().getGlobalBounds().position.x)
+							if (!knocked)
+								velocity_x = -600.f;
+							else velocity_x = -200.f;
+						else
+							if (!knocked)
+								velocity_x = 600.f;
+							else velocity_x = 200.f;
+						if (checking_rect.position.y < interactive_objects[index]->get_object_sprite().getGlobalBounds().position.x)
+							velocity_y = -600.f;
+						moving_block = 1;
+						return;
+					}
 				}
-
+				if (attackbox.findIntersection(interactive_objects[index]->get_object_sprite().getGlobalBounds()) && attackbox_active && interactive_objects[index]->get_punched() == 0)
+				{
+					if (interactive_objects[index]->get_object_type() == "punching_bag")
+					{
+						std::cout << interactive_objects[index]->get_hp() << std::endl;
+						interactive_objects[index]->decrease_hp(1);							
+						if (right_side)
+							interactive_objects[index]->set_punched(1);
+						else if(!right_side)
+							interactive_objects[index]->set_punched(2);
+						std::cout << right_side << std::endl;
+						if (interactive_objects[index]->get_hp() <= 0)
+							interactive_objects[index] = std::make_unique<Gem>(rand()%2, interactive_objects[index]->get_tile_number());
+					}
+				}
+				
 			}
 		}
-	
-}
+	}	
+
 
 void Player::check_pressed()
 {
@@ -471,12 +543,12 @@ void Player::check_pressed()
 
 	if (!is_fighting)
 	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D) && !moving_block)
 		{
 			moving_normal = 2;
 			moving_fight = 0;
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A))
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A) && !moving_block)
 		{
 			moving_normal = 1;
 			moving_fight = 0;
@@ -528,4 +600,49 @@ const short int Player::get_special_points()
 const short int Player::get_max_special_points()
 {
 	return max_special_points;
+}
+
+void Player::knocked_moving_latency(sf::Time& dt)
+{
+	if (knocked)
+	{
+		time_knocked += dt;
+		if (time_knocked >= sf::seconds(2.f))
+		{
+			knocked = 0;
+			time_knocked = sf::seconds(0.f);
+		}
+	}
+	if (moving_block)
+	{
+		time_moving_block += dt;
+		if (time_moving_block >= sf::seconds(0.2f))
+		{
+			moving_block = 0;
+			time_moving_block = sf::seconds(0.f);
+		}
+	}
+}
+
+const bool Player::get_knocked()
+{
+	return knocked;
+}
+
+void Player::character_position_update()
+{
+	{
+		character_sprite.setPosition(character_position);
+		if (!knocked)
+		{
+			hitbox.size = { 64,128 - 128 / 8 };
+			hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y + character_sprite.getLocalBounds().size.y / 8 };
+		}
+		else
+		{
+			hitbox.size = { 64 / 3, 128 - 128 / 8 };
+			hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y + character_sprite.getLocalBounds().size.y / 8 };
+		}
+
+	}
 }

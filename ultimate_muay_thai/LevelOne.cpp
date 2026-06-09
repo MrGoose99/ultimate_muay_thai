@@ -8,6 +8,7 @@
 #include "Interactive.hpp"
 #include "Gem.hpp"
 #include "Spiked_roller.hpp"
+#include "Punching_bag.hpp"
 
 
 
@@ -32,16 +33,31 @@ LevelOne::LevelOne()
 
 	for (short int i = 0; i < interactive_array.size(); i++)
 	{
-		if (interactive_array[i] == 0)
+		switch (interactive_array[i])
+		{
+		case 0:
 			interactive_objects.push_back(std::make_unique<Gem>(0, i, 0));
-		else if (interactive_array[i] == 1)
+			break;
+		case 1:
 			interactive_objects.push_back(std::make_unique<Gem>(0, i));
-		else if (interactive_array[i] == 2)
+			break;
+
+		case 2:
 			interactive_objects.push_back(std::make_unique<Gem>(1, i));
-		else if (interactive_array[i] == 3)
+			break;
+
+		case 3:
 			interactive_objects.push_back(std::make_unique<Spiked_roller>(i));
+			break;
+
+		case 4:
+			interactive_objects.push_back(std::make_unique<Punching_bag>(i));
+			break;
+
+		default:
+			break;
+		}
 	}
-	
 }
 
 void LevelOne::set_lvl_tiles()
@@ -61,9 +77,9 @@ void LevelOne::update_interactive_objects(sf::Time& dt)
 	{
 		if (interactive_object->get_object_type() == "hp_gem" || interactive_object->get_object_type() == "special_gem")
 			interactive_object->update(dt, 10.f);
-	}
-	for (const auto& interactive_object : interactive_objects)
+		if (interactive_object->get_punched() > 0)interactive_object->update_punched(dt);
 		interactive_object->texture_update(dt);
+	}
 }
 
 void LevelOne::draw(sf::RenderTarget& target, sf::RenderStates states) const

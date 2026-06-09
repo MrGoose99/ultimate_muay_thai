@@ -69,6 +69,9 @@
     <ClCompile Include="Spiked_roller.cpp">
       <Filter>Pliki źródłowe\Interactive</Filter>
     </ClCompile>
+    <ClCompile Include="Punching_bag.cpp">
+      <Filter>Pliki źródłowe\Interactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -102,7 +105,10 @@
       <Filter>Pliki nagłówkowe\Character</Filter>
     </ClInclude>
     <ClInclude Include="Spiked_roller.hpp">
-      <Filter>Pliki nagłówkowe</Filter>
+      <Filter>Pliki nagłówkowe\Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="Punching_bag.hpp">
+      <Filter>Pliki nagłówkowe\Interactive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

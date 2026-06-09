@@ -22,12 +22,27 @@ protected:
 	short int special_points;
 	short int max_special_points;
 
+	//knocked
+	bool knocked;
+	sf::Time time_knocked;
+	bool transparenting_status;
+	sf::Time transparenting_time;
+
+	//moving_block
+	bool moving_block;
+	sf::Time time_moving_block;
+
+
+
 public:
 	friend class Level;
 	friend class HUD;
 	
 	//constructor//////////////////////////////////////////////////////////////////////////////////////
 	Player();
+
+	//position
+	void character_position_update();
 	
 	//animations//////////////////////////////////////////////////////////////////////////////////////
 	void update_character_animation(sf::Time& dt) override; //setting the move animation of the character:
@@ -37,9 +52,11 @@ public:
 	//checking events//////////////////////////////////////////////////////////////////////////////////////
 	void check_player_events(const std::optional<sf::Event>& event, sf::Time& dt); //checking events related to the player
 	void check_pressed(); //checking pressed buttons
+	void knocked_moving_latency(sf::Time& dt); //change knocked boolean
+
 
 	//collisions//////////////////////////////////////////////////////////////////////////////////////
-	void check_player_collisions_with_interactive(sf::Vector2f position, const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects); //checking collisions of the player with interactive objects (for example, with a health pack)
+	void check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects); //checking collisions of the player with interactive objects (for example, with a health pack)
 	
 	//getters//////////////////////////////////////////////////////////////////////////////////////
 	bool get_is_fighting() const; //returning the fighting status of the player
@@ -49,6 +66,7 @@ public:
 	sf::Vector2f get_player_center();
 	const short int get_special_points();
 	const short int get_max_special_points();
+	const bool get_knocked();
 
 	//setters//////////////////////////////////////////////////////////////////////////////////////
 	void set_is_fighting(const bool status); //setting the fighting status of the player

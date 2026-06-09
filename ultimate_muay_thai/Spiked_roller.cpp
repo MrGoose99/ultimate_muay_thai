@@ -4,6 +4,7 @@
 
 Spiked_roller::Spiked_roller(short int tile_nr)
 {
+	tile_number = tile_nr;
 	if(!object_texture.loadFromFile("textures/spiked_roller.png"))
 		std::cout << "Error spiked roller texture loading...\n";
 	spiked_roller_sprite.setTexture(object_texture);
@@ -13,8 +14,8 @@ Spiked_roller::Spiked_roller(short int tile_nr)
 	default_texture_rect.size = { 78, 120 };
 	spiked_roller_sprite.setTextureRect(default_texture_rect);
 
-	float position_x = tile_nr % 16 + 78.f + 25.f;
-	float position_y = tile_nr / 16 + 120.f + 5.f;
+	float position_x = tile_nr % 16 * 128.f + 25.f;
+	float position_y = tile_nr / 16 * 128.f + 5.f;
 
 	spiked_roller_sprite.setPosition({ position_x, position_y });
 

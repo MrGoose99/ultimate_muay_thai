@@ -103,10 +103,15 @@ void Game::position_update(sf::Time& dt)
 	if (level != nullptr)
 	{
 		//PLAYER
-		player.character_moving(dt, 375.f, 100.f, level->get_collision_array());
-		player.check_velocity(dt, level->get_collision_array());
+		player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_objects());
+		player.check_velocity_y(dt, level->get_collision_array(), level->get_interactive_objects());
+		player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_objects());
 		player.character_position_update();
 		player.attack(dt);
+
+		//Interactive
+		player.check_player_collisions_with_interactive(level->get_tiles_in_row(), level->get_interactive_objects());
+		player.knocked_moving_latency(dt);
 
 		//LEVEL
 		level->update_interactive_objects(dt);
@@ -116,7 +121,6 @@ void Game::position_update(sf::Time& dt)
 		//HUD
 		hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points());
 
-		//Interactive
-		player.check_player_collisions_with_interactive(player.get_character_position(), level->get_tiles_in_row(), level->get_interactive_objects());
+
 	}
 }

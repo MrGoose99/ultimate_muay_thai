@@ -7,6 +7,7 @@ Gem::Gem(short int gem_stat, short int tile_nr, bool stat)
 {
 	gem_status = gem_stat;
 	status = stat;
+	tile_number = tile_nr;
 	if (gem_status == 0)
 	{
 		if (!object_texture.loadFromFile("textures/red_gem.png"))
@@ -75,3 +76,4 @@ void Gem::texture_update(sf::Time& dt)
 {
 
 }
+

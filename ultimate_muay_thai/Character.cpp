@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
-
+#include "Interactive.hpp"
 
 
 void Character::set_character(std::filesystem::path& texture, std::string& char_name, sf::Vector2f& pos)
@@ -34,7 +34,7 @@ void Character::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(character_sprite, states); 
 }
 
-void Character::character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::array<bool, 128> collision_array)
+void Character::character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
 {
 	if (!is_fighting)
 	{
@@ -45,7 +45,7 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 				right_side = 1;
 			}
 			sf::Vector2f next_pos = { character_position.x + speed_normal * dt.asSeconds(), character_position.y };
-			if (!check_character_collision(next_pos, 16, collision_array))
+			if (!check_character_collision(next_pos, 16, collision_array, interactive_objects))
 				character_position = next_pos;
 		}
 		else if (moving_normal == 1)
@@ -55,7 +55,7 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 				right_side = 0;
 			}
 			sf::Vector2f next_pos = { character_position.x + -speed_normal * dt.asSeconds(), character_position.y };
-			if(!check_character_collision(next_pos, 16, collision_array))
+			if(!check_character_collision(next_pos, 16, collision_array, interactive_objects))
 				character_position = next_pos;
 		}
 	}
@@ -64,28 +64,28 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 		if (moving_fight == 2)
 		{
 			sf::Vector2f next_pos = {character_position.x + speed_fight * dt.asSeconds(), character_position.y };
-			if (!check_character_collision(next_pos, 16, collision_array))
+			if (!check_character_collision(next_pos, 16, collision_array, interactive_objects))
 			character_position = next_pos;
 		}
 		else if (moving_fight == 1)
 		{
 			sf::Vector2f next_pos = { character_position.x + -speed_fight * dt.asSeconds(), character_position.y };
-			if (!check_character_collision(next_pos, 16, collision_array))
+			if (!check_character_collision(next_pos, 16, collision_array, interactive_objects))
 			character_position = next_pos;
 		}
 	}
 }
 
-void Character::character_falling(sf::Time& dt, const float falling_speed, std::array<bool,128> collision_array)
+void Character::character_falling(sf::Time& dt, const float falling_speed, std::array<bool,128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
 {
 	sf::Vector2f next_pos = { character_position.x, character_position.y + dt.asSeconds() * falling_speed };
-	if (!check_character_collision(next_pos, 16, collision_array) && !is_jumping)
+	if (!check_character_collision(next_pos, 16, collision_array, interactive_objects) && !is_jumping)
 	{
 		is_falling = 1;
 		character_position = next_pos;
 		jump_actual_high = 0;
 	}
-	else if(check_character_collision(next_pos, 16, collision_array) && !is_jumping)
+	else if(check_character_collision(next_pos, 16, collision_array, interactive_objects) && !is_jumping)
 	{
 		is_falling = 0;
 	}
@@ -113,7 +113,7 @@ sf::RectangleShape Character::get_debug_2_shape()
 	return debug2;
 }
 
-bool Character::check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::array<bool,128> collision_array)
+bool Character::check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::array<bool,128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
 {
 	//debug rects
 	debug.setSize(hitbox.size);
@@ -143,17 +143,24 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 				if (checking_tile.findIntersection(checking_rect))
 					return 1;
 			}
+			else if (interactive_objects[x + y * tiles_in_row]->get_object_type() == "punching_bag")
+			{
+				sf::FloatRect checking_tile = { {interactive_objects[x + y * tiles_in_row]->get_object_sprite().getGlobalBounds().position.x,interactive_objects[x + y * tiles_in_row]->get_object_sprite().getGlobalBounds().position.y}, {interactive_objects[x + y * tiles_in_row]->get_object_sprite().getGlobalBounds().size } };
+					if (checking_tile.findIntersection(checking_rect))
+						return 1;
+				
+			}
 		}
 	return 0;
 }
 
-void Character::check_velocity(sf::Time& dt, std::array<bool, 128> collision_array)
+void Character::check_velocity_y(sf::Time& dt, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
 {
 	on_ground = 0;
 	velocity_y += gravity * dt.asSeconds();
 	float change = std::min(velocity_y, max_fall_speed);
 	sf::Vector2f next_pos = { character_position.x, character_position.y + (change * dt.asSeconds()) };
-	bool collided = check_character_collision(next_pos, 16, collision_array);
+	bool collided = check_character_collision(next_pos, 16, collision_array, interactive_objects);
 	if (!collided)
 	{
 
@@ -175,8 +182,24 @@ void Character::check_velocity(sf::Time& dt, std::array<bool, 128> collision_arr
 	}
 	is_falling = (!on_ground && velocity_y > 0.f);
 	is_jumping = (!on_ground && velocity_y < 0.f);
-	std::cout << "on_ground = " << on_ground << std::endl;
 
+}
+
+void Character::check_velocity_x(sf::Time& dt, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
+{
+	if (velocity_x < 0.f) velocity_x += gravity * dt.asSeconds();
+	else if (velocity_x > 0.f) velocity_x -= gravity * dt.asSeconds();
+	float change = velocity_x;
+	sf::Vector2f next_pos = { character_position.x + (change * dt.asSeconds()), character_position.y };
+	bool collided = check_character_collision(next_pos, 16, collision_array, interactive_objects);
+	if (!collided)
+	{
+		character_position = next_pos;
+	}
+	else
+	{
+		velocity_x = 0.f;
+	}
 }
 
 void Character::attack(sf::Time& dt)

@@ -31,8 +31,8 @@ int main()
 		}
 		if (game.get_status() == 1)
 		{
-			game.animations_update(dt); //checking animations update every frame
 			game.position_update(dt); //checking positions every frame
+			game.animations_update(dt); //checking animations update every frame
 		}
 		window.clear(sf::Color::Black);
 		game.draw(window);

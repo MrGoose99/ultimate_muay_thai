@@ -165,6 +165,7 @@
     <ClCompile Include="LevelTwo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Punching_bag.cpp" />
     <ClCompile Include="Spiked_roller.cpp" />
     <ClCompile Include="TileMap.cpp" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="LevelOne.hpp" />
     <ClInclude Include="LevelTwo.hpp" />
     <ClInclude Include="Player.hpp" />
+    <ClInclude Include="Punching_bag.hpp" />
     <ClInclude Include="Spiked_roller.hpp" />
     <ClInclude Include="TileMap.hpp" />
   </ItemGroup>
