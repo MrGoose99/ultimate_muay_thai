@@ -76,11 +76,10 @@ public:
 
 	//moving//////////////////////////////////////////////////////////////////////////////////////
 	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects);
-	void character_falling(sf::Time& dt, const float falling_speed, std::array<bool,128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects);
 	const unsigned int get_tile_number(unsigned int tiles_in_row); //getting number of tile in tilemap (tile = 128x128)
 	void character_position_update(); //updating position of sprite and hitbox
 	bool check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects); //checking is position collide
-	void check_velocity_y(sf::Time& dt, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects);
+	void check_velocity_y(sf::Time& dt, std::array<bool, 128> collision_array, const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects);
 	void check_velocity_x(sf::Time& dt, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects);
 	
 	//debug//////////////////////////////////////////////////////////////////////////////////////
@@ -92,10 +91,10 @@ public:
 	sf::Sprite& get_character_sprite(); //returning the character sprite
 	sf::FloatRect& get_character_hitbox(); //returning the character hitbox
 	sf::Vector2f& get_character_position(); //returning the character position
-	short int get_hp(); //returning the health points of the character
-	short int get_max_hp(); //returning the maximum health points of the character
+	const short int get_hp(); //returning the health points of the character
+	const short int get_max_hp(); //returning the maximum health points of the character
 	
 	//setters//////////////////////////////////////////////////////////////////////////////////////
 	void set_character(std::filesystem::path& texture, std::string& char_name, sf::Vector2f& pos); //setting character texture, name and position
-
+	const short int get_damage()&;
 };

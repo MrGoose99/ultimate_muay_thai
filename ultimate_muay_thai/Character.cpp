@@ -76,22 +76,6 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 	}
 }
 
-void Character::character_falling(sf::Time& dt, const float falling_speed, std::array<bool,128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
-{
-	sf::Vector2f next_pos = { character_position.x, character_position.y + dt.asSeconds() * falling_speed };
-	if (!check_character_collision(next_pos, 16, collision_array, interactive_objects) && !is_jumping)
-	{
-		is_falling = 1;
-		character_position = next_pos;
-		jump_actual_high = 0;
-	}
-	else if(check_character_collision(next_pos, 16, collision_array, interactive_objects) && !is_jumping)
-	{
-		is_falling = 0;
-	}
-
-}
-
 const unsigned int Character::get_tile_number(unsigned int tiles_in_row)
 {
 	return character_position.x / 128 + character_position.y / 128 * tiles_in_row;
@@ -154,13 +138,13 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 	return 0;
 }
 
-void Character::check_velocity_y(sf::Time& dt, std::array<bool, 128> collision_array, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
+void Character::check_velocity_y(sf::Time& dt, std::array<bool, 128> collision_array, const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
 {
 	on_ground = 0;
 	velocity_y += gravity * dt.asSeconds();
 	float change = std::min(velocity_y, max_fall_speed);
 	sf::Vector2f next_pos = { character_position.x, character_position.y + (change * dt.asSeconds()) };
-	bool collided = check_character_collision(next_pos, 16, collision_array, interactive_objects);
+	bool collided = check_character_collision(next_pos, tiles_in_row, collision_array, interactive_objects);
 	if (!collided)
 	{
 
@@ -172,7 +156,10 @@ void Character::check_velocity_y(sf::Time& dt, std::array<bool, 128> collision_a
 		if (velocity_y > 0.f)
 		{
 			on_ground = 1;
-			character_position.y = std::ceil(character_position.y);
+			velocity_y = 0.f;
+			float tile_top = next_pos.y + 128.f;
+			tile_top = tile_top / 128.f;
+			tile_top = tile_top * 128.f;
 		}
 		else
 		{
@@ -255,7 +242,7 @@ void Character::attack(sf::Time& dt)
 			else
 				attackbox.position = { hitbox.position.x - hitbox.size.x / 2, hitbox.position.y + hitbox.size.y / 6 * 5 };
 
-			if (attack_time <= sf::seconds(0.3f))
+			if (attack_time <= sf::seconds(0.2f))
 				attackbox_active = 1;
 			else
 				attackbox_active = 0;
@@ -275,12 +262,12 @@ void Character::attack(sf::Time& dt)
 	}
 }
 
-short int Character::get_hp()
+const short int Character::get_hp()
 {
 	return hp;
 }
 
-short int Character::get_max_hp()
+const short int Character::get_max_hp()
 {
 	return max_hp;
 }
@@ -293,4 +280,16 @@ sf::FloatRect& Character::get_character_hitbox()
 sf::Vector2f& Character::get_character_position()
 {
 	return character_position;
+}
+
+const short int Character::get_damage()&
+{
+	if (meele_attack_state != MeeleAttackState::None)
+		return 1;
+	else if (kick_attack_state == KickAttackState::AttackLow)
+		return 1;
+	else if (kick_attack_state == KickAttackState::AttackMiddle)
+		return 2;
+	else if (kick_attack_state == KickAttackState::AttackHigh)
+		return 3;
 }

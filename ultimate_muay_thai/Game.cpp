@@ -104,7 +104,7 @@ void Game::position_update(sf::Time& dt)
 	{
 		//PLAYER
 		player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_objects());
-		player.check_velocity_y(dt, level->get_collision_array(), level->get_interactive_objects());
+		player.check_velocity_y(dt, level->get_collision_array(), level->get_tiles_in_row(), level->get_interactive_objects());
 		player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_objects());
 		player.character_position_update();
 		player.attack(dt);

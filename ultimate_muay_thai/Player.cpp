@@ -134,6 +134,7 @@ void Player::update_character_animation(sf::Time& dt)
 				case 3:character_sprite.setTextureRect(get_frame_position(23)); break;
 				case 4:character_sprite.setTextureRect(get_frame_position(24)); break;
 				case 5:character_sprite.setTextureRect(get_frame_position(25)); break;
+				case 6:character_sprite.setTextureRect(get_frame_position(2)); break;
 				default: break;
 				}
 			}
@@ -261,7 +262,10 @@ void Player::update_frame_status(sf::Time& dt)
 			break;
 			case KickAttackState::AttackLow:
 			{
-				animation_stage = 5;
+				if (attack_time < sf::seconds(0.2f))
+					animation_stage = 5;
+				else
+					animation_stage = 6;
 				break;
 			}
 			default:
@@ -515,7 +519,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 					if (interactive_objects[index]->get_object_type() == "punching_bag")
 					{
 						std::cout << interactive_objects[index]->get_hp() << std::endl;
-						interactive_objects[index]->decrease_hp(1);							
+						interactive_objects[index]->decrease_hp(get_damage());							
 						if (right_side)
 							interactive_objects[index]->set_punched(1);
 						else if(!right_side)
@@ -529,7 +533,6 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 			}
 		}
 	}	
-
 
 void Player::check_pressed()
 {
