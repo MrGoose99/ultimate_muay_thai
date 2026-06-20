@@ -5,6 +5,8 @@
 Spiked_roller::Spiked_roller(short int tile_nr)
 {
 	tile_number = tile_nr;
+	spawning_tile = tile_nr;
+	current_tile = tile_nr;
 	if(!object_texture.loadFromFile("textures/spiked_roller.png"))
 		std::cout << "Error spiked roller texture loading...\n";
 	spiked_roller_sprite.setTexture(object_texture);
@@ -22,6 +24,7 @@ Spiked_roller::Spiked_roller(short int tile_nr)
 	status = 1;
 
 	animation_stage = 0;
+
 }
 
 void Spiked_roller::texture_update(sf::Time& dt)
@@ -53,7 +56,7 @@ void Spiked_roller::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 	if (status) target.draw(spiked_roller_sprite, states);
 }
 
-void Spiked_roller::update(sf::Time& dt, float moving_speed)
+void Spiked_roller::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos)
 {
 
 }
@@ -63,7 +66,7 @@ std::string Spiked_roller::get_object_type()
 	return type;
 }
 
-sf::Sprite Spiked_roller::get_object_sprite()
+const sf::Sprite& Spiked_roller::get_object_sprite() const
 {
 	return spiked_roller_sprite;
 }

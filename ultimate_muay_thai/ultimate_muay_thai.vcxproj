@@ -164,6 +164,7 @@
     <ClCompile Include="LevelOne.cpp" />
     <ClCompile Include="LevelTwo.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Moving_tile.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Punching_bag.cpp" />
     <ClCompile Include="Spiked_roller.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Level.hpp" />
     <ClInclude Include="LevelOne.hpp" />
     <ClInclude Include="LevelTwo.hpp" />
+    <ClInclude Include="Moving_tile.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Punching_bag.hpp" />
     <ClInclude Include="Spiked_roller.hpp" />

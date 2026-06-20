@@ -8,6 +8,7 @@
 #include "LevelTwo.hpp"
 #include <cmath>
 #include "HUD.hpp"
+#include "Interactive.hpp"
 
 Game::Game(bool s)
 {
@@ -28,6 +29,7 @@ void Game::checkEvents_paused(const std::optional<sf::Event>& event, sf::RenderW
 		}
 	}
 }
+
 void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::RenderWindow& window, sf::Time& dt)
 {
 	if (event->is<sf::Event::Closed>()) // closing the window by every possible way (but not from keyboard)
@@ -54,6 +56,7 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 		if (keyPressed->scancode == sf::Keyboard::Scancode::P)
 			pause();
 		player.check_player_events(event, dt);
+
 	}
 	
 }
@@ -95,29 +98,29 @@ void Game::animations_update(sf::Time& dt)
 		//PLAYER
 		player.update_frame_status(dt);
 		player.update_character_animation(dt);
-		player.check_pressed(); 
 }
 
 void Game::position_update(sf::Time& dt)
 {
 	if (level != nullptr)
 	{
+
 		//PLAYER
-		player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_objects());
-		player.check_velocity_y(dt, level->get_collision_array(), level->get_tiles_in_row(), level->get_interactive_objects());
-		player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_objects());
+		player.check_pressed();
+		player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_row());
+		player.check_velocity_y(dt, level->get_collision_array(), level->get_tiles_in_row(), level->get_interactive_grid());
+		player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_grid());
+		player.check_player_collisions_with_interactive(level->get_tiles_in_row(), level->get_interactive_grid());
 		player.character_position_update();
+		level->update_interactive_objects(dt, player.get_character_hitbox(), player.get_player_position());
 		player.attack(dt);
 
 		//Interactive
-		player.check_player_collisions_with_interactive(level->get_tiles_in_row(), level->get_interactive_objects());
 		player.knocked_moving_latency(dt);
 
 		//LEVEL
-		level->update_interactive_objects(dt);
 		level->set_camera_center(player.get_player_center());
-
-
+		
 		//HUD
 		hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points());
 

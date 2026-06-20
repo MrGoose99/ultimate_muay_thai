@@ -7,7 +7,8 @@ Gem::Gem(short int gem_stat, short int tile_nr, bool stat)
 {
 	gem_status = gem_stat;
 	status = stat;
-	tile_number = tile_nr;
+	spawning_tile = tile_nr;
+	current_tile = tile_nr;
 	if (gem_status == 0)
 	{
 		if (!object_texture.loadFromFile("textures/red_gem.png"))
@@ -32,11 +33,9 @@ Gem::Gem(short int gem_stat, short int tile_nr, bool stat)
 	hitbox.position = { position_x, position_y };
 	hitbox.size = sf::Vector2f{ object_texture.getSize() };
 
-
-	
 }
 
-void Gem::update(sf::Time& dt, float moving_speed)
+void Gem::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos)
 {
 	if (status)
 	{
@@ -67,7 +66,7 @@ std::string Gem::get_object_type()
 	return type;
 }
 
-sf::Sprite Gem::get_object_sprite()
+const sf::Sprite& Gem::get_object_sprite() const
 {
 	return gem_sprite;
 }

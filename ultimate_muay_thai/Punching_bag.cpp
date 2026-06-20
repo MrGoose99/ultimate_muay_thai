@@ -6,6 +6,8 @@
 Punching_bag::Punching_bag(short int tile_nr)
 {
 	tile_number = tile_nr;
+	spawning_tile = tile_nr;
+	current_tile = tile_nr;
 	if (!object_texture.loadFromFile("textures/punching_bag.png"))
 		std::cout << "Error loading punching_bag texture...\n";
 	
@@ -45,7 +47,7 @@ void Punching_bag::texture_update(sf::Time& dt)
 
 }
 
-void Punching_bag::update(sf::Time& dt, float moving_speed)
+void Punching_bag::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos)
 {
 	//empty method
 }
@@ -60,7 +62,7 @@ std::string Punching_bag::get_object_type()
 	return type;
 }
 
-sf::Sprite Punching_bag::get_object_sprite()
+const sf::Sprite& Punching_bag::get_object_sprite() const
 {
 	return punching_bag_sprite;
 }

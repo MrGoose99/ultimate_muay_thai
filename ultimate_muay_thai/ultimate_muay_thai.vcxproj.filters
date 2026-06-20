@@ -72,6 +72,9 @@
     <ClCompile Include="Punching_bag.cpp">
       <Filter>Pliki źródłowe\Interactive</Filter>
     </ClCompile>
+    <ClCompile Include="Moving_tile.cpp">
+      <Filter>Pliki źródłowe\Interactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -108,6 +111,9 @@
       <Filter>Pliki nagłówkowe\Interactive</Filter>
     </ClInclude>
     <ClInclude Include="Punching_bag.hpp">
+      <Filter>Pliki nagłówkowe\Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="Moving_tile.hpp">
       <Filter>Pliki nagłówkowe\Interactive</Filter>
     </ClInclude>
   </ItemGroup>

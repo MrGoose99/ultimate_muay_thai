@@ -460,7 +460,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 	}
 }
 
-void Player::check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects)
+void Player::check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid)
 {
 	sf::FloatRect checking_rect = { hitbox.position, hitbox.size };
 	int left = checking_rect.position.x / 128.f;
@@ -476,57 +476,61 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 			{
 				continue;
 			}
-			else if (interactive_objects[x + y * tiles_in_row]->get_status())
+			else
 			{
 				short int index = x + y * tiles_in_row;
-				if (checking_rect.findIntersection(interactive_objects[index]->get_object_sprite().getGlobalBounds()))
+				for (int i = 0; i < interactive_grid[index].size(); i++)
 				{
-					if (interactive_objects[index]->get_object_type() == "hp_gem" && hp < max_hp)
+					if (checking_rect.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && interactive_grid[index][i]->get_status())
 					{
-						hp++;
-						interactive_objects[index]->set_status(0);
-						return;
-					}
-					else if (interactive_objects[index]->get_object_type() == "special_gem" && special_points < max_special_points)
-					{
-						special_points++;
-						interactive_objects[index]->set_status(0);
-						return;
-					}
-					else if (interactive_objects[index]->get_object_type() == "spiked_roller")
-					{
-						if (!knocked)
+						if (interactive_grid[index][i]->get_object_type() == "hp_gem" && hp < max_hp)
 						{
-							hp--;
-							knocked = 1;
+							hp++;
+							interactive_grid[index][i]->set_destroyed(1);
+							return;
 						}
-						if (checking_rect.position.x < interactive_objects[index]->get_object_sprite().getGlobalBounds().position.x)
+						else if (interactive_grid[index][i]->get_object_type() == "special_gem" && special_points < max_special_points)
+						{
+							special_points++;
+							interactive_grid[index][i]->set_destroyed(1);
+							return;
+						}
+						else if (interactive_grid[index][i]->get_object_type() == "spiked_roller")
+						{
+							if (checking_rect.position.x < interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x)
+								if (!knocked)
+									velocity_x = -600.f;
+								else velocity_x = -300.f;
+							else
+								if (!knocked)
+									velocity_x = 600.f;
+								else velocity_x = 300.f;
+
+							if (checking_rect.position.y < interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x)
+								velocity_y = -600.f;
+							moving_block = 1;
 							if (!knocked)
-								velocity_x = -600.f;
-							else velocity_x = -200.f;
-						else
-							if (!knocked)
-								velocity_x = 600.f;
-							else velocity_x = 200.f;
-						if (checking_rect.position.y < interactive_objects[index]->get_object_sprite().getGlobalBounds().position.x)
-							velocity_y = -600.f;
-						moving_block = 1;
-						return;
+							{
+								hp--;
+								knocked = 1;
+							}
+							return;
+						}
 					}
-				}
-				if (attackbox.findIntersection(interactive_objects[index]->get_object_sprite().getGlobalBounds()) && attackbox_active && interactive_objects[index]->get_punched() == 0)
-				{
-					if (interactive_objects[index]->get_object_type() == "punching_bag")
+					if (attackbox.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && attackbox_active && interactive_grid[index][i]->get_punched() == 0 && interactive_grid[index][i]->get_status())
 					{
-						std::cout << interactive_objects[index]->get_hp() << std::endl;
-						interactive_objects[index]->decrease_hp(get_damage());							
-						if (right_side)
-							interactive_objects[index]->set_punched(1);
-						else if(!right_side)
-							interactive_objects[index]->set_punched(2);
-						std::cout << right_side << std::endl;
-						if (interactive_objects[index]->get_hp() <= 0)
-							interactive_objects[index] = std::make_unique<Gem>(rand()%2, interactive_objects[index]->get_tile_number());
+						if (interactive_grid[index][i]->get_object_type() == "punching_bag")
+						{
+							//std::cout << interactive_objects[index]->get_hp() << std::endl;
+							interactive_grid[index][i]->decrease_hp(get_damage());
+							if (right_side)
+								interactive_grid[index][i]->set_punched(1);
+							else if (!right_side)
+								interactive_grid[index][i]->set_punched(2);
+							//std::cout << right_side << std::endl;
+							if (interactive_grid[index][i]->get_hp() <= 0)
+								interactive_grid[index][i]->set_destroyed(true);
+						}
 					}
 				}
 				
@@ -585,7 +589,7 @@ void Player::check_pressed()
 
 }
 
-sf::Vector2f Player::get_player_position()
+sf::Vector2f& Player::get_player_position()
 {
 	return character_position;
 }
@@ -648,4 +652,6 @@ void Player::character_position_update()
 		}
 
 	}
+	//std::cout << "char_pos = " << character_position.x << std::endl;
+	//std::cout << "velocity_x = " << velocity_x << std::endl;
 }

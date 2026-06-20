@@ -32,8 +32,6 @@ protected:
 	bool moving_block;
 	sf::Time time_moving_block;
 
-
-
 public:
 	friend class Level;
 	friend class HUD;
@@ -56,13 +54,13 @@ public:
 
 
 	//collisions//////////////////////////////////////////////////////////////////////////////////////
-	void check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::unique_ptr<Interactive>>& interactive_objects); //checking collisions of the player with interactive objects (for example, with a health pack)
+	void check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid); //checking collisions of the player with interactive objects (for example, with a health pack)
 	
 	//getters//////////////////////////////////////////////////////////////////////////////////////
 	bool get_is_fighting() const; //returning the fighting status of the player
 	bool get_is_moving() const; //returning the moving status of the player
 	bool get_is_blocking() const; //returning the blocking status of the player
-	sf::Vector2f get_player_position();
+	sf::Vector2f& get_player_position();
 	sf::Vector2f get_player_center();
 	const short int get_special_points();
 	const short int get_max_special_points();

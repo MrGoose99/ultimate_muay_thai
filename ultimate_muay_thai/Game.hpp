@@ -8,6 +8,7 @@
 #include "Character.hpp"
 #include "Player.hpp"
 #include "HUD.hpp"
+#include "Interactive.hpp"
 
 class Game
 {

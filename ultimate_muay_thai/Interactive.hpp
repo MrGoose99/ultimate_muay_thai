@@ -11,24 +11,32 @@ protected:
 	int tile_number = { 0 };
 	short int punched = { 0 };
 	sf::Time punched_time = { sf::seconds(0.f) };
+	int spawning_tile;
+	int current_tile;
+	bool is_destroyed = { false };
+	std::vector<std::vector<Interactive*>> interactive_grid;
 
 public:
-	void virtual update(sf::Time& dt, float moving_speed) = 0; //updating the status of the interactive object (position, interactive)
+	void virtual update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos) = 0; //updating the status of the interactive object (position, interactive)
 	void virtual texture_update(sf::Time& dt) = 0;
 	void update_punched(sf::Time& dt);
 
 	//getters
 	virtual std::string get_object_type() = 0; //getting the type of the interactive object (for example, "gem", "heart", etc.)
-	virtual sf::Sprite get_object_sprite() = 0; //getting the sprite of the interactive object
+	virtual const sf::Sprite& get_object_sprite() const = 0; //getting the sprite of the interactive object
 	bool get_status();
 	int get_hp()&;
 	const short int get_tile_number()&;
 	const short int get_punched()&;
+	const short int get_current_tile()&;
+	bool get_destroyed();
 
 	//setters
 	void set_status(bool stat);
 	void decrease_hp(short int points);
 	void set_punched(short int p);
+	void set_current_tile(const int current);
+	void set_destroyed(bool des);
 
 
 };

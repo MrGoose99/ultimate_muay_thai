@@ -14,10 +14,10 @@ protected:
 public:
 	Spiked_roller(short int tile_nr);
 	void texture_update(sf::Time& dt) override;
-	void update(sf::Time& dt, float moving_speed) override; //it's not moving, so its empty method
+	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos) override; //it's not moving, so its empty method
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	//getters
 	std::string get_object_type() override; //getting the type of the interactive object (for example, "gem", "heart", etc.)
-	sf::Sprite get_object_sprite() override; //getting the sprite of the interactive object
+	const sf::Sprite& get_object_sprite() const override; //getting the sprite of the interactive object
 };

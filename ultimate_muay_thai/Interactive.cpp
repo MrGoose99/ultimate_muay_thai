@@ -44,3 +44,23 @@ void Interactive::update_punched(sf::Time& dt)
 		punched_time = sf::seconds(0.f);
 	}
 }
+
+const short int Interactive::get_current_tile()&
+{
+	return current_tile;
+}
+
+void Interactive::set_current_tile(const int current)
+{
+	current_tile = current;
+}
+
+void Interactive::set_destroyed(bool des)
+{
+	is_destroyed = des;
+}
+
+bool Interactive::get_destroyed()
+{
+	return is_destroyed;
+}

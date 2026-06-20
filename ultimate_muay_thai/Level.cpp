@@ -3,6 +3,15 @@
 #include "TileMap.hpp"
 #include <SFML/Graphics.hpp>
 #include "Interactive.hpp"
+#include "Gem.hpp"
+#include "Spiked_roller.hpp"
+#include "Punching_bag.hpp"
+#include "Moving_tile.hpp"
+#include <fstream>
+#include "include/json.hpp"
+
+
+using json = nlohmann::json;
 
 
 void Level::set_lvl_background()
@@ -32,3 +41,94 @@ const int Level::get_tiles_in_row()
 	return tiles_in_row;
 }
 
+void Level::load_level(const std::string& path)
+{
+	tilemap_array.clear();
+	interactive_objects.clear();
+	interactive_grid.clear();
+	std::ifstream file(path);
+
+	if (!file.is_open())
+	{
+		std::cout << "Error loading level from json";
+		return;
+	}
+
+	json level_data;
+	file >> level_data;
+	file.close();
+
+	tiles_in_row = level_data["level_size"]["w"].get<int>();
+	height = level_data["level_size"]["h"].get<int>();
+	width = level_data["level_size"]["w"].get<int>();
+	tiles_in_level = height * width;
+	for (auto& tile : level_data["tiles"])
+		tilemap_array.push_back(tile);
+	for (auto& obj : level_data["objects"])
+	{
+		int tile_x = obj["x"].get<int>();
+		int tile_y = obj["y"].get<int>();
+		int tile = tile_x + tile_y * tiles_in_row;
+
+
+		if (obj["type"] == "gem")
+			interactive_objects.push_back(std::make_unique<Gem>(obj["gem_status"], tile));
+		else if (obj["type"] == "spiked_roller")
+			interactive_objects.push_back(std::make_unique<Spiked_roller>(tile));
+		else if (obj["type"] == "punching_bag")
+			interactive_objects.push_back(std::make_unique<Punching_bag>(tile));
+		else if (obj["type"] == "moving_tile")
+			interactive_objects.push_back(std::make_unique<Moving_tile>(tile, obj["tiles"].get<int>(), obj["dir"].get<int>(), tiles_in_row));
+	}
+
+
+}
+
+void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos)
+{
+	for (short int i = 0; i < interactive_objects.size(); i++)
+	{
+		short int tile = interactive_objects[i]->get_current_tile();
+		if (interactive_objects[i]->get_object_type() == "hp_gem" || interactive_objects[i]->get_object_type() == "special_gem")
+		{
+			interactive_objects[i]->update(dt, 10.f, interactive_grid, interactive_objects, tiles_in_row, player_hitbox, player_pos);
+			if (interactive_objects[i]->get_destroyed())
+			{
+				interactive_grid[tile].erase(std::remove(interactive_grid[tile].begin(), interactive_grid[tile].end(), interactive_objects[i].get()), interactive_grid[tile].end());
+				interactive_objects.erase(interactive_objects.begin() + i);
+				i--;
+				continue;
+			}
+		}
+		else if (interactive_objects[i]->get_object_type() == "moving_tile")
+			interactive_objects[i]->update(dt, 120.f, interactive_grid, interactive_objects, tiles_in_row, player_hitbox, player_pos);
+		else if (interactive_objects[i]->get_object_type() == "punching_bag")
+		{
+			if (interactive_objects[i]->get_destroyed())
+			{
+				interactive_grid[tile].erase(std::remove(interactive_grid[tile].begin(), interactive_grid[tile].end(), interactive_objects[i].get()), interactive_grid[tile].end());
+				interactive_objects[i] = std::make_unique<Gem>(std::rand() % 2, interactive_objects[i]->get_current_tile());
+				interactive_grid[tile].push_back(interactive_objects[i].get());
+			}
+		}
+		if (interactive_objects[i]->get_punched() > 0)
+			interactive_objects[i]->update_punched(dt);
+
+		interactive_objects[i]->texture_update(dt);
+	}
+}
+
+std::vector<std::unique_ptr<Interactive>>& Level::get_interactive_objects()
+{
+	return interactive_objects;
+}
+
+std::vector<std::vector<Interactive*>>& Level::get_interactive_grid()
+{
+	return interactive_grid;
+}
+
+std::vector<bool>& Level::get_collision_array()
+{
+	return collision_array;
+}
