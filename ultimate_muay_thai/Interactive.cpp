@@ -64,3 +64,13 @@ bool Interactive::get_destroyed()
 {
 	return is_destroyed;
 }
+
+float Interactive::get_actual_velocity_x()
+{
+	return actual_velocity_x;
+}
+
+float Interactive::get_actual_velocity_y()
+{
+	return actual_velocity_y;
+}

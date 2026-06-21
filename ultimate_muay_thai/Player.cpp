@@ -49,6 +49,9 @@ Player::Player()
 	//moving_block
 	moving_block = 0;
 	time_moving_block = sf::seconds(0.f);
+
+	//platform
+	standing_on_platform = nullptr ;
 }
 
 void Player::update_character_animation(sf::Time& dt)
@@ -517,6 +520,13 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 							return;
 						}
 					}
+					
+					if (interactive_grid[index][i]->get_object_type() == "moving_tile" && on_ground)
+						standing_on_platform = interactive_grid[index][i];
+					else
+						standing_on_platform = nullptr;
+					
+
 					if (attackbox.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && attackbox_active && interactive_grid[index][i]->get_punched() == 0 && interactive_grid[index][i]->get_status())
 					{
 						if (interactive_grid[index][i]->get_object_type() == "punching_bag")
@@ -536,6 +546,8 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 				
 			}
 		}
+	//if (standing_on_platform != nullptr) std::cout << "ON platform!\n";
+	//else std::cout << "NOT platform\n";
 	}	
 
 void Player::check_pressed()
@@ -638,7 +650,11 @@ const bool Player::get_knocked()
 
 void Player::character_position_update()
 {
+	if (get_standing_on_platform() != nullptr)
 	{
+		character_position.x += get_standing_on_platform()->get_actual_velocity_x();
+		character_position.y += get_standing_on_platform()->get_actual_velocity_y();
+	}
 		character_sprite.setPosition(character_position);
 		if (!knocked)
 		{
@@ -651,7 +667,11 @@ void Player::character_position_update()
 			hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y + character_sprite.getLocalBounds().size.y / 8 };
 		}
 
-	}
 	//std::cout << "char_pos = " << character_position.x << std::endl;
 	//std::cout << "velocity_x = " << velocity_x << std::endl;
+}
+
+Interactive* Player::get_standing_on_platform()
+{
+	return standing_on_platform;
 }

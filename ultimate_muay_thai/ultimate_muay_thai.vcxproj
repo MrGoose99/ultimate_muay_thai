@@ -182,11 +182,18 @@
     <ClInclude Include="Moving_tile.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Punching_bag.hpp" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Spiked_roller.hpp" />
     <ClInclude Include="TileMap.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\level_1_background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ultimate_muay_thai.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="json\level_one.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -81,24 +81,10 @@
 		},
 		{
 			"type": "moving_tile",
-			"x": 2,
-			"y": 1,
-			"tiles": 2,
-			"dir": 2
-		},
-		{
-			"type": "moving_tile",
 			"x": 3,
 			"y": 1,
 			"tiles": 2,
 			"dir": 1
-		},
-		{
-			"type": "moving_tile",
-			"x": 8,
-			"y": 3,
-			"tiles": 2,
-			"dir": 3
 		}
 	]
 }

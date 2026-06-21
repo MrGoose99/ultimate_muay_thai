@@ -11,13 +11,22 @@ protected:
 	int tile_number = { 0 };
 	short int punched = { 0 };
 	sf::Time punched_time = { sf::seconds(0.f) };
+
+	//dynamic tile position
 	int spawning_tile;
 	int current_tile;
+	std::vector<int> actual_tiles;
+
+	//for platform
+	float actual_velocity_x;
+	float actual_velocity_y;
+	//
+
 	bool is_destroyed = { false };
 	std::vector<std::vector<Interactive*>> interactive_grid;
 
 public:
-	void virtual update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos) = 0; //updating the status of the interactive object (position, interactive)
+	void virtual update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row) = 0; //updating the status of the interactive object (position, interactive)
 	void virtual texture_update(sf::Time& dt) = 0;
 	void update_punched(sf::Time& dt);
 
@@ -30,6 +39,8 @@ public:
 	const short int get_punched()&;
 	const short int get_current_tile()&;
 	bool get_destroyed();
+	float get_actual_velocity_x();
+	float get_actual_velocity_y();
 
 	//setters
 	void set_status(bool stat);

@@ -43,7 +43,14 @@ LevelOne::LevelOne()
 	for (auto& int_obj : interactive_objects)
 	{
 		int tile = int_obj->get_current_tile();
-		interactive_grid[tile].push_back(int_obj.get());
+		if (tile < 0 || tile >= interactive_grid.size())
+		{
+			std::cout << "OUT OF BOUNDS! Tile value =  " << tile << std::endl;
+
+		}
+		else
+			interactive_grid[tile].push_back(int_obj.get());
+
 	}
 }
 

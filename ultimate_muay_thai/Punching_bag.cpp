@@ -47,7 +47,7 @@ void Punching_bag::texture_update(sf::Time& dt)
 
 }
 
-void Punching_bag::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos)
+void Punching_bag::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row)
 {
 	//empty method
 }

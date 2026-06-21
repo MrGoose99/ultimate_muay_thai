@@ -91,7 +91,7 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 		short int tile = interactive_objects[i]->get_current_tile();
 		if (interactive_objects[i]->get_object_type() == "hp_gem" || interactive_objects[i]->get_object_type() == "special_gem")
 		{
-			interactive_objects[i]->update(dt, 10.f, interactive_grid, interactive_objects, tiles_in_row, player_hitbox, player_pos);
+			interactive_objects[i]->update(dt, 10.f, interactive_grid, interactive_objects, tiles_in_row);
 			if (interactive_objects[i]->get_destroyed())
 			{
 				interactive_grid[tile].erase(std::remove(interactive_grid[tile].begin(), interactive_grid[tile].end(), interactive_objects[i].get()), interactive_grid[tile].end());
@@ -101,7 +101,7 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 			}
 		}
 		else if (interactive_objects[i]->get_object_type() == "moving_tile")
-			interactive_objects[i]->update(dt, 120.f, interactive_grid, interactive_objects, tiles_in_row, player_hitbox, player_pos);
+			interactive_objects[i]->update(dt, 120.f, interactive_grid, interactive_objects, tiles_in_row);
 		else if (interactive_objects[i]->get_object_type() == "punching_bag")
 		{
 			if (interactive_objects[i]->get_destroyed())

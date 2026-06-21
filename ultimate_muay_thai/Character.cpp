@@ -126,7 +126,9 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 			{
 				sf::FloatRect checking_tile = { {x * 128.f, y * 128.f}, {128,128} };
 				if (checking_tile.findIntersection(checking_rect))
+				{
 					return 1;
+				}
 			}
 		}
 	for (int y = top; y <= bottom; y++)
@@ -144,7 +146,7 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 					if (interactive_grid[index][i]->get_object_type() == "punching_bag"
 						|| interactive_grid[index][i]->get_object_type() == "moving_tile")
 					{
-						sf::FloatRect checking_tile = { {interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position}, {interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size } };
+						sf::FloatRect checking_tile = { interactive_grid[index][i]->get_object_sprite().getGlobalBounds()};
 						if (checking_tile.findIntersection(checking_rect))
 							return 1;
 					}
@@ -175,10 +177,6 @@ void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_arra
 		{
 			on_ground = 1;
 			velocity_y = 0.f;
-			//float tile_top = next_pos.y + 128.f;
-			//tile_top = tile_top / 128.f;
-			//tile_top = tile_top * 128.f;
-
 		}
 		else
 		{
@@ -188,7 +186,7 @@ void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_arra
 	}
 	is_falling = (!on_ground && velocity_y > 0.f);
 	is_jumping = (!on_ground && velocity_y < 0.f);
-
+	//std::cout << "on_ground = " << on_ground << std::endl; //DEBUG
 }
 
 void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid)

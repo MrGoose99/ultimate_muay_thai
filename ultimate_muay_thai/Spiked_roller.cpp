@@ -56,7 +56,7 @@ void Spiked_roller::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 	if (status) target.draw(spiked_roller_sprite, states);
 }
 
-void Spiked_roller::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos)
+void Spiked_roller::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row)
 {
 
 }

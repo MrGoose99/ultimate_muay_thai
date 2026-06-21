@@ -32,6 +32,9 @@ protected:
 	bool moving_block;
 	sf::Time time_moving_block;
 
+	//platform
+	Interactive* standing_on_platform;
+
 public:
 	friend class Level;
 	friend class HUD;
@@ -65,6 +68,7 @@ public:
 	const short int get_special_points();
 	const short int get_max_special_points();
 	const bool get_knocked();
+	Interactive* get_standing_on_platform();
 
 	//setters//////////////////////////////////////////////////////////////////////////////////////
 	void set_is_fighting(const bool status); //setting the fighting status of the player

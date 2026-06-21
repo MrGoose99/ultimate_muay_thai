@@ -107,12 +107,12 @@ void Game::position_update(sf::Time& dt)
 
 		//PLAYER
 		player.check_pressed();
+		level->update_interactive_objects(dt, player.get_character_hitbox(), player.get_player_position());
 		player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_row());
 		player.check_velocity_y(dt, level->get_collision_array(), level->get_tiles_in_row(), level->get_interactive_grid());
 		player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_grid());
 		player.check_player_collisions_with_interactive(level->get_tiles_in_row(), level->get_interactive_grid());
 		player.character_position_update();
-		level->update_interactive_objects(dt, player.get_character_hitbox(), player.get_player_position());
 		player.attack(dt);
 
 		//Interactive

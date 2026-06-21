@@ -6,15 +6,15 @@
 Moving_tile::Moving_tile(short int starting, short int tiles, short int dir, short int tiles_in_row)
 {
 	spawning_tile = starting;
-	current_tile = starting;
 	nr_of_tiles = tiles;
+	current_tile = starting;
 	direction = dir; //1 - right, 2 - left, 3 - up, 4 - down
 
 	if (!object_texture.loadFromFile("textures/moving_tile.png"))
 		std::cout << "Error loading texture of moving tile...";
 	moving_tile_sprite.setTexture(object_texture);
 
-	
+
 
 	switch (dir) //min and max setting
 	{
@@ -40,6 +40,8 @@ Moving_tile::Moving_tile(short int starting, short int tiles, short int dir, sho
 	}
 
 	moving_tile_sprite.setPosition(starting_position);
+	sf::Vector2f pos = moving_tile_sprite.getPosition();
+	current_tile = starting_position.x + starting_position.y / tiles_in_row;
 }
 
 std::string Moving_tile::get_object_type()
@@ -52,7 +54,7 @@ const sf::Sprite& Moving_tile::get_object_sprite() const
 	return moving_tile_sprite;
 }
 
-void Moving_tile::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos)
+void Moving_tile::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row)
 {
 	sf::Vector2f new_pos;
 	float pos_x = moving_tile_sprite.getPosition().x;
@@ -67,6 +69,8 @@ void Moving_tile::update(sf::Time& dt, float moving_speed, std::vector<std::vect
 			direction = 2;
 			std::swap(starting_position, ending_position);
 		}
+		actual_velocity_x = moving_speed * dt.asSeconds();
+		actual_velocity_y = 0.f;
 		break;
 	case 2:
 		new_pos = { pos_x - (moving_speed * dt.asSeconds()), pos_y };
@@ -76,6 +80,8 @@ void Moving_tile::update(sf::Time& dt, float moving_speed, std::vector<std::vect
 			direction = 1;
 			std::swap(starting_position, ending_position);
 		}
+		actual_velocity_x = -moving_speed * dt.asSeconds();
+		actual_velocity_y = 0.f;
 		break;
 	case 3:
 		new_pos = { pos_x, pos_y - (moving_speed * dt.asSeconds()) };
@@ -85,6 +91,8 @@ void Moving_tile::update(sf::Time& dt, float moving_speed, std::vector<std::vect
 			direction = 4;
 			std::swap(starting_position, ending_position);
 		}
+		actual_velocity_x = 0.f;
+		actual_velocity_y = -moving_speed * dt.asSeconds();
 		break;
 	case 4:
 		new_pos = { pos_x, pos_y + (moving_speed * dt.asSeconds()) };
@@ -94,42 +102,47 @@ void Moving_tile::update(sf::Time& dt, float moving_speed, std::vector<std::vect
 			direction = 3;
 			std::swap(starting_position, ending_position);
 		}
+		actual_velocity_x = 0.f;
+		actual_velocity_y = moving_speed * dt.asSeconds();
 		break;
 	default:
 		break;
 	}
+
 	moving_tile_sprite.setPosition(new_pos);
-	if (moving_tile_sprite.getGlobalBounds().findIntersection(player_hitbox))
+
+	for (int i = 0; i < actual_tiles.size(); i++)
 	{
-		switch (direction)
+		int tile = actual_tiles[i];
+		interactive_grid[tile].erase(std::remove(interactive_grid[tile].begin(), interactive_grid[tile].end(), this), interactive_grid[tile].end());
+	}
+	actual_tiles.clear();
+
+	int left = new_pos.x / 128.f;
+	int right = (new_pos.x + moving_tile_sprite.getLocalBounds().size.x) / 128.f;
+	int top = new_pos.y / 128.f;
+	int bottom = (new_pos.y + moving_tile_sprite.getLocalBounds().size.y) / 128.f;
+
+	for(int y = top; y <= bottom; y++)
+		for (int x = left; x <= right; x++)
 		{
-		case 1:
-			if(player_pos.x > moving_tile_sprite.getPosition().x)
-				player_pos = { player_pos.x + (moving_speed * dt.asSeconds()), player_pos.y };
-			break;
-		case 2:
-			if (player_pos.x < moving_tile_sprite.getPosition().x)
-				player_pos = { player_pos.x - (moving_speed * dt.asSeconds()), player_pos.y };
-			break;
-		case 3:
-			if (player_pos.y < moving_tile_sprite.getPosition().y)
-				player_pos = { player_pos.x, player_pos.y - (moving_speed * dt.asSeconds()) };
-			break;
-		default:
-			break;
+			int checking_tile = x + y * tiles_in_row;
+			if (x < 0 || y < 0 || x >= tiles_in_row || y >= interactive_grid.size() / tiles_in_row)
+			{
+				continue;
+			}
+			else
+			{
+				bool is_there = 0;
+				for (auto& tiles : actual_tiles)
+					if (tiles == checking_tile) is_there = 1;
+				if (!is_there)
+				{
+					actual_tiles.push_back(checking_tile);
+					interactive_grid[checking_tile].push_back(this);
+				}
+			}
 		}
-
-
-	}
-
-	int new_tile = (new_pos.x / 128.f) + (new_pos.y / 128.f * tiles_in_row);
-	if (current_tile != new_tile)
-	{
-		moving_objects[current_tile].erase(std::remove(moving_objects[current_tile].begin(), moving_objects[current_tile].end(), this), moving_objects[current_tile].end());
-		moving_objects[new_tile].push_back(this);
-		this->set_current_tile(new_tile);
-	}
-
 
 }
 

@@ -18,7 +18,7 @@ public:
 
 	void texture_update(sf::Time& dt) override; //gem havn't animation, so its empty method
 
-	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos); //update the status of the gem (postition, interacticve)
+	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row); //update the status of the gem (postition, interacticve)
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override; //drawing the gem
 

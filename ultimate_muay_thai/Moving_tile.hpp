@@ -18,9 +18,10 @@ protected:
 
 	std::string type = { "moving_tile" };
 
+
 public:
 	Moving_tile(short int starting, short int tiles, short int dir, short int tiles_in_row);
-	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos) override;
+	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row) override;
 	void texture_update(sf::Time& dt) override;
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
