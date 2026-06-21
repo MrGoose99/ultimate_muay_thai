@@ -41,7 +41,6 @@ Moving_tile::Moving_tile(short int starting, short int tiles, short int dir, sho
 
 	moving_tile_sprite.setPosition(starting_position);
 	sf::Vector2f pos = moving_tile_sprite.getPosition();
-	current_tile = starting_position.x + starting_position.y / tiles_in_row;
 }
 
 std::string Moving_tile::get_object_type()
@@ -143,7 +142,9 @@ void Moving_tile::update(sf::Time& dt, float moving_speed, std::vector<std::vect
 				}
 			}
 		}
-
+	std::cout << "size: " << actual_tiles.size() << std::endl;
+	for (int i = 0; i < actual_tiles.size(); i++)
+		std::cout << i << ". " << actual_tiles[i] << std::endl;
 }
 
 void Moving_tile::texture_update(sf::Time& dt)

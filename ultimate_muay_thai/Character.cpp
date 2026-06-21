@@ -152,9 +152,7 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 					}
 				}
 			}
-		}	
-			
-		
+		}		
 	return 0;
 }
 

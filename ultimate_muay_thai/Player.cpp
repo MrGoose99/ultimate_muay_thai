@@ -521,7 +521,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 						}
 					}
 					
-					if (interactive_grid[index][i]->get_object_type() == "moving_tile" && on_ground)
+					if (checking_rect.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && interactive_grid[index][i]->get_object_type() == "moving_tile" && on_ground)
 						standing_on_platform = interactive_grid[index][i];
 					else
 						standing_on_platform = nullptr;
