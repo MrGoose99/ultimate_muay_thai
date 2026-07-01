@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+class Player;
 class Interactive: public sf::Drawable, public sf::Transformable
 {
 protected:
@@ -20,13 +21,14 @@ protected:
 	//for platform
 	float actual_velocity_x;
 	float actual_velocity_y;
+	short int direction; //1 - right, 2 - left, 3 - up, 4 - down
 	//
 
 	bool is_destroyed = { false };
 	std::vector<std::vector<Interactive*>> interactive_grid;
 
 public:
-	void virtual update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row) = 0; //updating the status of the interactive object (position, interactive)
+	void virtual update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level) = 0; //updating the status of the interactive object (position, interactive)
 	void virtual texture_update(sf::Time& dt) = 0;
 	void update_punched(sf::Time& dt);
 
@@ -41,6 +43,7 @@ public:
 	bool get_destroyed();
 	float get_actual_velocity_x();
 	float get_actual_velocity_y();
+	short int get_direction();
 
 	//setters
 	void set_status(bool stat);

@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include "Interactive.hpp"
+#include "Player.hpp"
 
 
 class Level :public TileMap
@@ -25,7 +26,7 @@ protected:
 	short int tiles_in_row; //number of tiles in a row of the level
 	short int width;
 	short int height;
-	short int tiles_in_level;
+	int tiles_in_level;
 
 	
 public:
@@ -33,7 +34,7 @@ public:
 	TileMap& get_tilemap(); //getting the tilemap of the level
 	void load_level(const std::string& path);
 	void set_camera_center(sf::Vector2f center_pos);
-	void update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos);
+	void update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos, Player& p1);
 
 	//getters
 	const int get_tiles_in_row(); //getting the number of tiles in a row of the level
@@ -41,4 +42,5 @@ public:
 	std::vector<std::vector<Interactive*>>& get_interactive_grid();
 	std::vector<std::unique_ptr<Interactive>>& get_interactive_objects();
 	std::vector<bool>& get_collision_array();
+	const int get_tiles_in_level()&;
 };

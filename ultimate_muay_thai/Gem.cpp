@@ -2,8 +2,9 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cstdlib>
+#include "Player.hpp"
 
-Gem::Gem(short int gem_stat, short int tile_nr, bool stat)
+Gem::Gem(int gem_stat, int tile_nr, int tiles_in_row, bool stat)
 {
 	gem_status = gem_stat;
 	status = stat;
@@ -23,9 +24,9 @@ Gem::Gem(short int gem_stat, short int tile_nr, bool stat)
 	}
 	gem_sprite.setTexture(object_texture);
 
-	float position_x = tile_nr % 16 * 128.f + 48.f;
-	float position_y = tile_nr / 16 * 128.f + (rand() % int(max_y_difference) + 56.f);
-	original_position = { position_x, tile_nr / 16 * 128.f + 56.f };
+	float position_x = tile_nr % tiles_in_row * 128.f + 48.f;
+	float position_y = tile_nr / tiles_in_row * 128.f + (rand() % int(max_y_difference) + 56.f);
+	original_position = { position_x, tile_nr / tiles_in_row * 128.f + 56.f };
 	if (rand() % 100 < 50) go_down = 1;
 	else go_down = 0;
 	gem_sprite.setPosition({ position_x, position_y });
@@ -35,7 +36,7 @@ Gem::Gem(short int gem_stat, short int tile_nr, bool stat)
 
 }
 
-void Gem::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row)
+void Gem::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level)
 {
 	if (status)
 	{

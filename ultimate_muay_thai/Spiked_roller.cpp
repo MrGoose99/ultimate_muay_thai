@@ -1,8 +1,9 @@
 #include "Interactive.hpp"
 #include "Spiked_roller.hpp"
 #include <iostream>
+#include "Player.hpp"
 
-Spiked_roller::Spiked_roller(short int tile_nr)
+Spiked_roller::Spiked_roller(int tile_nr, int tiles_in_row)
 {
 	tile_number = tile_nr;
 	spawning_tile = tile_nr;
@@ -16,8 +17,8 @@ Spiked_roller::Spiked_roller(short int tile_nr)
 	default_texture_rect.size = { 78, 120 };
 	spiked_roller_sprite.setTextureRect(default_texture_rect);
 
-	float position_x = tile_nr % 16 * 128.f + 25.f;
-	float position_y = tile_nr / 16 * 128.f + 5.f;
+	float position_x = tile_nr % tiles_in_row * 128.f + 25.f;
+	float position_y = tile_nr / tiles_in_row * 128.f + 5.f;
 
 	spiked_roller_sprite.setPosition({ position_x, position_y });
 
@@ -56,7 +57,7 @@ void Spiked_roller::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 	if (status) target.draw(spiked_roller_sprite, states);
 }
 
-void Spiked_roller::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row)
+void Spiked_roller::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level)
 {
 
 }

@@ -14,11 +14,11 @@ protected:
 	std::string type = "nothing"; //type of the interactive object (for example, "gem", "heart", etc.)
 
 public:
-	Gem(short int gem_stat = 0, short int tile_nr = 0, bool stat = 1);
+	Gem(int gem_stat, int tile_nr, int tiles_in_row, bool stat);
 
 	void texture_update(sf::Time& dt) override; //gem havn't animation, so its empty method
 
-	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row); //update the status of the gem (postition, interacticve)
+	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level); //update the status of the gem (postition, interacticve)
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override; //drawing the gem
 

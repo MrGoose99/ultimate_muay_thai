@@ -38,7 +38,7 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 	{
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Num1)
-			level = std::make_unique<LevelOne>();
+			level = std::make_unique<LevelOne>(player);
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Num2)
 			level = std::make_unique<LevelTwo>();
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Right)
@@ -104,26 +104,26 @@ void Game::position_update(sf::Time& dt)
 {
 	if (level != nullptr)
 	{
-
 		//PLAYER
 		player.check_pressed();
-		level->update_interactive_objects(dt, player.get_character_hitbox(), player.get_player_position());
-		player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_row());
-		player.check_velocity_y(dt, level->get_collision_array(), level->get_tiles_in_row(), level->get_interactive_grid());
-		player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_grid());
-		player.check_player_collisions_with_interactive(level->get_tiles_in_row(), level->get_interactive_grid());
+		level->update_interactive_objects(dt, player.get_character_hitbox(), player.get_player_position(), player);
+		player.apply_platform_velocity();
+		player.character_position_update();
+		player.check_player_collisions_with_interactive(level->get_tiles_in_row(), level->get_interactive_grid(), level->get_tiles_in_level());
+		player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_row(), level->get_tiles_in_level());
+		player.check_velocity_y(dt, level->get_collision_array(), level->get_tiles_in_row(), level->get_interactive_grid(), level->get_tiles_in_level());
+		player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_tiles_in_row());
 		player.character_position_update();
 		player.attack(dt);
 
-		//Interactive
+		//INTERACITVE
 		player.knocked_moving_latency(dt);
+
 
 		//LEVEL
 		level->set_camera_center(player.get_player_center());
 		
 		//HUD
 		hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points());
-
-
 	}
 }

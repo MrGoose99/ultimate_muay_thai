@@ -10,7 +10,6 @@ protected:
 	bool status = { 1 };
 	short int starting_tile;
 	short int nr_of_tiles;
-	short int direction;
 	sf::Vector2f starting_position;
 	sf::Vector2f ending_position;
 
@@ -21,7 +20,7 @@ protected:
 
 public:
 	Moving_tile(short int starting, short int tiles, short int dir, short int tiles_in_row);
-	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row) override;
+	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level) override;
 	void texture_update(sf::Time& dt) override;
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

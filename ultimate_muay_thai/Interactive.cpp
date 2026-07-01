@@ -74,3 +74,8 @@ float Interactive::get_actual_velocity_y()
 {
 	return actual_velocity_y;
 }
+
+short int Interactive::get_direction()
+{
+	return direction;
+}

@@ -34,7 +34,7 @@ void Character::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(character_sprite, states); 
 }
 
-void Character::character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, short int tiles_in_row)
+void Character::character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, short int tiles_in_row, const int& tiles_in_level)
 {
 	if (!is_fighting)
 	{
@@ -45,7 +45,7 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 				right_side = 1;
 			}
 			sf::Vector2f next_pos = { character_position.x + speed_normal * dt.asSeconds(), character_position.y };
-			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid))
+			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level))
 				character_position = next_pos;
 		}
 		else if (moving_normal == 1)
@@ -55,7 +55,7 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 				right_side = 0;
 			}
 			sf::Vector2f next_pos = { character_position.x + -speed_normal * dt.asSeconds(), character_position.y };
-			if(!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid))
+			if(!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level))
 				character_position = next_pos;
 		}
 	}
@@ -64,16 +64,17 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 		if (moving_fight == 2)
 		{
 			sf::Vector2f next_pos = {character_position.x + speed_fight * dt.asSeconds(), character_position.y };
-			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid))
+			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level))
 			character_position = next_pos;
 		}
 		else if (moving_fight == 1)
 		{
 			sf::Vector2f next_pos = { character_position.x + -speed_fight * dt.asSeconds(), character_position.y };
-			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid))
+			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level))
 			character_position = next_pos;
 		}
 	}
+
 }
 
 const unsigned int Character::get_tile_number(unsigned int tiles_in_row)
@@ -97,7 +98,7 @@ sf::RectangleShape Character::get_debug_2_shape()
 	return debug2;
 }
 
-bool Character::check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid)
+bool Character::check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level)
 {
 
 	//debug rects
@@ -118,7 +119,7 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 	for(int y = top; y <= bottom; y++)
 		for (int x = left; x <= right; x++)
 		{
-			if (x < 0 || y < 0 || x >= tiles_in_row)
+			if (x < 0 || y < 0 || x >= tiles_in_row || y >= tiles_in_level/tiles_in_row)
 			{
 				continue;
 			}
@@ -131,38 +132,39 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 				}
 			}
 		}
-	for (int y = top; y <= bottom; y++)
-		for (int x = left; x <= right; x++)
-		{
-			if (x < 0 || y < 0 || x >= tiles_in_row)
+		for (int y = top; y <= bottom + 1; y++)
+			for (int x = left; x <= right; x++)
 			{
-				continue;
-			}
-			else
-			{
-				short int index = x + y * tiles_in_row;
-				for (short int i = 0; i < interactive_grid[index].size(); i++)
+				if (x < 0 || y < 0 || x >= tiles_in_row || y >= tiles_in_level / tiles_in_row)
 				{
-					if (interactive_grid[index][i]->get_object_type() == "punching_bag"
-						|| interactive_grid[index][i]->get_object_type() == "moving_tile")
+					continue;
+				}
+				else
+				{
+					short int index = x + y * tiles_in_row;
+					for (short int i = 0; i < interactive_grid[index].size(); i++)
 					{
-						sf::FloatRect checking_tile = { interactive_grid[index][i]->get_object_sprite().getGlobalBounds()};
-						if (checking_tile.findIntersection(checking_rect))
-							return 1;
+						if (interactive_grid[index][i]->get_object_type() == "punching_bag"
+							|| interactive_grid[index][i]->get_object_type() == "moving_tile")
+						{
+							sf::FloatRect checking_tile = { interactive_grid[index][i]->get_object_sprite().getGlobalBounds() };
+							if (checking_tile.findIntersection(checking_rect))
+								return 1;
+						}
 					}
 				}
 			}
-		}		
+	
 	return 0;
 }
 
-void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_array, const int tiles_in_row, std::vector<std::vector<Interactive*>>& interactive_grid)
+void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_array, const int tiles_in_row, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level)
 {
 	on_ground = 0;
 	velocity_y += gravity * dt.asSeconds();
 	float change = std::min(velocity_y, max_fall_speed);
 	sf::Vector2f next_pos = { character_position.x, character_position.y + (change * dt.asSeconds()) };
-	bool collided = check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid);
+	bool collided = check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level);
 	if (!collided)
 	{
 
@@ -187,13 +189,13 @@ void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_arra
 	//std::cout << "on_ground = " << on_ground << std::endl; //DEBUG
 }
 
-void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid)
+void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, const int tiles_in_row)
 {
 	if (velocity_x < 0.f) velocity_x += gravity * dt.asSeconds();
 	else if (velocity_x > 0.f) velocity_x -= gravity * dt.asSeconds();
 	float change = velocity_x;
-	sf::Vector2f next_pos = { character_position.x + (change * dt.asSeconds()), character_position.y };
-	bool collided = check_character_collision(next_pos, 16, collision_array, interactive_grid);
+	sf::Vector2f next_pos = { character_position.x + (change * dt.asSeconds()), character_position.y};
+	bool collided = check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level);
 	if (!collided)
 	{
 		character_position = next_pos;
@@ -309,4 +311,23 @@ const short int Character::get_damage()&
 		return 2;
 	else if (kick_attack_state == KickAttackState::AttackHigh)
 		return 3;
+}
+
+Interactive* Character::get_standing_on_platform()
+{
+	return standing_on_platform;
+}
+
+void Character::apply_platform_velocity()
+{
+	if (standing_on_platform != nullptr)
+	{
+		character_position.x += get_standing_on_platform()->get_actual_velocity_x();
+		character_position.y += get_standing_on_platform()->get_actual_velocity_y();
+	}
+}
+
+void Character::set_character_position(float pos_x, float pos_y)
+{
+	character_position = { pos_x, pos_y };
 }

@@ -57,11 +57,25 @@ protected:
 	bool is_moving; //boolean variable to check if the player is moving
 	bool is_jumping = { 0 }; //checking is on air and going up
 	bool on_ground; //checking is on ground
+	bool is_blocking;
 
 	//debugging//////////////////////////////////////////////////////////////////////////////////////
 	sf::RectangleShape debug; //debugging Rectangle (hitbox)
 	sf::RectangleShape debug2; //debugging Rectangle (hitbox)
 	
+	//platform
+	Interactive* standing_on_platform;
+
+	//knocked
+	bool knocked;
+	sf::Time time_knocked;
+	bool transparenting_status;
+	sf::Time transparenting_time;
+
+	//platforms
+	bool on_platform = { 0 };
+	Interactive* current_platform;
+
 public:
 	
 	//animation//////////////////////////////////////////////////////////////////////////////////////
@@ -75,16 +89,13 @@ public:
 	void attack(sf::Time& dt);
 
 	//moving//////////////////////////////////////////////////////////////////////////////////////
-	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, short int tiles_in_row);
+	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, short int tiles_in_row, const int& tiles_in_level);
 	const unsigned int get_tile_number(unsigned int tiles_in_row); //getting number of tile in tilemap (tile = 128x128)
 	void character_position_update(); //updating position of sprite and hitbox
-	bool check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid); //checking is position collide
-	void check_velocity_y(sf::Time& dt, std::vector<bool>& collision_array, const int tiles_in_row, std::vector<std::vector<Interactive*>>& interactive_grid);
-	void check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid);
-	
-	//platforms
-	bool on_platform = { 0 };
-	Interactive* current_platform;
+	bool check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level); //checking is position collide
+	void check_velocity_y(sf::Time& dt, std::vector<bool>& collision_array, const int tiles_in_row, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level);
+	void check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, const int tiles_in_row);
+	void apply_platform_velocity();
 
 	//debug//////////////////////////////////////////////////////////////////////////////////////
 	sf::RectangleShape get_debug_shape();
@@ -98,8 +109,10 @@ public:
 	const short int get_hp(); //returning the health points of the character
 	const short int get_max_hp(); //returning the maximum health points of the character
 	const short int get_damage()&;
+	Interactive* get_standing_on_platform();
 	
 	//setters//////////////////////////////////////////////////////////////////////////////////////
 	void set_character(std::filesystem::path& texture, std::string& char_name, sf::Vector2f& pos); //setting character texture, name and position
+	void set_character_position(float pos_x, float pos_y);
 
 };

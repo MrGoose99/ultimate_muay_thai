@@ -12,9 +12,9 @@ protected:
 	sf::IntRect default_texture_rect;
 	int animation_stage;
 public:
-	Spiked_roller(short int tile_nr);
+	Spiked_roller(int tile_nr, int tiles_in_row);
 	void texture_update(sf::Time& dt) override;
-	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row) override; //it's not moving, so its empty method
+	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level) override; //it's not moving, so its empty method
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	//getters

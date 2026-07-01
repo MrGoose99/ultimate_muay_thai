@@ -463,8 +463,10 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 	}
 }
 
-void Player::check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid)
+void Player::check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid, const int& tiles_in_level)
 {
+
+	standing_on_platform = nullptr;
 	sf::FloatRect checking_rect = { hitbox.position, hitbox.size };
 	int left = checking_rect.position.x / 128.f;
 	int right = (checking_rect.position.x + hitbox.size.x) / 128.f;
@@ -472,10 +474,10 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 	int bottom = (checking_rect.position.y + hitbox.size.y) / 128.f;
 
 
-	for(int y = top; y <= bottom; y++)
+	for(int y = top; y <= bottom + 1; y++) //more tiles are checking
 		for (int x = left; x <= right; x++)
 		{
-			if (x < 0 || y < 0 || x >= tiles_in_row)
+			if (x < 0 || y < 0 || x >= tiles_in_row || y >= tiles_in_level/tiles_in_row)
 			{
 				continue;
 			}
@@ -486,50 +488,153 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 				{
 					if (checking_rect.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && interactive_grid[index][i]->get_status())
 					{
-						if (interactive_grid[index][i]->get_object_type() == "hp_gem" && hp < max_hp)
+						if (interactive_grid[index][i]->get_object_type() == "hp_gem" && hp < max_hp) //HP GEM
 						{
 							hp++;
 							interactive_grid[index][i]->set_destroyed(1);
-							return;
 						}
-						else if (interactive_grid[index][i]->get_object_type() == "special_gem" && special_points < max_special_points)
+						else if (interactive_grid[index][i]->get_object_type() == "special_gem" && special_points < max_special_points) //SPECIAL GEM
 						{
 							special_points++;
 							interactive_grid[index][i]->set_destroyed(1);
-							return;
 						}
-						else if (interactive_grid[index][i]->get_object_type() == "spiked_roller")
+						else if (interactive_grid[index][i]->get_object_type() == "spiked_roller" ) //SPIKED ROLLER
 						{
 							if (checking_rect.position.x < interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x)
+							{
 								if (!knocked)
 									velocity_x = -600.f;
 								else velocity_x = -300.f;
-							else
+							}
+							else if(checking_rect.position.x + checking_rect.size.x > interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x + interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size.x)
+							{
 								if (!knocked)
 									velocity_x = 600.f;
 								else velocity_x = 300.f;
+							}
 
-							if (checking_rect.position.y < interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x)
-								velocity_y = -600.f;
+							if (checking_rect.position.y < interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.y)
+								if (!knocked)
+									velocity_y = -600.f;
+								else velocity_y = -300.f;
+							else if(checking_rect.position.y + checking_rect.size.y > interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.y + interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size.y)
+								if (!knocked)
+									velocity_y = 600.f;
+								else velocity_y = 300.f;
+
+							on_ground = 0;
 							moving_block = 1;
 							if (!knocked)
 							{
 								hp--;
 								knocked = 1;
 							}
-							return;
+							
+						}
+						else if (interactive_grid[index][i]->get_object_type() == "spikes") //SPIKES
+						{
+							int dir = interactive_grid[index][i]->get_direction();
+							sf::FloatRect obj = interactive_grid[index][i]->get_object_sprite().getGlobalBounds();
+							std::cout << "DIR: " << dir << std::endl;
+							switch (dir)
+							{
+							case 1:
+								if (!knocked)
+									velocity_y = 600.f;
+								else velocity_y = 10.f;
+								if (checking_rect.position.x < obj.position.x)
+									if (!knocked)
+										velocity_x = -600.f;
+									else velocity_x = -10.f;
+								else if (checking_rect.position.x + checking_rect.size.x > obj.position.x + obj.size.x)
+									if (!knocked)
+										velocity_x = 600.f;
+									else velocity_x = 10.f;
+								break;
+							case 2:
+									velocity_y = -600.f;
+								if (checking_rect.position.x < obj.position.x)
+									if (!knocked)
+										velocity_x = -600.f;
+									else velocity_x = -10.f;
+								else if (checking_rect.position.x + checking_rect.size.x > obj.position.x + obj.size.x)
+									if (!knocked)
+										velocity_y = 600.f;
+									else velocity_y = 10.f;
+								break;
+							case 3:
+								velocity_x = 600.f;
+								if (checking_rect.position.y < obj.position.y)
+									velocity_y = -600.f;
+								else if (checking_rect.position.y + checking_rect.size.y > obj.position.y + obj.size.y)
+									velocity_y = 600.f;
+								break;
+							case 4:
+								velocity_x = -600.f;
+								if (checking_rect.position.y < obj.position.y)
+									velocity_y = -600.f;
+								else if (checking_rect.position.y + checking_rect.size.y > obj.position.y + obj.size.y)
+									velocity_y = 600.f;
+								break;
+							default:
+								if (!knocked)
+									velocity_y = 600.f;
+								else velocity_y = 10.f;
+								if (checking_rect.position.x < obj.position.x)
+									if (!knocked)
+										velocity_x = -600.f;
+									else velocity_x = -10.f;
+								else if (checking_rect.position.x + checking_rect.size.x > obj.position.x + obj.size.x)
+									if (!knocked)
+										velocity_x = 600.f;
+									else velocity_x = 10.f;
+							}
+							moving_block = 1;
+							if (!knocked)
+							{
+								knocked = 1;
+								hp--;
+							}
+							
 						}
 					}
-					
-					if (checking_rect.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && interactive_grid[index][i]->get_object_type() == "moving_tile" && on_ground)
-						standing_on_platform = interactive_grid[index][i];
-					else
-						standing_on_platform = nullptr;
-					
+					if (interactive_grid[index][i]->get_object_type() == "moving_tile") //MOVING TILE
+					{
+						if (checking_rect.position.x < interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x + interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size.x
+							&& checking_rect.position.x + checking_rect.size.x >= interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x
+							&& std::abs(interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.y - (checking_rect.position.y + checking_rect.size.y)) <= 10.f
+							&& !is_jumping)
+						{
+							standing_on_platform = interactive_grid[index][i];
+							on_ground = 1;
+							is_falling = 0;
+							character_position.y = interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.y - character_sprite.getGlobalBounds().size.y;
+						}
+						else if (checking_rect.position.x < interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x
+							&& checking_rect.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds())
+							&& interactive_grid[index][i]->get_direction() == 2)
+							character_position.x -= std::abs((checking_rect.position.x + checking_rect.size.x) - interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x);
+
+						else if (checking_rect.position.x + checking_rect.size.x > interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x + interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size.x
+							&& checking_rect.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds())
+							&& interactive_grid[index][i]->get_direction() == 1)
+								character_position.x += std::abs(checking_rect.position.x - (interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x + interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size.x));
+
+						else if (checking_rect.position.y + checking_rect.size.y > interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.y + interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size.y
+							&& checking_rect.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds())
+							&& interactive_grid[index][i]->get_direction() == 4)
+						{
+							character_position.y += std::abs(checking_rect.position.y - (interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.y + interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size.y)) + 10.f;
+							velocity_y = 0.f;
+						}
+						
+
+					}
+
 
 					if (attackbox.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && attackbox_active && interactive_grid[index][i]->get_punched() == 0 && interactive_grid[index][i]->get_status())
 					{
-						if (interactive_grid[index][i]->get_object_type() == "punching_bag")
+						if (interactive_grid[index][i]->get_object_type() == "punching_bag") //PUNCHING BAG
 						{
 							//std::cout << interactive_objects[index]->get_hp() << std::endl;
 							interactive_grid[index][i]->decrease_hp(get_damage());
@@ -546,7 +651,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 				
 			}
 		}
-	//if (standing_on_platform != nullptr) std::cout << "ON platform!\n";
+	//if (standing_on_platform != nullptr) std::cout << "ON platform!\n";  //DEBUG
 	//else std::cout << "NOT platform\n";
 	}	
 
@@ -650,28 +755,6 @@ const bool Player::get_knocked()
 
 void Player::character_position_update()
 {
-	if (get_standing_on_platform() != nullptr)
-	{
-		character_position.x += get_standing_on_platform()->get_actual_velocity_x();
-		character_position.y += get_standing_on_platform()->get_actual_velocity_y();
-	}
-		character_sprite.setPosition(character_position);
-		if (!knocked)
-		{
-			hitbox.size = { 64,128 - 128 / 8 };
-			hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y + character_sprite.getLocalBounds().size.y / 8 };
-		}
-		else
-		{
-			hitbox.size = { 64 / 3, 128 - 128 / 8 };
-			hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y + character_sprite.getLocalBounds().size.y / 8 };
-		}
-
-	//std::cout << "char_pos = " << character_position.x << std::endl;
-	//std::cout << "velocity_x = " << velocity_x << std::endl;
-}
-
-Interactive* Player::get_standing_on_platform()
-{
-	return standing_on_platform;
+	character_sprite.setPosition(character_position);
+	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y + character_sprite.getLocalBounds().size.y / 8 };
 }

@@ -75,6 +75,12 @@
     <ClCompile Include="Moving_tile.cpp">
       <Filter>Pliki źródłowe\Interactive</Filter>
     </ClCompile>
+    <ClCompile Include="Spikes.cpp">
+      <Filter>Pliki źródłowe\Interactive</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Pliki źródłowe\Character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -119,6 +125,12 @@
     <ClInclude Include="resource.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="Spikes.hpp">
+      <Filter>Pliki nagłówkowe\Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.hpp">
+      <Filter>Pliki nagłówkowe\Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\level_1_background.png">
@@ -132,6 +144,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="json\level_one.json">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+    <None Include="json\level_test.json">
       <Filter>Pliki zasobów</Filter>
     </None>
   </ItemGroup>

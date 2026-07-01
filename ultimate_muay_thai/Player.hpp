@@ -14,7 +14,7 @@ protected:
 	
 	//flags//////////////////////////////////////////////////////////////////////////////////////
 	bool moving_flag = { 0 }; //boolean variable to make loop of moving animation
-	bool is_blocking; //boolean variable to check if the player is blocking or not
+	//boolean variable to check if the player is blocking or not
 	bool attack_flag = { 0 };
 	int attack_dir = { 0 }; //0 - middle, 1 high, 2 - low
 
@@ -22,18 +22,13 @@ protected:
 	short int special_points;
 	short int max_special_points;
 
-	//knocked
-	bool knocked;
-	sf::Time time_knocked;
-	bool transparenting_status;
-	sf::Time transparenting_time;
+
 
 	//moving_block
 	bool moving_block;
 	sf::Time time_moving_block;
 
-	//platform
-	Interactive* standing_on_platform;
+
 
 public:
 	friend class Level;
@@ -57,7 +52,7 @@ public:
 
 
 	//collisions//////////////////////////////////////////////////////////////////////////////////////
-	void check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid); //checking collisions of the player with interactive objects (for example, with a health pack)
+	void check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid, const int& tiles_in_level); //checking collisions of the player with interactive objects (for example, with a health pack)
 	
 	//getters//////////////////////////////////////////////////////////////////////////////////////
 	bool get_is_fighting() const; //returning the fighting status of the player
