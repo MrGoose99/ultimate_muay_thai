@@ -9,11 +9,10 @@
 class Player : public Character
 {
 protected:
-	//animation//////////////////////////////////////////////////////////////////////////////////////
-	short unsigned int animation_stage; //boolean variable to check the stage of the animation (for example, for a 2-frame animation, it will be 0 for the first frame and 1 for the second frame)
+
 	
 	//flags//////////////////////////////////////////////////////////////////////////////////////
-	bool moving_flag = { 0 }; //boolean variable to make loop of moving animation
+
 	//boolean variable to check if the player is blocking or not
 	bool attack_flag = { 0 };
 	int attack_dir = { 0 }; //0 - middle, 1 high, 2 - low

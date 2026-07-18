@@ -132,7 +132,7 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 				}
 			}
 		}
-		for (int y = top; y <= bottom + 1; y++)
+		for (int y = top; y <= bottom + 1; y++) //+1 for moving_tile, because it can be on the top of lower tile
 			for (int x = left; x <= right; x++)
 			{
 				if (x < 0 || y < 0 || x >= tiles_in_row || y >= tiles_in_level / tiles_in_row)
@@ -150,6 +150,37 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 							sf::FloatRect checking_tile = { interactive_grid[index][i]->get_object_sprite().getGlobalBounds() };
 							if (checking_tile.findIntersection(checking_rect))
 								return 1;
+						}
+						else if (interactive_grid[index][i] -> get_object_type() == "enemy" 
+							&& this->character_name == "player")
+						{
+							sf::FloatRect tile = { interactive_grid[index][i]->get_object_sprite().getGlobalBounds() };
+							sf::FloatRect checking_tile = { {tile.position.x + tile.size.x / 4, tile.position.y}, {tile.size.x - tile.size.x / 4 * 2, tile.size.y} };
+
+							if (checking_tile.findIntersection(checking_rect))
+							{
+								if (checking_rect.position.y + checking_rect.size.y < checking_tile.position.y + checking_tile.size.y / 4)
+								{
+									if (checking_rect.position.x <= checking_tile.position.x)
+									{
+										on_ground = 0;
+										velocity_x = -600.f;
+										velocity_y = -300.f;
+										is_jumping = 1;
+										return 0;
+									}
+									else if (checking_rect.position.x + checking_rect.size.x > checking_tile.position.x + checking_tile.size.x)
+									{
+										on_ground = 0;
+										velocity_x = 600.f;
+										velocity_y = -300.f;
+										is_jumping = 1;
+										return 0;
+									}
+								}
+								return 1;
+							}
+
 						}
 					}
 				}
@@ -206,6 +237,7 @@ void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_arra
 	}
 	if (on_ground)
 		velocity_x = 0.f;
+	std::cout << character_name << ": velocity_x = " << velocity_x << std::endl; //DEBUG
 }
 
 void Character::attack(sf::Time& dt)

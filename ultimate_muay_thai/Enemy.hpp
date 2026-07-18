@@ -19,6 +19,7 @@ protected:
 	std::string type = { "enemy" };
 	int patrol_tile;
 	bool patroling_direction = { 1 };
+	
 public:
 	Enemy(int starting, std::vector<std::vector<Interactive*>>& moving_objects, int tiles_in_row);
 	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level) override;

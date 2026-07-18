@@ -14,7 +14,7 @@ Player::Player()
 	is_moving = false;
 	is_blocking = false;
 	animation_stage = 0;
-	character_name = "Player";
+	character_name = "player";
 	if (!character_texture.loadFromFile("textures/player_textures.png"))
 		std::cout << "Error loading player texture from file\n";
 	character_sprite.setTexture(character_texture);

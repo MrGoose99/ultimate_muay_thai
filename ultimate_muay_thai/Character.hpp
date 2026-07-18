@@ -13,7 +13,8 @@ protected:
 	//animation//////////////////////////////////////////////////////////////////////////////////////
 	sf::Time time_animation = sf::seconds(0.f); //time variable to control the animation of the character
 	sf::Sprite character_sprite{ character_texture }; //sprite of the character
-
+	short unsigned int animation_stage = 0; //boolean variable to check the stage of the animation (for example, for a 2-frame animation, it will be 0 for the first frame and 1 for the second frame)
+	bool moving_flag = { 0 }; //boolean variable to make loop of moving animation
 	//stats//////////////////////////////////////////////////////////////////////////////////////
 	short int hp; //health points
 	short int max_hp; //maximum health points
