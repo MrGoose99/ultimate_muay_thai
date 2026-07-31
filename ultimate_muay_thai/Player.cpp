@@ -80,8 +80,9 @@ void Player::update_character_animation(sf::Time& dt)
 	}
 
 
-
-	if (is_jumping)
+	if(attacked)
+		character_sprite.setTextureRect(get_frame_position(26));
+	else if (is_jumping)
 	{
 		if (animation_stage == 0)
 			character_sprite.setTextureRect(get_frame_position(13));
@@ -148,18 +149,32 @@ void Player::update_character_animation(sf::Time& dt)
 		if (moving_normal > 0 && moving_fight == 0)
 		{
 			if (animation_stage == 0)
-				character_sprite.setTextureRect(get_frame_position(5));
+				if (!pistol_mode)
+					character_sprite.setTextureRect(get_frame_position(5));
+				else
+					character_sprite.setTextureRect(get_frame_position(33));
 			else if (animation_stage == 1)
-				character_sprite.setTextureRect(get_frame_position(6));
+				if (!pistol_mode)
+					character_sprite.setTextureRect(get_frame_position(6));
+				else
+					character_sprite.setTextureRect(get_frame_position(34));
 			else if (animation_stage == 2)
-				character_sprite.setTextureRect(get_frame_position(7));
+				if (!pistol_mode)
+					character_sprite.setTextureRect(get_frame_position(7));
+				else
+					character_sprite.setTextureRect(get_frame_position(35));
 		}
 		else if(on_ground)
 		{
 			if (animation_stage == 0)
-				character_sprite.setTextureRect(get_frame_position(0));
+				if (!pistol_mode)
+					character_sprite.setTextureRect(get_frame_position(0));
+				else
+					character_sprite.setTextureRect(get_frame_position(29));
 			else if (animation_stage == 1)
-				character_sprite.setTextureRect(get_frame_position(1));
+				if (!pistol_mode)
+					character_sprite.setTextureRect(get_frame_position(1));
+				else character_sprite.setTextureRect(get_frame_position(30));
 		}
 	}
 }
@@ -362,10 +377,18 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				is_fighting = false;
 			else is_fighting = true;
 		}
+		if (pistol_mode)
+		{
+			if (keyPressed->scancode == sf::Keyboard::Scancode::H && !moving_fight && !moving_normal && !is_blocking && !is_falling && !is_jumping)
+			{
+				is_shooting = true;
+			}
+		}
 		if (is_fighting)
 		{
 			if (keyPressed->scancode == sf::Keyboard::Scancode::H && moving_fight == 0 && !is_blocking)
 			{
+				starting_strike = true;
 				kick_attack_state = KickAttackState::None;
 				switch (meele_attack_state)
 				{
@@ -409,6 +432,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 			if (keyPressed->scancode == sf::Keyboard::Scancode::J && !is_blocking)
 			{
 				meele_attack_state = MeeleAttackState::None;
+				starting_strike = 1;
 				if (kick_attack_state == KickAttackState::None)
 				{
 					if (attack_dir == 0)
@@ -440,6 +464,11 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				on_ground = 0;
 				velocity_y = -1000.f;
 		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::U && special_points == max_special_points && !is_jumping && !is_falling && !pistol_mode)
+		{
+			pistol_mode = true;
+			pistol_mode_time = sf::seconds(0.f);
+		}
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Numpad1)
 		{
 			hp--;
@@ -463,7 +492,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 	}
 }
 
-void Player::check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid, const int& tiles_in_level)
+void Player::check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid)
 {
 
 	standing_on_platform = nullptr;
@@ -477,7 +506,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 	for(int y = top; y <= bottom + 1; y++) //more tiles are checking
 		for (int x = left; x <= right; x++)
 		{
-			if (x < 0 || y < 0 || x >= tiles_in_row || y >= tiles_in_level/tiles_in_row)
+			if (x < 0 || y < 0 || x >= tiles_in_row || y >= tiles_in_level / tiles_in_row)
 			{
 				continue;
 			}
@@ -597,7 +626,11 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 							}
 							
 						}
+
 					}
+
+
+
 					if (interactive_grid[index][i]->get_object_type() == "moving_tile") //MOVING TILE
 					{
 						if (checking_rect.position.x < interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.x + interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size.x
@@ -627,12 +660,10 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 							character_position.y += std::abs(checking_rect.position.y - (interactive_grid[index][i]->get_object_sprite().getGlobalBounds().position.y + interactive_grid[index][i]->get_object_sprite().getGlobalBounds().size.y)) + 10.f;
 							velocity_y = 0.f;
 						}
-						
-
 					}
 
 
-					if (attackbox.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && attackbox_active && interactive_grid[index][i]->get_punched() == 0 && interactive_grid[index][i]->get_status())
+					if (attackbox.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && attackbox_active && interactive_grid[index][i]->get_punched() == 0 && interactive_grid[index][i]->get_status() && !interactive_grid[index][i]->get_blocking_status())
 					{
 						if (interactive_grid[index][i]->get_object_type() == "punching_bag") //PUNCHING BAG
 						{
@@ -646,7 +677,23 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 							if (interactive_grid[index][i]->get_hp() <= 0)
 								interactive_grid[index][i]->set_destroyed(true);
 						}
+						else if (interactive_grid[index][i]->get_object_type() == "enemy") //ENEMY
+						{
+								interactive_grid[index][i]->decrease_hp(get_damage());
+								interactive_grid[index][i]->set_punched(1);
+								if (interactive_grid[index][i]->get_hp() <= 0)
+									interactive_grid[index][i]->set_is_dying(true);
+						}
 					}
+
+				}
+				for (int i = 0; i < character_grid[index].size(); i++)
+				{
+					if (checking_rect.findIntersection(character_grid[index][i]->get_character_attackbox()) && character_grid[index][i]->get_character_attackbox_status() && !attacked && !is_blocking && character_grid[index][i] != this)
+						{
+							hp -= character_grid[index][i]->get_damage();
+							attacked = true;
+						}
 				}
 				
 			}
@@ -662,6 +709,7 @@ void Player::check_pressed()
 		is_blocking = 1;
 		moving_fight = 0;
 		moving_normal = 0;
+		attackbox_active = 0;
 	}
 	else is_blocking = 0;
 
@@ -757,4 +805,56 @@ void Player::character_position_update()
 {
 	character_sprite.setPosition(character_position);
 	hitbox.position = { character_position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, character_position.y + character_sprite.getLocalBounds().size.y / 8 };
+}
+
+const bool& Player::get_starting_strike()
+{
+	return starting_strike;
+}
+
+void Player::set_starting_strike(const bool flag)
+{
+	starting_strike = flag;
+}
+
+void Player::check_attacked(sf::Time& dt)
+{
+	if (attacked_time >= sf::seconds(0.35f))
+	{
+		attacked = false;
+		attacked_time = sf::seconds(0.f);
+	}
+		else attacked_time += dt;
+}
+
+void Player::pistol_mode_check(sf::Time& dt)
+{
+	pistol_mode_time += dt;
+	if (pistol_mode_time >= sf::seconds(1.f))
+	{
+		pistol_mode_time = sf::seconds(0.f);
+		special_points--;
+	}
+	if (special_points <= 0)
+		pistol_mode = false;
+}
+
+const bool& Player::get_pistol_mode() const
+{
+	return pistol_mode;
+}
+
+const bool& Player::get_is_shooting() const
+{
+	return is_shooting;
+}
+
+void Player::set_is_shooting(const bool flag)
+{
+	is_shooting = flag;
+}
+
+const sf::Vector2u& Player::get_player_size() const
+{
+	return character_texture.getSize();
 }

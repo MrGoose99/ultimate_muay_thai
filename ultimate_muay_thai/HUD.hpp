@@ -15,12 +15,17 @@ private:
 	//MAX SIZE
 	const float special_bar_max_size_x = 203.f;
 
+	float change = { 0.f };
+
+	//bool
+	bool up_down = false;
+
 public:
 	//constructor//////////////////////////////////////////////////////////////////////////////////////
 	HUD();
 
 	//update////////////////////////////////////////////////////////////////////////////////////////
-	void hud_update(short int hp, short int max_hp, short int spec, short int max_spec);
+	void hud_update(short int hp, short int max_hp, short int spec, short int max_spec, const bool pistol_mode, sf::Time& dt);
 
 	//drawing//////////////////////////////////////////////////////////////////////////////////////
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override; //drawing the HUD

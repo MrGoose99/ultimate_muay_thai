@@ -3,6 +3,7 @@
 #include "Game.hpp"
 #include <ctime>
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 using namespace sf;
@@ -18,6 +19,7 @@ int main()
 	while (window.isOpen())
 	{
 		dt = clock.restart(); // clock is restarting every frame
+		if (dt >= sf::seconds(0.05f)) dt = sf::seconds(0.f); //prevent to SUM dt when game freezes
 		while (const optional<Event> event = window.pollEvent()) //events checking (can't be a methode because of SFML limitations)
 		{
 			if (game.get_status() == 1)

@@ -79,3 +79,23 @@ short int Interactive::get_direction()
 {
 	return direction;
 }
+
+std::vector<int>& Interactive::get_actual_tiles()
+{
+	return actual_tiles;
+}
+
+bool Interactive::get_blocking_status()
+{
+	return is_blocking;
+}
+
+const bool Interactive::get_is_dying() const
+{
+	return is_dying;
+}
+
+void Interactive::set_is_dying(const bool flag)
+{
+	is_dying = flag;
+}

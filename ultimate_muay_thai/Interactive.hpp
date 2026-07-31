@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+class Character;
 class Player;
 class Interactive: public sf::Drawable, public sf::Transformable
 {
@@ -27,8 +28,14 @@ protected:
 	bool is_destroyed = { false };
 	std::vector<std::vector<Interactive*>> interactive_grid;
 
+	bool is_blocking = { 0 };
+
+	//dying
+	sf::Time dying_time = { sf::seconds(0.f) };
+	bool is_dying = { false };
+
 public:
-	void virtual update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level) = 0; //updating the status of the interactive object (position, interactive)
+	void virtual update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid) = 0; //updating the status of the interactive object (position, interactive)
 	void virtual texture_update(sf::Time& dt) = 0;
 	void update_punched(sf::Time& dt);
 
@@ -44,6 +51,9 @@ public:
 	float get_actual_velocity_x();
 	float get_actual_velocity_y();
 	short int get_direction();
+	std::vector<int>& get_actual_tiles();
+	bool get_blocking_status();
+	const bool get_is_dying() const;
 
 	//setters
 	void set_status(bool stat);
@@ -51,6 +61,7 @@ public:
 	void set_punched(short int p);
 	void set_current_tile(const int current);
 	void set_destroyed(bool des);
+	void set_is_dying(const bool flag);
 
 
 };

@@ -34,7 +34,7 @@ void Character::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(character_sprite, states); 
 }
 
-void Character::character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, short int tiles_in_row, const int& tiles_in_level)
+void Character::character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, short int tiles_in_row, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid)
 {
 	if (!is_fighting)
 	{
@@ -45,7 +45,7 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 				right_side = 1;
 			}
 			sf::Vector2f next_pos = { character_position.x + speed_normal * dt.asSeconds(), character_position.y };
-			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level))
+			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level, character_grid))
 				character_position = next_pos;
 		}
 		else if (moving_normal == 1)
@@ -55,7 +55,7 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 				right_side = 0;
 			}
 			sf::Vector2f next_pos = { character_position.x + -speed_normal * dt.asSeconds(), character_position.y };
-			if(!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level))
+			if(!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level, character_grid))
 				character_position = next_pos;
 		}
 	}
@@ -64,13 +64,13 @@ void Character::character_moving(sf::Time& dt, const float speed_normal, const f
 		if (moving_fight == 2)
 		{
 			sf::Vector2f next_pos = {character_position.x + speed_fight * dt.asSeconds(), character_position.y };
-			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level))
+			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level, character_grid))
 			character_position = next_pos;
 		}
 		else if (moving_fight == 1)
 		{
 			sf::Vector2f next_pos = { character_position.x + -speed_fight * dt.asSeconds(), character_position.y };
-			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level))
+			if (!check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level, character_grid))
 			character_position = next_pos;
 		}
 	}
@@ -98,7 +98,7 @@ sf::RectangleShape Character::get_debug_2_shape()
 	return debug2;
 }
 
-bool Character::check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level)
+bool Character::check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid)
 {
 
 	//debug rects
@@ -119,7 +119,7 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 	for(int y = top; y <= bottom; y++)
 		for (int x = left; x <= right; x++)
 		{
-			if (x < 0 || y < 0 || x >= tiles_in_row || y >= tiles_in_level/tiles_in_row)
+			if (x < 0 || y < 0 || x >= tiles_in_row || y >= tiles_in_level / tiles_in_row)
 			{
 				continue;
 			}
@@ -151,10 +151,12 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 							if (checking_tile.findIntersection(checking_rect))
 								return 1;
 						}
-						else if (interactive_grid[index][i] -> get_object_type() == "enemy" 
-							&& this->character_name == "player")
+					}
+					for(short int i = 0; i < character_grid[index].size(); i++)
+					{
+						if (character_grid[index][i] != this && !character_grid[index][i]->get_character_is_dying())
 						{
-							sf::FloatRect tile = { interactive_grid[index][i]->get_object_sprite().getGlobalBounds() };
+							sf::FloatRect tile = { character_grid[index][i]->get_character_hitbox()};
 							sf::FloatRect checking_tile = { {tile.position.x + tile.size.x / 4, tile.position.y}, {tile.size.x - tile.size.x / 4 * 2, tile.size.y} };
 
 							if (checking_tile.findIntersection(checking_rect))
@@ -180,22 +182,20 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 								}
 								return 1;
 							}
-
 						}
 					}
 				}
 			}
-	
 	return 0;
 }
 
-void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_array, const int tiles_in_row, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level)
+void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_array, const int tiles_in_row, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid)
 {
 	on_ground = 0;
 	velocity_y += gravity * dt.asSeconds();
 	float change = std::min(velocity_y, max_fall_speed);
 	sf::Vector2f next_pos = { character_position.x, character_position.y + (change * dt.asSeconds()) };
-	bool collided = check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level);
+	bool collided = check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level, character_grid);
 	if (!collided)
 	{
 
@@ -220,13 +220,13 @@ void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_arra
 	//std::cout << "on_ground = " << on_ground << std::endl; //DEBUG
 }
 
-void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, const int tiles_in_row)
+void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, const int tiles_in_row, std::vector<std::vector<Character*>>& character_grid)
 {
 	if (velocity_x < 0.f) velocity_x += gravity * dt.asSeconds();
 	else if (velocity_x > 0.f) velocity_x -= gravity * dt.asSeconds();
 	float change = velocity_x;
 	sf::Vector2f next_pos = { character_position.x + (change * dt.asSeconds()), character_position.y};
-	bool collided = check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level);
+	bool collided = check_character_collision(next_pos, tiles_in_row, collision_array, interactive_grid, tiles_in_level, character_grid);
 	if (!collided)
 	{
 		character_position = next_pos;
@@ -237,7 +237,7 @@ void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_arra
 	}
 	if (on_ground)
 		velocity_x = 0.f;
-	std::cout << character_name << ": velocity_x = " << velocity_x << std::endl; //DEBUG
+	//std::cout << character_name << ": velocity_x = " << velocity_x << std::endl; //DEBUG
 }
 
 void Character::attack(sf::Time& dt)
@@ -304,13 +304,25 @@ void Character::attack(sf::Time& dt)
 			break;
 		}
 	}
-
-	if (attack_time >= sf::seconds(0.45f))
+	if (this->character_name == "player")
 	{
-		meele_attack_state = MeeleAttackState::None;
-		kick_attack_state = KickAttackState::None;
-		attack_time = sf::seconds(0.f);
+		if (attack_time >= sf::seconds(0.45f))
+		{
+			meele_attack_state = MeeleAttackState::None;
+			kick_attack_state = KickAttackState::None;
+			attack_time = sf::seconds(0.f);
+		}
 	}
+	else if (this->character_name == "enemy")
+	{
+		if (attack_time >= sf::seconds(0.75f))
+		{
+			meele_attack_state = MeeleAttackState::None;
+			kick_attack_state = KickAttackState::None;
+			attack_time = sf::seconds(0.f);
+		}
+	}
+	
 }
 
 const short int Character::get_hp()
@@ -343,6 +355,7 @@ const short int Character::get_damage()&
 		return 2;
 	else if (kick_attack_state == KickAttackState::AttackHigh)
 		return 3;
+	else return 0;
 }
 
 Interactive* Character::get_standing_on_platform()
@@ -362,4 +375,46 @@ void Character::apply_platform_velocity()
 void Character::set_character_position(float pos_x, float pos_y)
 {
 	character_position = { pos_x, pos_y };
+}
+
+void Character::set_attacked(bool at)
+{
+	attacked = at;
+}
+
+bool Character::get_attacked()
+{
+	return attacked;
+}
+
+bool Character::get_attacking_status()
+{
+	if (meele_attack_state == MeeleAttackState::None && kick_attack_state == KickAttackState::None)
+		return 0;
+	else return 1;
+}
+
+sf::FloatRect& Character::get_character_attackbox()
+{
+	return attackbox;
+}
+
+bool Character::get_character_attackbox_status()
+{
+	return attackbox_active;
+}
+
+std::string& Character::get_character_name()
+{
+	return character_name;
+}
+
+const bool Character::get_character_is_dying() const
+{
+	return character_is_dying;
+}
+
+bool Character::get_right_side() const
+{
+	return right_side;
 }

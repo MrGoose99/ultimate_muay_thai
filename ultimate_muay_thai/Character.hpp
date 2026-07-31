@@ -51,6 +51,10 @@ protected:
 		AttackLow
 	};
 	KickAttackState kick_attack_state = KickAttackState::None;
+
+	bool attacked = { false };
+	sf::Time attacked_time = { sf::seconds(0.f) };
+
 	//flags//////////////////////////////////////////////////////////////////////////////////////
 	bool right_side; //is character_sprite looking on the right?
 	bool is_fighting; //boolean variable to check if the player is in fighting mode or not
@@ -77,6 +81,9 @@ protected:
 	bool on_platform = { 0 };
 	Interactive* current_platform;
 
+	//dying
+	bool character_is_dying = { false };
+
 public:
 	
 	//animation//////////////////////////////////////////////////////////////////////////////////////
@@ -90,12 +97,12 @@ public:
 	void attack(sf::Time& dt);
 
 	//moving//////////////////////////////////////////////////////////////////////////////////////
-	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, short int tiles_in_row, const int& tiles_in_level);
+	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, short int tiles_in_row, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid);
 	const unsigned int get_tile_number(unsigned int tiles_in_row); //getting number of tile in tilemap (tile = 128x128)
 	void character_position_update(); //updating position of sprite and hitbox
-	bool check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level); //checking is position collide
-	void check_velocity_y(sf::Time& dt, std::vector<bool>& collision_array, const int tiles_in_row, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level);
-	void check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, const int tiles_in_row);
+	bool check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid); //checking is position collide
+	void check_velocity_y(sf::Time& dt, std::vector<bool>& collision_array, const int tiles_in_row, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid);
+	void check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, const int tiles_in_row, std::vector<std::vector<Character*>>& character_grid);
 	void apply_platform_velocity();
 
 	//debug//////////////////////////////////////////////////////////////////////////////////////
@@ -106,14 +113,26 @@ public:
 	sf::IntRect get_frame_position(short int frame_number); //returning the position of the frame in the texture based on the frame number and total frames in the animation
 	sf::Sprite& get_character_sprite(); //returning the character sprite
 	sf::FloatRect& get_character_hitbox(); //returning the character hitbox
+	sf::FloatRect& get_character_attackbox(); //returning character attackbox
+	bool get_character_attackbox_status(); //returning character attackbox status
 	sf::Vector2f& get_character_position(); //returning the character position
 	const short int get_hp(); //returning the health points of the character
 	const short int get_max_hp(); //returning the maximum health points of the character
 	const short int get_damage()&;
 	Interactive* get_standing_on_platform();
+	bool get_attacked();
+	bool get_attacking_status();
+	std::string& get_character_name();
+	const bool get_character_is_dying() const;
+	bool get_right_side() const;
+	
 	
 	//setters//////////////////////////////////////////////////////////////////////////////////////
 	void set_character(std::filesystem::path& texture, std::string& char_name, sf::Vector2f& pos); //setting character texture, name and position
 	void set_character_position(float pos_x, float pos_y);
+	void set_attacked(bool at);
+
+
+
 
 };
