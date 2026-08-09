@@ -24,7 +24,6 @@ protected:
 	float actual_velocity_y;
 	short int direction; //1 - right, 2 - left, 3 - up, 4 - down
 	//
-
 	bool is_destroyed = { false };
 	std::vector<std::vector<Interactive*>> interactive_grid;
 
@@ -33,6 +32,10 @@ protected:
 	//dying
 	sf::Time dying_time = { sf::seconds(0.f) };
 	bool is_dying = { false };
+	bool by_bullet = { false };
+
+	//to turning enemy into gem
+	bool gem_spawned = { false };
 
 public:
 	void virtual update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid) = 0; //updating the status of the interactive object (position, interactive)
@@ -54,6 +57,7 @@ public:
 	std::vector<int>& get_actual_tiles();
 	bool get_blocking_status();
 	const bool get_is_dying() const;
+	const bool& get_gem_spawned() const;
 
 	//setters
 	void set_status(bool stat);
@@ -62,6 +66,8 @@ public:
 	void set_current_tile(const int current);
 	void set_destroyed(bool des);
 	void set_is_dying(const bool flag);
+	void set_by_bullet(const bool flag);
+	void set_gem_spawned(bool flag);
 
 
 };

@@ -15,7 +15,7 @@ Player::Player()
 	is_blocking = false;
 	animation_stage = 0;
 	character_name = "player";
-	if (!character_texture.loadFromFile("textures/player_textures.png"))
+	if (!character_texture.loadFromFile("textures/player_textures_new.png"))
 		std::cout << "Error loading player texture from file\n";
 	character_sprite.setTexture(character_texture);
 	character_position = { 100.f, 100.f };
@@ -82,6 +82,12 @@ void Player::update_character_animation(sf::Time& dt)
 
 	if(attacked)
 		character_sprite.setTextureRect(get_frame_position(26));
+	else if (is_shooting_animation)
+	{
+		if (animation_stage == 0) character_sprite.setTextureRect(get_frame_position(31));
+		else if (animation_stage == 1) character_sprite.setTextureRect(get_frame_position(32));
+		
+	}
 	else if (is_jumping)
 	{
 		if (animation_stage == 0)
@@ -198,7 +204,22 @@ void Player::update_frame_status(sf::Time& dt)
 		}
 	}
 	else transparenting_status = 0;
-	if (is_jumping) //jumping
+
+	if (is_shooting_animation)
+	{
+		if (moving_normal > 0) is_shooting_animation = 0;
+		else if (time_animation < sf::seconds(0.05f))
+			animation_stage = 0;
+		else if (time_animation <= sf::seconds(0.20f))
+			animation_stage = 1;
+		else
+		{
+			time_animation = sf::seconds(0.f);
+			animation_stage = 0;
+			is_shooting_animation = false;
+		}
+	}
+	else if (is_jumping) //jumping
 	{
 		if (time_animation >= sf::seconds(0.3f))
 		{
@@ -371,23 +392,31 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 {
 	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 	{
-		if (keyPressed->scancode == sf::Keyboard::Scancode::Space && !is_jumping && !is_falling)
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Space && !is_jumping && !is_falling && !pistol_mode)
 		{
 			if (is_fighting)
 				is_fighting = false;
 			else is_fighting = true;
 		}
+
 		if (pistol_mode)
 		{
-			if (keyPressed->scancode == sf::Keyboard::Scancode::H && !moving_fight && !moving_normal && !is_blocking && !is_falling && !is_jumping)
+			if (keyPressed->scancode == sf::Keyboard::Scancode::H && !moving_fight && !moving_normal && !is_blocking && !is_falling && !is_jumping
+				&& shooting_latency == sf::seconds(0.f))
 			{
 				is_shooting = true;
+				is_shooting_animation = true;
+				is_fighting = false;
+				animation_stage = 0;
+				time_animation = sf::seconds(0.f);
+				shooting_latency += dt;
 			}
 		}
 		if (is_fighting)
 		{
 			if (keyPressed->scancode == sf::Keyboard::Scancode::H && moving_fight == 0 && !is_blocking)
 			{
+				moving_fight = 0;
 				starting_strike = true;
 				kick_attack_state = KickAttackState::None;
 				switch (meele_attack_state)
@@ -429,8 +458,9 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 					break;
 				}
 			}
-			if (keyPressed->scancode == sf::Keyboard::Scancode::J && !is_blocking)
+			if (keyPressed->scancode == sf::Keyboard::Scancode::J && !is_blocking && moving_fight == 0)
 			{
+				moving_fight = 0;
 				meele_attack_state = MeeleAttackState::None;
 				starting_strike = 1;
 				if (kick_attack_state == KickAttackState::None)
@@ -680,6 +710,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 						else if (interactive_grid[index][i]->get_object_type() == "enemy") //ENEMY
 						{
 								interactive_grid[index][i]->decrease_hp(get_damage());
+								attackbox_active = false;
 								interactive_grid[index][i]->set_punched(1);
 								if (interactive_grid[index][i]->get_hp() <= 0)
 									interactive_grid[index][i]->set_is_dying(true);
@@ -693,6 +724,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 						{
 							hp -= character_grid[index][i]->get_damage();
 							attacked = true;
+							attackbox_active = false;
 						}
 				}
 				
@@ -835,8 +867,20 @@ void Player::pistol_mode_check(sf::Time& dt)
 		pistol_mode_time = sf::seconds(0.f);
 		special_points--;
 	}
+
+	if (shooting_latency > sf::seconds(0.f) && shooting_latency <= sf::seconds(0.5f))
+	{
+		shooting_latency += dt;
+	}
+	else shooting_latency = sf::seconds(0.f);
+
 	if (special_points <= 0)
+	{
 		pistol_mode = false;
+		shooting_latency = sf::seconds(0.f);
+	}
+
+
 }
 
 const bool& Player::get_pistol_mode() const
@@ -857,4 +901,14 @@ void Player::set_is_shooting(const bool flag)
 const sf::Vector2u& Player::get_player_size() const
 {
 	return character_texture.getSize();
+}
+
+void Player::set_hp_to_default()
+{
+	hp = max_hp;
+}
+
+void Player::set_special_to_default()
+{
+	special_points = 0;
 }

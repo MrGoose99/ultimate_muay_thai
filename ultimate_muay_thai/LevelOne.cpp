@@ -24,7 +24,7 @@ LevelOne::LevelOne(Player& p1)
 	background_shape.setTexture(&background);
 	background_shape.setPosition({ 0,0 });
 
-	LevelOne::load_level("json/level_one.json"); //TESTING LEVEL
+	LevelOne::load_level("json/level_test.json"); //TESTING LEVEL
 
 	LevelOne::tilemap.set_tilemap("tilesets/tileset_lvl_1.png", { 128,128 }, tilemap_array.data(), width, height);
 
@@ -63,11 +63,11 @@ void LevelOne::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		if (interactive_objects[i]->get_status())target.draw(*interactive_objects[i], states);
 	}
-	/*for (int i = 0; i < character_grid.size(); i++) //ATTACKBOX FOR DEBUGGING
+	for (int i = 0; i < character_grid.size(); i++) //ATTACKBOX FOR DEBUGGING
 		for (int j = 0; j < character_grid[i].size(); j++)
 		{
 			target.draw(character_grid[i][j]->get_debug_2_shape(), states);
-		}*/
+		}
 }
 
 

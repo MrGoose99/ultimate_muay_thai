@@ -99,12 +99,14 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 	if (p1.get_is_shooting())
 	{
 		int tile;
-		int tile_x = (p1.get_player_position().x + p1.get_player_size().x) / 128.f;
-		int tile_y = (p1.get_player_position().y + p1.get_player_size().y / 128 * 52) / 128.f;
+		int tile_x = (p1.get_player_position().x + p1.get_character_hitbox().size.x) / 128.f;
+		int tile_y = (p1.get_player_position().y + p1.get_character_hitbox().size.y / 128 * 52) / 128.f;
 		tile = tile_x + tile_y * tiles_in_row;
 		sf::Vector2f pos;
-		pos.x = p1.get_player_position().x + p1.get_player_size().x;
-		pos.y = p1.get_player_position().y + p1.get_player_size().y / 128 * 52;
+		if (p1.get_right_side())
+			pos.x = p1.get_player_position().x + (p1.get_character_hitbox().size.x * 1.85f);
+		else pos.x = p1.get_player_position().x;
+		pos.y = p1.get_player_position().y + (p1.get_character_hitbox().size.y / 128 * 52);
 		interactive_objects.push_back(std::make_unique<Bullet>(tile, p1.get_right_side(), tiles_in_row, pos));
 		p1.set_is_shooting(false);
 	}
@@ -138,6 +140,15 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 		{
 
 			interactive_objects[i]->update(dt, 200.f, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid); //in this update character_grid tiles are removing
+			if (interactive_objects[i]->get_hp() <= 0 && !interactive_objects[i]->get_gem_spawned())
+			{
+				sf::Sprite obj_sprite = interactive_objects[i]->get_object_sprite();
+				sf::Vector2f obj_pos = obj_sprite.getGlobalBounds().position;
+				int tile = ((obj_pos.x + obj_sprite.getLocalBounds().size.x / 2) / 128.f) + (((obj_pos.y ) / 128.f) * tiles_in_row);
+				interactive_objects.push_back(std::make_unique<Gem>(std::rand() % 2, tile, tiles_in_row, 1));
+				interactive_grid[tile].push_back(interactive_objects[interactive_objects.size() - 1].get());
+				interactive_objects[i]->set_gem_spawned(true);
+			}
 			if (interactive_objects[i]->get_destroyed())
 			{
 				std::vector<int> act_tiles = interactive_objects[i]->get_actual_tiles();
@@ -152,7 +163,7 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 		}
 		else if (interactive_objects[i]->get_object_type() == "bullet")
 		{
-			interactive_objects[i]->update(dt, 600.f, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid);
+			interactive_objects[i]->update(dt, 1600.f, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid);
 			if (interactive_objects[i]->get_destroyed())
 			{
 				std::vector<int> act_tiles = interactive_objects[i]->get_actual_tiles();

@@ -38,7 +38,10 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 	{
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Num1)
+		{
 			level = std::make_unique<LevelOne>(player);
+			player.set_hp_to_default(); player.set_special_to_default();
+		}
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Num2)
 			level = std::make_unique<LevelTwo>();
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Right)
@@ -70,7 +73,7 @@ void Game::draw(sf::RenderWindow& window)
 		//PLAYER
 		window.draw(player);
 		//window.draw(player.get_debug_shape()); // debugging player hitbox
-		//window.draw(player.get_debug_2_shape()); //debugging player attackbox
+		window.draw(player.get_debug_2_shape()); //debugging player attackbox
 		//HUD
 		window.setView(window.getDefaultView());
 		window.draw(hud);

@@ -99,3 +99,18 @@ void Interactive::set_is_dying(const bool flag)
 {
 	is_dying = flag;
 }
+
+void Interactive::set_by_bullet(const bool flag)
+{
+	by_bullet = flag;
+}
+
+const bool& Interactive::get_gem_spawned() const
+{
+	return gem_spawned;
+}
+
+void Interactive::set_gem_spawned(bool flag)
+{
+	gem_spawned = flag;
+}
