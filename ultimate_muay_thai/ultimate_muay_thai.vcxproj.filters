@@ -135,7 +135,7 @@
       <Filter>Pliki nagłówkowe\Character</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.hpp">
-      <Filter>Pliki nagłówkowe</Filter>
+      <Filter>Pliki nagłówkowe\Interactive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

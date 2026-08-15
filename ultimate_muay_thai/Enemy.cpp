@@ -215,6 +215,8 @@ void Enemy::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Int
 	}
 	case EnemyState::Dying:
 	{
+		moving_normal = 0;
+		moving_fight = 0;
 		dying_time += dt;
 		if (dying_time >= sf::seconds(10.f)) is_destroyed = true;
 		attackbox_active = 0;
@@ -450,7 +452,9 @@ void Enemy::update_character_animation(sf::Time& dt)
 	if(is_dying)
 	{
 		if (dying_time < sf::seconds(0.25f))
-			character_sprite.setTextureRect(get_frame_position(26));
+			if (!by_bullet)
+				character_sprite.setTextureRect(get_frame_position(26));
+			else character_sprite.setTextureRect(get_frame_position(36));
 		else if (dying_time < sf::seconds(0.6f))
 			character_sprite.setTextureRect(get_frame_position(27));
 		else character_sprite.setTextureRect(get_frame_position(28));

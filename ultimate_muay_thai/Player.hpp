@@ -25,6 +25,8 @@ protected:
 
 	bool is_shooting = { 0 };
 
+	bool is_shooting_animation = { 0 };
+
 	//moving_block
 	bool moving_block;
 	sf::Time time_moving_block;
@@ -32,6 +34,9 @@ protected:
 	//
 	bool pistol_mode = {false};
 	sf::Time pistol_mode_time = { sf::seconds(0.f) };
+	sf::Time shooting_latency = { sf::seconds(0.f) };
+
+
 
 public:
 	friend class Level;
@@ -74,10 +79,14 @@ public:
 	const bool& get_is_shooting() const;
 	const sf::Vector2u& get_player_size() const;
 
+
 	//setters//////////////////////////////////////////////////////////////////////////////////////
 	void set_is_fighting(const bool status); //setting the fighting status of the player
 	void set_is_moving(const bool status); //setting the moving status of the player
 	void set_is_blocking(const bool status); //setting the blocking status of the player
 	void set_starting_strike(const bool flag);
 	void set_is_shooting(const bool flag);
+	void set_hp_to_default();
+	void set_special_to_default();
+
 };
