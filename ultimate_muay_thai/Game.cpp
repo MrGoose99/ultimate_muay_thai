@@ -73,7 +73,7 @@ void Game::draw(sf::RenderWindow& window)
 		//PLAYER
 		window.draw(player);
 		//window.draw(player.get_debug_shape()); // debugging player hitbox
-		window.draw(player.get_debug_2_shape()); //debugging player attackbox
+		//window.draw(player.get_debug_2_shape()); //debugging player attackbox
 		//HUD
 		window.setView(window.getDefaultView());
 		window.draw(hud);
