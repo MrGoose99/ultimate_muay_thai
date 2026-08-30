@@ -22,16 +22,20 @@ int main()
 		if (dt >= sf::seconds(0.05f)) dt = sf::seconds(0.f); //prevent to SUM dt when game freezes
 		while (const optional<Event> event = window.pollEvent()) //events checking (can't be a methode because of SFML limitations)
 		{
-			if (game.get_status() == 1)
+			if (game.get_status() == 1) //running
 			{
 				game.checkEvents_running(event, window, dt);
 			}	
-			else
+			else if (game.get_status() == 0) //paused
 			{
 				game.checkEvents_paused(event, window);
 			}
+			else if (game.get_status() == 2) //main_menu
+			{
+				game.checkEvents_main_menu(event, window);
+			}
 		}
-		if (game.get_status() == 1)
+		if (game.get_status() != 0)
 		{
 			game.position_update(dt); //checking positions every frame
 			game.animations_update(dt); //checking animations update every frame

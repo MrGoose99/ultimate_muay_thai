@@ -37,6 +37,14 @@ TileMap& Level::get_tilemap()
 
 void Level::set_camera_center(sf::Vector2f center_pos)
 {
+	if (center_pos.x - (camera.getSize().x / 2) < 0)
+		center_pos.x += std::abs(center_pos.x - (camera.getSize().x / 2));
+	else if (center_pos.x + camera.getSize().x / 2 > tiles_in_row * 128.f)
+		center_pos.x -= std::abs(center_pos.x + camera.getSize().x / 2 - (tiles_in_row * 128.f));
+	if (center_pos.y - (camera.getSize().y / 2 ) < 0)
+		center_pos.y += std::abs(center_pos.y - (camera.getSize().y / 2));
+	else if (center_pos.y + camera.getSize().y / 2 > height * 128.f)
+		center_pos.y -= std::abs(center_pos.y + camera.getSize().y / 2 - (height * 128.f));
 	camera.setCenter({ round(center_pos.x), round(center_pos.y) });
 }
 

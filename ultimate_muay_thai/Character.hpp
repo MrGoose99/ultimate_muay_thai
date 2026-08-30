@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include "Interactive.hpp"
+#include "Punching_bag.hpp"
 
 class Character : public sf::Drawable, public sf::Transformable
 {
@@ -95,6 +96,10 @@ public:
 
 	//attack//////////////////////////////////////////////////////////////////////////////////////
 	void attack(sf::Time& dt);
+
+	//MENU_FIGHTER//////////////////////////////////////////////////////////////////////////////////////
+	void menu_fighter_fighting(sf::Time& dt);
+	void check_collision_with_punching_bag(Punching_bag& punching_bag); //only for menu_fighter
 
 	//moving//////////////////////////////////////////////////////////////////////////////////////
 	void character_moving(sf::Time& dt, const float speed_normal, const float speed_fight, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, short int tiles_in_row, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid);

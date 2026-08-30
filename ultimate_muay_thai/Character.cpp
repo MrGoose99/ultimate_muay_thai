@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 #include "Interactive.hpp"
+#include "Punching_bag.hpp"
 
 
 void Character::set_character(std::filesystem::path& texture, std::string& char_name, sf::Vector2f& pos)
@@ -96,6 +97,15 @@ sf::RectangleShape Character::get_debug_shape()
 sf::RectangleShape Character::get_debug_2_shape()
 {
 	return debug2;
+}
+
+void Character::check_collision_with_punching_bag(Punching_bag& punching_bag)
+{
+	if (attackbox_active && attackbox.findIntersection(punching_bag.get_object_sprite().getGlobalBounds()))
+	{
+		punching_bag.set_punched(1);
+	}
+	else punching_bag.set_punched(0);
 }
 
 bool Character::check_character_collision(const sf::Vector2f position, const int tiles_in_row, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid)
@@ -322,7 +332,18 @@ void Character::attack(sf::Time& dt)
 			attack_time = sf::seconds(0.f);
 		}
 	}
-	
+	else if (this->character_name == "menu_fighter")
+	{
+		attackbox.size = { 500.f, 100.f };
+		attackbox.position = { 1443,340 };
+		if (attack_time >= sf::seconds(0.45f))
+		{
+			meele_attack_state = MeeleAttackState::None;
+			kick_attack_state = KickAttackState::None;
+		}
+		if (attack_time >= sf::seconds(1.5f))
+			attack_time = sf::seconds(0.f);
+	}
 }
 
 const short int Character::get_hp()
@@ -375,6 +396,27 @@ void Character::apply_platform_velocity()
 void Character::set_character_position(float pos_x, float pos_y)
 {
 	character_position = { pos_x, pos_y };
+	std::cout << character_sprite.getLocalBounds().size.x << "x" << character_sprite.getLocalBounds().size.y << std::endl;
+}
+
+void Character::menu_fighter_fighting(sf::Time& dt)
+{
+	if (meele_attack_state == MeeleAttackState::None && kick_attack_state == KickAttackState::None && attack_time == sf::seconds(0.f))
+	{
+		int random = std::rand() % 100;
+		if (random < 30)
+			meele_attack_state = MeeleAttackState::Attack1;
+		else if (random < 60)
+			meele_attack_state = MeeleAttackState::Attack3;
+		else if (random < 80)
+			kick_attack_state = KickAttackState::AttackHigh;
+		else
+			kick_attack_state = KickAttackState::AttackMiddle;
+
+
+	}
+	attack(dt);
+
 }
 
 void Character::set_attacked(bool at)

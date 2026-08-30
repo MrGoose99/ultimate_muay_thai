@@ -25,7 +25,7 @@ Punching_bag::Punching_bag(int tile_nr, int tiles_in_row)
 
 	set_punched(0);
 
-	hp = 5;
+	hp = MAX_HP;
 }
 
 void Punching_bag::texture_update(sf::Time& dt)
@@ -46,6 +46,21 @@ void Punching_bag::texture_update(sf::Time& dt)
 	punching_bag_sprite.setTextureRect(new_tex_rect);
 	
 
+}
+
+void Punching_bag::set_hp_to_max()
+{
+	hp = MAX_HP;
+}
+
+void Punching_bag::set_position(sf::Vector2f position)
+{
+	punching_bag_sprite.setPosition(position);
+}
+
+void Punching_bag::set_scale(sf::Vector2f scale)
+{
+	punching_bag_sprite.setScale(scale);
 }
 
 void Punching_bag::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid)

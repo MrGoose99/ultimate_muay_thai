@@ -10,10 +10,10 @@
 #include "HUD.hpp"
 #include "Interactive.hpp"
 
-Game::Game(bool s)
+Game::Game()
 {
-	if (s != 0) status = 1;
-	else status = s;
+	status = 2;
+	main_menu = std::make_unique<Main_menu>();
 }
 
 void Game::checkEvents_paused(const std::optional<sf::Event>& event, sf::RenderWindow& window)
@@ -64,23 +64,55 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 	
 }
 
-void Game::draw(sf::RenderWindow& window)
+void Game::checkEvents_main_menu(const std::optional<sf::Event>& event, sf::RenderWindow& window)
 {
-	if (level != nullptr)
+	if (event->is<sf::Event::Closed>()) // closing the window by every possible way (but not from keyboard)
+		window.close();
+	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 	{
-		//LEVEL
-		window.draw(*level);
-		//PLAYER
-		window.draw(player);
-		//window.draw(player.get_debug_shape()); // debugging player hitbox
-		//window.draw(player.get_debug_2_shape()); //debugging player attackbox
-		//HUD
-		window.setView(window.getDefaultView());
-		window.draw(hud);
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Up || keyPressed->scancode == sf::Keyboard::Scancode::W)
+		{
+			main_menu->button_up();
+			main_menu->check_buttons_activation_texture();
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Down || keyPressed->scancode == sf::Keyboard::Scancode::S)
+		{
+			main_menu->button_down();
+			main_menu->check_buttons_activation_texture();
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Enter || keyPressed->scancode == sf::Keyboard::Scancode::Space)
+		{
+			main_menu->button_enter(window);
+		}
 	}
 }
 
-bool Game::get_status() const
+void Game::draw(sf::RenderWindow& window)
+{
+	if (status == 2)
+	{
+		window.setView(window.getDefaultView());
+		window.draw(*main_menu);
+	}
+	else
+	{
+		if (level != nullptr)
+		{
+			//LEVEL
+			window.draw(*level);
+			//PLAYER
+			window.draw(player);
+			//window.draw(player.get_debug_shape()); // debugging player hitbox
+			//window.draw(player.get_debug_2_shape()); //debugging player attackbox
+			//HUD
+			window.setView(window.getDefaultView());
+			window.draw(hud);
+		}
+	}
+
+}
+
+int Game::get_status() const
 {
 	return status;
 }
@@ -97,10 +129,12 @@ void Game::pause()
 
 void Game::animations_update(sf::Time& dt)
 {
-	if(level != nullptr)
+	if (level != nullptr)
+	{
 		//PLAYER
 		player.update_frame_status(dt);
 		player.update_character_animation(dt);
+	}
 }
 
 void Game::position_update(sf::Time& dt)
@@ -130,5 +164,9 @@ void Game::position_update(sf::Time& dt)
 		
 		//HUD
 		hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points(), player.get_pistol_mode(), dt);
+	}
+	else if (main_menu != nullptr)
+	{
+		main_menu->update_menu_fighter_animation(dt);
 	}
 }

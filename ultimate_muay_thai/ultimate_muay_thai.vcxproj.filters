@@ -31,6 +31,12 @@
     <Filter Include="Pliki nagłówkowe\Character">
       <UniqueIdentifier>{713e9372-a433-49e6-9748-e794c94f0912}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main_menu">
+      <UniqueIdentifier>{78857e76-dc63-40e3-942b-62d77f70514c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Main_menu">
+      <UniqueIdentifier>{7671b702-31c0-4a96-b10c-cbee3ec023a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,6 +90,12 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>Pliki źródłowe\Interactive</Filter>
     </ClCompile>
+    <ClCompile Include="Main_menu.cpp">
+      <Filter>Pliki źródłowe\Main_menu</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_fighter.cpp">
+      <Filter>Pliki źródłowe\Character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -136,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="Bullet.hpp">
       <Filter>Pliki nagłówkowe\Interactive</Filter>
+    </ClInclude>
+    <ClInclude Include="Main_menu.hpp">
+      <Filter>Main_menu</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu_fighter.hpp">
+      <Filter>Pliki nagłówkowe\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

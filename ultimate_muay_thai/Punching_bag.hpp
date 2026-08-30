@@ -10,8 +10,12 @@ protected:
 	std::string type = "punching_bag";
 	short int hp;
 	sf::IntRect default_texture_rect;
+	const short int MAX_HP = 5;
 public:
 	Punching_bag(int tile_nr, int tiles_in_row);
+	void set_hp_to_max();
+	void set_position(sf::Vector2f position);
+	void set_scale(sf::Vector2f scale);
 	void texture_update(sf::Time& dt) override;
 	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid) override; //it's not moving, so its empty method
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
