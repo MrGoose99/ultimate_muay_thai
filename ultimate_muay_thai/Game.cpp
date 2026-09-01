@@ -14,6 +14,7 @@ Game::Game()
 {
 	status = 2;
 	main_menu = std::make_unique<Main_menu>();
+	current_level = 0;
 }
 
 void Game::checkEvents_paused(const std::optional<sf::Event>& event, sf::RenderWindow& window)
@@ -58,6 +59,12 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 			level->camera.zoom(0.8f);
 		if (keyPressed->scancode == sf::Keyboard::Scancode::P)
 			pause();
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
+		{;
+			pause();
+			main_menu->button_in_game_menu();
+			return;
+		}
 		player.check_player_events(event, dt);
 
 	}
@@ -70,25 +77,73 @@ void Game::checkEvents_main_menu(const std::optional<sf::Event>& event, sf::Rend
 		window.close();
 	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 	{
-		if (keyPressed->scancode == sf::Keyboard::Scancode::Up || keyPressed->scancode == sf::Keyboard::Scancode::W)
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Up || keyPressed->scancode == sf::Keyboard::Scancode::W) //BUTTON UP
 		{
 			main_menu->button_up();
-			main_menu->check_buttons_activation_texture();
 		}
-		if (keyPressed->scancode == sf::Keyboard::Scancode::Down || keyPressed->scancode == sf::Keyboard::Scancode::S)
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Down || keyPressed->scancode == sf::Keyboard::Scancode::S) //BUTTON DOWN
 		{
 			main_menu->button_down();
-			main_menu->check_buttons_activation_texture();
 		}
-		if (keyPressed->scancode == sf::Keyboard::Scancode::Enter || keyPressed->scancode == sf::Keyboard::Scancode::Space)
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Left || keyPressed->scancode == sf::Keyboard::Scancode::A) //BUTTON LEFT
 		{
-			main_menu->button_enter(window);
+			main_menu->button_left();
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Right || keyPressed->scancode == sf::Keyboard::Scancode::D) //BUTTON RIGHT
+		{
+			main_menu->button_right();
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Enter || keyPressed->scancode == sf::Keyboard::Scancode::Space) //ENTER
+		{
+			main_menu->button_enter(window, status, current_level);
+			if (current_level == 1)
+			{
+				level = std::make_unique<LevelOne>(player);
+				player.set_hp_to_default(); player.set_special_to_default();
+			}
+		}
+	}
+}
+
+void Game::checkEvents_in_game_menu(const std::optional<sf::Event>& event, sf::RenderWindow& window)
+{
+
+	if (event->is<sf::Event::Closed>()) // closing the window by every possible way (but not from keyboard)
+		window.close();
+	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+	{
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Up || keyPressed->scancode == sf::Keyboard::Scancode::W) //BUTTON UP
+		{
+			main_menu->button_up();
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Down || keyPressed->scancode == sf::Keyboard::Scancode::S) //BUTTON DOWN
+		{
+			main_menu->button_down();
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Left || keyPressed->scancode == sf::Keyboard::Scancode::A) //BUTTON LEFT
+		{
+			main_menu->button_left();
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Right || keyPressed->scancode == sf::Keyboard::Scancode::D) //BUTTON RIGHT
+		{
+			main_menu->button_right();
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Enter || keyPressed->scancode == sf::Keyboard::Scancode::Space) //ENTER
+		{
+			main_menu->button_enter(window, status, current_level);
+			if (current_level == 0)
+			{
+				status = 2;
+				current_level = 0;
+				level = nullptr;
+			}
 		}
 	}
 }
 
 void Game::draw(sf::RenderWindow& window)
 {
+	
 	if (status == 2)
 	{
 		window.setView(window.getDefaultView());
@@ -108,6 +163,10 @@ void Game::draw(sf::RenderWindow& window)
 			window.setView(window.getDefaultView());
 			window.draw(hud);
 		}
+		if (status == 3)
+		{
+			window.draw(*main_menu);
+		}
 	}
 
 }
@@ -124,7 +183,8 @@ void Game::run()
 
 void Game::pause()
 {
-	status = 0;
+	status = 3;
+	std::cout << "Pausing...\n";
 }
 
 void Game::animations_update(sf::Time& dt)
@@ -165,7 +225,7 @@ void Game::position_update(sf::Time& dt)
 		//HUD
 		hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points(), player.get_pistol_mode(), dt);
 	}
-	else if (main_menu != nullptr)
+	else if (status == 2)
 	{
 		main_menu->update_menu_fighter_animation(dt);
 	}

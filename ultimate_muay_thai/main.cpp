@@ -34,8 +34,12 @@ int main()
 			{
 				game.checkEvents_main_menu(event, window);
 			}
+			else if (game.get_status() == 3) //in game menu
+			{
+				game.checkEvents_in_game_menu(event, window);
+			}
 		}
-		if (game.get_status() != 0)
+		if (game.get_status() == 1 || game.get_status() == 2)
 		{
 			game.position_update(dt); //checking positions every frame
 			game.animations_update(dt); //checking animations update every frame

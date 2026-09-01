@@ -8,6 +8,7 @@
 class Main_menu : public sf::Drawable, public sf::Transformable
 {
 protected:
+	//Main_menu
 	sf::Texture background_texture{"menu/main_menu_background.png"};
 	sf::Texture button_active_texture{"menu/button_active.png"};
 	sf::Texture button_unactive_texture{"menu/button_unactive.png"};
@@ -29,14 +30,86 @@ protected:
 
 	std::unique_ptr<Character> menu_fighter;
 
-	int active_button;
+	//Settings_menu
+	sf::Texture context_menu_background_texture{ "menu/context_menu_background.png" };
+	sf::Texture volume_button_active_texture{ "menu/volume_button_active.png" };
+	sf::Texture volume_button_unactive_texture{ "menu/volume_button_unactive.png" };
+
+	sf::Sprite settings_menu_background_sprite{ context_menu_background_texture };
+	sf::Sprite volume_button_1_sprite{ volume_button_active_texture }; //can't be an array because of SFML Sprite class
+	sf::Sprite volume_button_2_sprite{ volume_button_active_texture };
+	sf::Sprite volume_button_3_sprite{ volume_button_active_texture };
+	sf::Sprite volume_button_4_sprite{ volume_button_active_texture };
+	sf::Sprite volume_button_5_sprite{ volume_button_active_texture };
+	sf::Sprite volume_button_6_sprite{ volume_button_unactive_texture };
+	sf::Sprite volume_button_7_sprite{ volume_button_unactive_texture };
+	sf::Sprite volume_button_8_sprite{ volume_button_unactive_texture };
+	sf::Sprite volume_button_9_sprite{ volume_button_unactive_texture };
+	sf::Sprite volume_button_10_sprite{ volume_button_unactive_texture };
+
+	sf::Text settings_header_text{ pixeled_font };
+	sf::Text resolution_text{ pixeled_font };
+	sf::Text resolution_value_text{ pixeled_font };
+	sf::Text volume_text{ pixeled_font };
+	sf::Text apply_text{ pixeled_font };
+	sf::Text return_text{ pixeled_font }; //also for start_game menu
+
+	//START_GAME MENU
+	sf::Texture level_one_unactive_texture{ "menu/level_one_unactive.png" };
+	sf::Texture level_one_active_texture{ "menu/level_one_active.png" };
+
+	sf::Sprite start_game_menu_background_sprite{ context_menu_background_texture };
+	sf::Sprite level_one_sprite{ level_one_unactive_texture };
+
+	sf::Text start_game_header_text{ pixeled_font };
+
+	//IN_GAME_MENU
+	sf::RectangleShape shade;
+
+	sf::Texture in_game_menu_background_texture{ "menu/in_game_menu_background.png" };
+
+	sf::Sprite in_game_menu_background_sprite{ in_game_menu_background_texture };
+
+	short int current_volume_value;
+	short int volume_value;
+
+	short int active_button;
+
+	enum class Menu_status
+	{
+		None,
+		Main_menu,
+		Settings_menu,
+		Start_game_menu,
+		In_game_menu,
+		In_game_settings_menu
+	};
+
+	enum class Resolution
+	{
+		_1920x1080,
+		_2560x1440,
+		_1280x720
+	};
+
+	Menu_status menu_status;
+
+	Resolution resolution;
+	Resolution current_resolution;
 
 public:
 	Main_menu();
-	void button_enter(sf::RenderWindow& window);
+	void button_enter(sf::RenderWindow& window, int& status, short int& current_level);
 	void check_buttons_activation_texture();
 	void button_up();
 	void button_down();
+	void button_left();
+	void button_right();
+	void button_in_game_menu();
+	void main_menu_set_up();
+	void start_game_menu_set_up();
+	void settings_menu_set_up();
+	void in_game_menu_set_up();
 	void update_menu_fighter_animation(sf::Time& dt);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
