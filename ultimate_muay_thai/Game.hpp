@@ -20,12 +20,14 @@ class Game
 	sf::RectangleShape background_shape; //shape of the background of the level
 	Player player; //player character
 	std::unique_ptr<Main_menu> main_menu; //main menu of the game
+	short int current_level;
 
 public:
 	Game();
 	void checkEvents_paused(const std::optional<sf::Event>& event, sf::RenderWindow& window); //checking for events when the game is paused
 	void checkEvents_running(const std::optional<sf::Event>& event, sf::RenderWindow& window, sf::Time& dt); //checking for events when the game is running
 	void checkEvents_main_menu(const std::optional<sf::Event>& event, sf::RenderWindow& window); //checking for events when the game is in main menu
+	void checkEvents_in_game_menu(const std::optional<sf::Event>& event, sf::RenderWindow& window); //checking for events when in game menu is showed
 	int get_status() const; //returning the status of the game
 	void draw(sf::RenderWindow& window); //drawing the game
 	void run(); //running the game
