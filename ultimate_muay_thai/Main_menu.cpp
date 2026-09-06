@@ -163,16 +163,13 @@ void Main_menu::settings_menu_set_up()
 	return_text.setCharacterSize(30);
 	return_text.setPosition({742,770});
 
-	volume_button_1_sprite.setPosition({ 1060,580 });
-	volume_button_2_sprite.setPosition({ 1090,580 });
-	volume_button_3_sprite.setPosition({ 1120,580 });
-	volume_button_4_sprite.setPosition({ 1150,580 });
-	volume_button_5_sprite.setPosition({ 1180,580 });
-	volume_button_6_sprite.setPosition({ 1210,580 });
-	volume_button_7_sprite.setPosition({ 1240,580 });
-	volume_button_8_sprite.setPosition({ 1270,580 });
-	volume_button_9_sprite.setPosition({ 1300,580 });
-	volume_button_10_sprite.setPosition({ 1330,580 });
+	float start_pos = 1060;
+	for (auto& button : volume_buttons_sprites)
+	{
+		button.setPosition({ start_pos, 580 });
+		button.setTextureRect(sf::IntRect(sf::Vector2i(15,0),sf::Vector2i(15,48)));
+		start_pos += 30;
+	}
 	
 	resolution = current_resolution;
 	volume_value = current_volume_value;
@@ -271,153 +268,14 @@ void Main_menu::check_buttons_activation_texture()
 			apply_text.setFillColor(sf::Color::Black);
 			return_text.setFillColor(sf::Color::Black);
 		}
-		switch (volume_value)
+		for (int i = 0; i < 10; i++)
 		{
-		case 0:
-			volume_button_1_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_2_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_3_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_4_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_5_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_6_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_7_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_8_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 1:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_3_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_4_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_5_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_6_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_7_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_8_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 2:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_active_texture);
-			volume_button_3_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_4_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_5_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_6_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_7_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_8_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 3:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_active_texture);
-			volume_button_3_sprite.setTexture(volume_button_active_texture);
-			volume_button_4_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_5_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_6_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_7_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_8_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 4:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_active_texture);
-			volume_button_3_sprite.setTexture(volume_button_active_texture);
-			volume_button_4_sprite.setTexture(volume_button_active_texture);
-			volume_button_5_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_6_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_7_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_8_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 5:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_active_texture);
-			volume_button_3_sprite.setTexture(volume_button_active_texture);
-			volume_button_4_sprite.setTexture(volume_button_active_texture);
-			volume_button_5_sprite.setTexture(volume_button_active_texture);
-			volume_button_6_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_7_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_8_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 6:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_active_texture);
-			volume_button_3_sprite.setTexture(volume_button_active_texture);
-			volume_button_4_sprite.setTexture(volume_button_active_texture);
-			volume_button_5_sprite.setTexture(volume_button_active_texture);
-			volume_button_6_sprite.setTexture(volume_button_active_texture);
-			volume_button_7_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_8_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 7:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_active_texture);
-			volume_button_3_sprite.setTexture(volume_button_active_texture);
-			volume_button_4_sprite.setTexture(volume_button_active_texture);
-			volume_button_5_sprite.setTexture(volume_button_active_texture);
-			volume_button_6_sprite.setTexture(volume_button_active_texture);
-			volume_button_7_sprite.setTexture(volume_button_active_texture);
-			volume_button_8_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 8:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_active_texture);
-			volume_button_3_sprite.setTexture(volume_button_active_texture);
-			volume_button_4_sprite.setTexture(volume_button_active_texture);
-			volume_button_5_sprite.setTexture(volume_button_active_texture);
-			volume_button_6_sprite.setTexture(volume_button_active_texture);
-			volume_button_7_sprite.setTexture(volume_button_active_texture);
-			volume_button_8_sprite.setTexture(volume_button_active_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 9:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_active_texture);
-			volume_button_3_sprite.setTexture(volume_button_active_texture);
-			volume_button_4_sprite.setTexture(volume_button_active_texture);
-			volume_button_5_sprite.setTexture(volume_button_active_texture);
-			volume_button_6_sprite.setTexture(volume_button_active_texture);
-			volume_button_7_sprite.setTexture(volume_button_active_texture);
-			volume_button_8_sprite.setTexture(volume_button_active_texture);
-			volume_button_9_sprite.setTexture(volume_button_active_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
-		case 10:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_active_texture);
-			volume_button_3_sprite.setTexture(volume_button_active_texture);
-			volume_button_4_sprite.setTexture(volume_button_active_texture);
-			volume_button_5_sprite.setTexture(volume_button_active_texture);
-			volume_button_6_sprite.setTexture(volume_button_active_texture);
-			volume_button_7_sprite.setTexture(volume_button_active_texture);
-			volume_button_8_sprite.setTexture(volume_button_active_texture);
-			volume_button_9_sprite.setTexture(volume_button_active_texture);
-			volume_button_10_sprite.setTexture(volume_button_active_texture);
-			break;
-		default:
-			volume_button_1_sprite.setTexture(volume_button_active_texture);
-			volume_button_2_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_3_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_4_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_5_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_6_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_7_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_8_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_9_sprite.setTexture(volume_button_unactive_texture);
-			volume_button_10_sprite.setTexture(volume_button_unactive_texture);
-			break;
+			if (i < volume_value)
+				volume_buttons_sprites[i].setTextureRect(sf::IntRect(sf::Vector2i(15, 0), sf::Vector2i(15, 48)));
+			else
+				volume_buttons_sprites[i].setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(15, 48)));
 		}
+
 		switch (resolution)
 		{
 		case Resolution::_1920x1080:
@@ -602,6 +460,47 @@ void Main_menu::button_enter(sf::RenderWindow& window, int& status, short int& c
 		default:
 			status = 1;
 		}
+	}
+}
+
+void Main_menu::button_escape(sf::RenderWindow& window, int& status, short int& current_level)
+{
+	switch (menu_status)
+	{
+	case Menu_status::In_game_menu:
+	{
+		menu_status = Menu_status::None;
+		status = 1;
+		break;
+	}
+	case Menu_status::Settings_menu:
+	{
+		menu_status = Menu_status::Main_menu;
+		active_button = 2;
+		break;
+	}
+	case Menu_status::In_game_settings_menu:
+	{
+		menu_status = Menu_status::In_game_menu;
+		active_button = 2;
+		break;
+	}
+	case Menu_status::Start_game_menu:
+	{
+		menu_status = Menu_status::Main_menu;
+		active_button = 1;
+		break;
+	}
+	case Menu_status::Main_menu:
+	{
+		break;
+	}
+	default:
+	{
+		menu_status = Menu_status::None;
+		status = 1;
+		break;
+	}
 	}
 }
 
@@ -863,16 +762,8 @@ void Main_menu::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		target.draw(*menu_fighter, states);
 
 		target.draw(settings_menu_background_sprite, states);
-		target.draw(volume_button_1_sprite, states);
-		target.draw(volume_button_2_sprite, states);
-		target.draw(volume_button_3_sprite, states);
-		target.draw(volume_button_4_sprite, states);
-		target.draw(volume_button_5_sprite, states);
-		target.draw(volume_button_6_sprite, states);
-		target.draw(volume_button_7_sprite, states);
-		target.draw(volume_button_8_sprite, states);
-		target.draw(volume_button_9_sprite, states);
-		target.draw(volume_button_10_sprite, states);
+		for (auto& button : volume_buttons_sprites)
+			target.draw(button, states);
 
 		target.draw(settings_header_text, states);
 		target.draw(resolution_text, states);
@@ -917,17 +808,8 @@ void Main_menu::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	else if (menu_status == Menu_status::In_game_settings_menu)
 	{
 		target.draw(settings_menu_background_sprite, states);
-		target.draw(volume_button_1_sprite, states);
-		target.draw(volume_button_2_sprite, states);
-		target.draw(volume_button_3_sprite, states);
-		target.draw(volume_button_4_sprite, states);
-		target.draw(volume_button_5_sprite, states);
-		target.draw(volume_button_6_sprite, states);
-		target.draw(volume_button_7_sprite, states);
-		target.draw(volume_button_8_sprite, states);
-		target.draw(volume_button_9_sprite, states);
-		target.draw(volume_button_10_sprite, states);
-
+		for (auto& button : volume_buttons_sprites)
+			target.draw(button, states);
 		target.draw(settings_header_text, states);
 		target.draw(resolution_text, states);
 		target.draw(resolution_value_text, states);

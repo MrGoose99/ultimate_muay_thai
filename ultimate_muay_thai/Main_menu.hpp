@@ -32,20 +32,22 @@ protected:
 
 	//Settings_menu
 	sf::Texture context_menu_background_texture{ "menu/context_menu_background.png" };
-	sf::Texture volume_button_active_texture{ "menu/volume_button_active.png" };
-	sf::Texture volume_button_unactive_texture{ "menu/volume_button_unactive.png" };
+	sf::Texture volume_button_texture{ "menu/volume_button.png" };
 
 	sf::Sprite settings_menu_background_sprite{ context_menu_background_texture };
-	sf::Sprite volume_button_1_sprite{ volume_button_active_texture }; //can't be an array because of SFML Sprite class
-	sf::Sprite volume_button_2_sprite{ volume_button_active_texture };
-	sf::Sprite volume_button_3_sprite{ volume_button_active_texture };
-	sf::Sprite volume_button_4_sprite{ volume_button_active_texture };
-	sf::Sprite volume_button_5_sprite{ volume_button_active_texture };
-	sf::Sprite volume_button_6_sprite{ volume_button_unactive_texture };
-	sf::Sprite volume_button_7_sprite{ volume_button_unactive_texture };
-	sf::Sprite volume_button_8_sprite{ volume_button_unactive_texture };
-	sf::Sprite volume_button_9_sprite{ volume_button_unactive_texture };
-	sf::Sprite volume_button_10_sprite{ volume_button_unactive_texture };
+
+	sf::Sprite volume_buttons_sprites[10] = 
+	{ sf::Sprite { volume_button_texture},
+	sf::Sprite { volume_button_texture },
+	sf::Sprite{ volume_button_texture },
+	sf::Sprite { volume_button_texture },
+	sf::Sprite { volume_button_texture },
+	sf::Sprite { volume_button_texture },
+	sf::Sprite { volume_button_texture },
+	sf::Sprite { volume_button_texture },
+	sf::Sprite { volume_button_texture },
+	sf::Sprite { volume_button_texture }
+	};
 
 	sf::Text settings_header_text{ pixeled_font };
 	sf::Text resolution_text{ pixeled_font };
@@ -100,6 +102,7 @@ protected:
 public:
 	Main_menu();
 	void button_enter(sf::RenderWindow& window, int& status, short int& current_level);
+	void button_escape(sf::RenderWindow& window, int& status, short int& current_level);
 	void check_buttons_activation_texture();
 	void button_up();
 	void button_down();

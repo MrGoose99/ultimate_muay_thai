@@ -93,11 +93,11 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>Pliki źródłowe\Interactive</Filter>
     </ClCompile>
-    <ClCompile Include="Main_menu.cpp">
-      <Filter>Pliki źródłowe\Menu</Filter>
-    </ClCompile>
     <ClCompile Include="Menu_fighter.cpp">
       <Filter>Pliki źródłowe\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Main_menu.cpp">
+      <Filter>Pliki źródłowe\Main_menu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

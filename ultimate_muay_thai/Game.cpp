@@ -60,7 +60,7 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 		if (keyPressed->scancode == sf::Keyboard::Scancode::P)
 			pause();
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
-		{;
+		{
 			pause();
 			main_menu->button_in_game_menu();
 			return;
@@ -101,6 +101,10 @@ void Game::checkEvents_main_menu(const std::optional<sf::Event>& event, sf::Rend
 				level = std::make_unique<LevelOne>(player);
 				player.set_hp_to_default(); player.set_special_to_default();
 			}
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
+		{
+			main_menu->button_escape(window, status, current_level);
 		}
 	}
 }
