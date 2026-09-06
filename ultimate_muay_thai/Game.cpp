@@ -9,10 +9,11 @@
 #include <cmath>
 #include "HUD.hpp"
 #include "Interactive.hpp"
+#include "Game_status.hpp"
 
 Game::Game()
 {
-	status = 2;
+	status = Game_status::Main_menu;
 	main_menu = std::make_unique<Main_menu>();
 	current_level = 0;
 }
@@ -61,11 +62,11 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 			pause();
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
 		{
-			pause();
+			status = Game_status::In_game_menu;
 			main_menu->button_in_game_menu();
 			return;
 		}
-		player.check_player_events(event, dt);
+		if(!player.get_player_dead())player.check_player_events(event, dt);
 
 	}
 	
@@ -137,18 +138,21 @@ void Game::checkEvents_in_game_menu(const std::optional<sf::Event>& event, sf::R
 			main_menu->button_enter(window, status, current_level);
 			if (current_level == 0)
 			{
-				status = 2;
+				status = Game_status::Main_menu;
 				current_level = 0;
 				level = nullptr;
 			}
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
+		{
+			main_menu->button_escape(window, status, current_level);
 		}
 	}
 }
 
 void Game::draw(sf::RenderWindow& window)
 {
-	
-	if (status == 2)
+	if (status == Game_status::Main_menu)
 	{
 		window.setView(window.getDefaultView());
 		window.draw(*main_menu);
@@ -167,28 +171,28 @@ void Game::draw(sf::RenderWindow& window)
 			window.setView(window.getDefaultView());
 			window.draw(hud);
 		}
-		if (status == 3)
+		if (status == Game_status::In_game_menu)
 		{
+			std::cout << "DRAWING IN_GAME_MENU" << std::endl;
 			window.draw(*main_menu);
 		}
 	}
 
 }
 
-int Game::get_status() const
+Game_status Game::get_status() const
 {
 	return status;
 }
 
 void Game::run()
 {
-	status = 1;
+	status = Game_status::Running;
 }
 
 void Game::pause()
 {
-	status = 3;
-	std::cout << "Pausing...\n";
+	status = Game_status::Paused;
 }
 
 void Game::animations_update(sf::Time& dt)
@@ -211,13 +215,14 @@ void Game::position_update(sf::Time& dt)
 		player.apply_platform_velocity();
 		player.character_position_update();
 		player.check_player_collisions_with_interactive(level->get_tiles_in_row(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_character_grid());
-		player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_row(), level->get_tiles_in_level(), level->get_character_grid());
+		if(!player.get_player_dead())player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_row(), level->get_tiles_in_level(), level->get_character_grid());
 		player.check_velocity_y(dt, level->get_collision_array(), level->get_tiles_in_row(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_character_grid());
 		player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_tiles_in_row(), level->get_character_grid());
 		player.character_position_update();
 		if(player.get_pistol_mode()) player.pistol_mode_check(dt);
 		if(player.get_attacked()) player.check_attacked(dt);
 		else player.attack(dt);
+		player.check_hp();
 
 		//INTERACITVE
 		player.knocked_moving_latency(dt);
@@ -229,7 +234,7 @@ void Game::position_update(sf::Time& dt)
 		//HUD
 		hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points(), player.get_pistol_mode(), dt);
 	}
-	else if (status == 2)
+	else if (status == Game_status::Main_menu)
 	{
 		main_menu->update_menu_fighter_animation(dt);
 	}

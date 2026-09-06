@@ -3,6 +3,8 @@
 #include <iostream>
 #include "Interactive.hpp"
 #include "Punching_bag.hpp"
+#include "Game.hpp"
+#include "Game_status.hpp"
 
 Main_menu::Main_menu()
 {
@@ -345,7 +347,7 @@ void Main_menu::update_menu_fighter_animation(sf::Time& dt)
 	punching_bag.texture_update(dt);
 }
 
-void Main_menu::button_enter(sf::RenderWindow& window, int& status, short int& current_level)
+void Main_menu::button_enter(sf::RenderWindow& window, Game_status& status, short int& current_level)
 {
 	if (menu_status == Menu_status::Main_menu)
 	{
@@ -379,9 +381,9 @@ void Main_menu::button_enter(sf::RenderWindow& window, int& status, short int& c
 		case 2:
 			break;
 		case 3:
-			if (status == 2)
+			if (status == Game_status::Main_menu)
 				menu_status = Menu_status::Main_menu;
-			else if (status == 3)
+			else if (status == Game_status::In_game_menu)
 			{
 				menu_status = Menu_status::In_game_menu;
 				active_button = 2;
@@ -406,9 +408,9 @@ void Main_menu::button_enter(sf::RenderWindow& window, int& status, short int& c
 			current_resolution = resolution;
 			break;
 		case 4:
-			if (status == 2)
+			if (status == Game_status::Main_menu)
 				menu_status = Menu_status::Main_menu;
-			else if (status == 3)
+			else if (status == Game_status::In_game_menu)
 			{
 				menu_status = Menu_status::In_game_menu;
 				active_button = 2;
@@ -426,7 +428,7 @@ void Main_menu::button_enter(sf::RenderWindow& window, int& status, short int& c
 		{
 		case 1:
 			menu_status = Menu_status::None;
-			status = 1;
+			status = Game_status::Running;
 			current_level = 1;
 			break;
 		case 2:
@@ -444,7 +446,7 @@ void Main_menu::button_enter(sf::RenderWindow& window, int& status, short int& c
 		{
 		case 1:
 			menu_status = Menu_status::None;
-			status = 1;
+			status = Game_status::Running;
 			break;
 		case 2:
 			menu_status = Menu_status::In_game_settings_menu;
@@ -453,24 +455,24 @@ void Main_menu::button_enter(sf::RenderWindow& window, int& status, short int& c
 			break;
 		case 3:
 			menu_status = Menu_status::Main_menu;
-			status = 3;
+			status = Game_status::Main_menu;
 			current_level = 0;
 			main_menu_set_up();
 			break;
 		default:
-			status = 1;
+			status = Game_status::Running;
 		}
 	}
 }
 
-void Main_menu::button_escape(sf::RenderWindow& window, int& status, short int& current_level)
+void Main_menu::button_escape(sf::RenderWindow& window, Game_status& status, short int& current_level)
 {
 	switch (menu_status)
 	{
 	case Menu_status::In_game_menu:
 	{
 		menu_status = Menu_status::None;
-		status = 1;
+		status = Game_status::Running;
 		break;
 	}
 	case Menu_status::Settings_menu:
@@ -483,6 +485,7 @@ void Main_menu::button_escape(sf::RenderWindow& window, int& status, short int& 
 	{
 		menu_status = Menu_status::In_game_menu;
 		active_button = 2;
+		in_game_menu_set_up();
 		break;
 	}
 	case Menu_status::Start_game_menu:
@@ -498,7 +501,7 @@ void Main_menu::button_escape(sf::RenderWindow& window, int& status, short int& 
 	default:
 	{
 		menu_status = Menu_status::None;
-		status = 1;
+		status = Game_status::Running;
 		break;
 	}
 	}
@@ -718,6 +721,7 @@ void Main_menu::button_right()
 void Main_menu::button_in_game_menu()
 {
 	menu_status = Menu_status::In_game_menu;
+	active_button = 1;
 	in_game_menu_set_up();
 }
 

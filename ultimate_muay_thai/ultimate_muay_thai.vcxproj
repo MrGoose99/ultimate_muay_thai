@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Checkpoint.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Gem.cpp" />
@@ -178,8 +179,10 @@
   <ItemGroup>
     <ClInclude Include="Bullet.hpp" />
     <ClInclude Include="Character.hpp" />
+    <ClInclude Include="Checkpoint.hpp" />
     <ClInclude Include="Enemy.hpp" />
     <ClInclude Include="Game.hpp" />
+    <ClInclude Include="Game_status.hpp" />
     <ClInclude Include="Gem.hpp" />
     <ClInclude Include="HUD.hpp" />
     <ClInclude Include="Interactive.hpp" />

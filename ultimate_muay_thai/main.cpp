@@ -4,6 +4,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
+#include "Game_status.hpp"
 
 using namespace std;
 using namespace sf;
@@ -22,24 +23,24 @@ int main()
 		if (dt >= sf::seconds(0.05f)) dt = sf::seconds(0.f); //prevent to SUM dt when game freezes
 		while (const optional<Event> event = window.pollEvent()) //events checking (can't be a methode because of SFML limitations)
 		{
-			if (game.get_status() == 1) //running
+			if (game.get_status() == Game_status::Running) //running
 			{
 				game.checkEvents_running(event, window, dt);
 			}	
-			else if (game.get_status() == 0) //paused
+			else if (game.get_status() == Game_status::Paused) //paused
 			{
 				game.checkEvents_paused(event, window);
 			}
-			else if (game.get_status() == 2) //main_menu
+			else if (game.get_status() == Game_status::Main_menu) //main_menu
 			{
 				game.checkEvents_main_menu(event, window);
 			}
-			else if (game.get_status() == 3) //in game menu
+			else if (game.get_status() == Game_status::In_game_menu) //in game menu
 			{
 				game.checkEvents_in_game_menu(event, window);
 			}
 		}
-		if (game.get_status() == 1 || game.get_status() == 2)
+		if (game.get_status() == Game_status::Running || game.get_status() == Game_status::Main_menu)
 		{
 			game.position_update(dt); //checking positions every frame
 			game.animations_update(dt); //checking animations update every frame

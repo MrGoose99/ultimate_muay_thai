@@ -11,6 +11,7 @@ protected:
 	short int hp;
 	sf::IntRect default_texture_rect;
 	const short int MAX_HP = 5;
+
 public:
 	Punching_bag(int tile_nr, int tiles_in_row);
 	void set_hp_to_max();

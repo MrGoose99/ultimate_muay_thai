@@ -9,12 +9,29 @@
 		5,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,5,5,4,4,5
 		],
 
+	"starting_tile": 
+		{
+			"x": 1,
+			"y": 2
+		},
+
+
 	"objects": [
 
 		{
 			"type": "enemy",
 			"x": 14,
 			"y": 0
+		},
+		{
+			"type": "checkpoint",
+			"x": 7,
+			"y": 2
+		},
+		{
+			"type": "spiked_roller",
+			"x": 11,
+			"y": 2
 		}
 	]
 }

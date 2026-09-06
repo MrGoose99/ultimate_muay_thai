@@ -13,6 +13,7 @@ protected:
 	int tile_number = { 0 };
 	short int punched = { 0 };
 	sf::Time punched_time = { sf::seconds(0.f) };
+	std::string type = { "" };
 
 	//dynamic tile position
 	int spawning_tile;
@@ -28,6 +29,10 @@ protected:
 	std::vector<std::vector<Interactive*>> interactive_grid;
 
 	bool is_blocking = { 0 };
+
+	//for checkpoint
+	sf::FloatRect checkpoint_rect = { {0,0},{0,0} };
+	bool checkpoint_is_drawing;
 
 	//dying
 	sf::Time dying_time = { sf::seconds(0.f) };
@@ -58,6 +63,8 @@ public:
 	bool get_blocking_status();
 	const bool get_is_dying() const;
 	const bool& get_gem_spawned() const;
+	const sf::FloatRect get_checkpoint_rect() const;
+	const bool get_checkpoint_is_drawing() const;
 
 	//setters
 	void set_status(bool stat);
@@ -68,6 +75,7 @@ public:
 	void set_is_dying(const bool flag);
 	void set_by_bullet(const bool flag);
 	void set_gem_spawned(bool flag);
+	void set_checkpoint_is_drawing();
 
 
 };

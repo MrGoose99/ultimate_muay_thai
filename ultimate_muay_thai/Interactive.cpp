@@ -1,4 +1,5 @@
 #include "Interactive.hpp"
+#include <iostream>
 
 void Interactive::set_status(bool stat)
 {
@@ -113,4 +114,19 @@ const bool& Interactive::get_gem_spawned() const
 void Interactive::set_gem_spawned(bool flag)
 {
 	gem_spawned = flag;
+}
+
+sf::FloatRect const Interactive::get_checkpoint_rect() const
+{
+	return checkpoint_rect;
+}
+
+void Interactive::set_checkpoint_is_drawing()
+{
+	checkpoint_is_drawing = true;
+}
+
+const bool Interactive::get_checkpoint_is_drawing() const
+{
+	return checkpoint_is_drawing;
 }

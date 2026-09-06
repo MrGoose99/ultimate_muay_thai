@@ -99,6 +99,9 @@
     <ClCompile Include="Main_menu.cpp">
       <Filter>Pliki źródłowe\Main_menu</Filter>
     </ClCompile>
+    <ClCompile Include="Checkpoint.cpp">
+      <Filter>Pliki źródłowe\Interactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -157,6 +160,12 @@
     </ClInclude>
     <ClInclude Include="Menu_fighter.hpp">
       <Filter>Pliki nagłówkowe\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Game_status.hpp">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Checkpoint.hpp">
+      <Filter>Pliki nagłówkowe\Interactive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

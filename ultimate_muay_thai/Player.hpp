@@ -36,7 +36,11 @@ protected:
 	sf::Time pistol_mode_time = { sf::seconds(0.f) };
 	sf::Time shooting_latency = { sf::seconds(0.f) };
 
+	sf::Time player_dying_time = { sf::seconds(0.f) };
+	
+	sf::Vector2f respawn_position = { 0,0 };
 
+	bool player_dead = { false };
 
 public:
 	friend class Level;
@@ -59,6 +63,9 @@ public:
 	void knocked_moving_latency(sf::Time& dt); //change knocked boolean
 	void check_attacked(sf::Time& dt);
 	void pistol_mode_check(sf::Time& dt);
+	void check_hp();
+
+	void respawn();
 
 
 	//collisions//////////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +85,7 @@ public:
 	const bool& get_pistol_mode() const;
 	const bool& get_is_shooting() const;
 	const sf::Vector2u& get_player_size() const;
+	const bool& get_player_dead() const;
 
 
 	//setters//////////////////////////////////////////////////////////////////////////////////////
@@ -88,5 +96,7 @@ public:
 	void set_is_shooting(const bool flag);
 	void set_hp_to_default();
 	void set_special_to_default();
+	void set_player_dead();
+	void set_start_respawn(sf::Vector2f pos);
 
 };

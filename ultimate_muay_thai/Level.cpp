@@ -13,6 +13,8 @@
 #include "Player.hpp"
 #include "Enemy.hpp"
 #include "Bullet.hpp"
+#include "Checkpoint.hpp"
+#include "Player.hpp"
 
 
 using json = nlohmann::json;
@@ -53,7 +55,7 @@ const int Level::get_tiles_in_row()
 	return tiles_in_row;
 }
 
-void Level::load_level(const std::string& path)
+void Level::load_level(const std::string& path, Player& p1)
 {
 	tilemap_array.clear();
 	interactive_objects.clear();
@@ -79,6 +81,7 @@ void Level::load_level(const std::string& path)
 	character_grid.resize(tiles_in_level);
 	for (auto& tile : level_data["tiles"])
 		tilemap_array.push_back(tile);
+	p1.set_start_respawn({ (level_data["starting_tile"]["x"] % tiles_in_row * 128.f), (level_data["starting_tile"]["y"] / tiles_in_row * 128.f )});
 	for (auto& obj : level_data["objects"])
 	{
 		int tile_x = obj["x"].get<int>();
@@ -97,6 +100,8 @@ void Level::load_level(const std::string& path)
 			interactive_objects.push_back(std::make_unique<Spikes>(tile, obj["dir"].get<int>(), tiles_in_row));
 		else if (obj["type"] == "enemy")
 			interactive_objects.push_back(std::make_unique<Enemy>(tile, interactive_grid, character_grid, tiles_in_row));
+		else if (obj["type"] == "checkpoint")
+			interactive_objects.push_back(std::make_unique<Checkpoint>(tile_x, tile_y, tile, tiles_in_row));
 	}
 
 
@@ -183,8 +188,19 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 				i--;
 				continue;
 			}
-	
 		}
+		else if (interactive_objects[i]->get_object_type() == "checkpoint")
+		{
+			interactive_objects[i]->update(dt, 100.f, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid);
+			if (interactive_objects[i]->get_destroyed())
+			{
+				interactive_grid[tile].erase(std::remove(interactive_grid[tile].begin(), interactive_grid[tile].end(), interactive_objects[i].get()), interactive_grid[tile].end());
+				interactive_objects.erase(interactive_objects.begin() + i);
+				i--;
+				continue;
+			}
+		}
+
 		if (interactive_objects[i]->get_punched() > 0)
 			interactive_objects[i]->update_punched(dt);
 

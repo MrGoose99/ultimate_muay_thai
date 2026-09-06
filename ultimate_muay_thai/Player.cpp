@@ -18,7 +18,7 @@ Player::Player()
 	if (!character_texture.loadFromFile("textures/player_textures_new.png"))
 		std::cout << "Error loading player texture from file\n";
 	character_sprite.setTexture(character_texture);
-	character_position = { 100.f, 100.f };
+	character_position = {respawn_position};
 	character_sprite.setPosition(character_position);
 	character_sprite.setTextureRect(get_frame_position(0));
 	hitbox.size = { 64,128 - 128/8};
@@ -79,8 +79,16 @@ void Player::update_character_animation(sf::Time& dt)
 		character_sprite.setColor(color);
 	}
 
-
-	if(attacked)
+	if (player_dead)
+	{
+		if (animation_stage == 0)
+			character_sprite.setTextureRect(get_frame_position(26));
+		else if (animation_stage == 1)
+			character_sprite.setTextureRect(get_frame_position(27));
+		else if(animation_stage == 2) 
+			character_sprite.setTextureRect(get_frame_position(28));
+	}
+	else if(attacked)
 		character_sprite.setTextureRect(get_frame_position(26));
 	else if (is_shooting_animation)
 	{
@@ -188,6 +196,7 @@ void Player::update_character_animation(sf::Time& dt)
 void Player::update_frame_status(sf::Time& dt)
 {
 	time_animation += dt;
+	
 	//std::cout << "animation_stage = " << animation_stage << std::endl;
 	//std::cout << "moving_normal = " << moving_normal << std::endl << "moving_fight = " << moving_fight << std::endl;
 	//if(on_ground) std::cout << "on_ground = " << on_ground << std::endl;
@@ -205,7 +214,15 @@ void Player::update_frame_status(sf::Time& dt)
 	}
 	else transparenting_status = 0;
 
-	if (is_shooting_animation)
+	if (player_dead)
+	{
+		if (time_animation < sf::seconds(0.25))
+			animation_stage = 0;
+		else if (time_animation < sf::seconds(0.60))
+			animation_stage = 1;
+		else animation_stage = 2;
+	}
+	else if (is_shooting_animation)
 	{
 		if (moving_normal > 0) is_shooting_animation = 0;
 		else if (time_animation < sf::seconds(0.05f))
@@ -658,6 +675,13 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 						}
 
 					}
+					
+					if (checking_rect.findIntersection(interactive_grid[index][i]->get_checkpoint_rect()) && interactive_grid[index][i]->get_object_type() == "checkpoint" && interactive_grid[index][i]->get_status()) // CHECKPOINT
+					{
+						interactive_grid[index][i]->set_status(false);
+						interactive_grid[index][i]->set_checkpoint_is_drawing();
+						respawn_position = interactive_grid[index][i]->get_checkpoint_rect().position;
+					}
 
 
 
@@ -911,4 +935,37 @@ void Player::set_hp_to_default()
 void Player::set_special_to_default()
 {
 	special_points = 0;
+}
+
+void Player::set_player_dead()
+{
+	player_dead = 1;
+}
+
+const bool& Player::get_player_dead() const
+{
+	return player_dead;
+}
+
+void Player::check_hp()
+{
+	if (hp <= 0)
+		set_player_dead();
+	if (player_dead && time_animation >= sf::seconds(2.f))
+		respawn();
+}
+
+void Player::respawn()
+{
+	hp = max_hp;
+	special_points = 0;
+	player_dead = false;
+	character_position = respawn_position;
+	knocked = true;
+}
+
+void Player::set_start_respawn(sf::Vector2f pos)
+{
+	respawn_position = pos;
+	character_position = pos;
 }

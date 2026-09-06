@@ -24,7 +24,7 @@ LevelOne::LevelOne(Player& p1)
 	background_shape.setTexture(&background);
 	background_shape.setPosition({ 0,0 });
 
-	LevelOne::load_level("json/level_one.json"); //TESTING LEVEL
+	LevelOne::load_level("json/level_one.json", p1); //TESTING LEVEL
 
 	LevelOne::tilemap.set_tilemap("tilesets/tileset_lvl_1.png", { 128,128 }, tilemap_array.data(), width, height);
 
@@ -48,7 +48,6 @@ LevelOne::LevelOne(Player& p1)
 		else
 			interactive_grid[tile].push_back(int_obj.get());
 	}
-	p1.set_character_position(192.f, 192.f);
 	std::cout << "STARTING INT_GRID SIZE: " << interactive_grid.size() << std::endl;
 }
 
@@ -62,6 +61,7 @@ void LevelOne::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	for (int i = 0; i < interactive_objects.size(); i++) //drawing the interactive objects of the level
 	{
 		if (interactive_objects[i]->get_status())target.draw(*interactive_objects[i], states);
+		else if (interactive_objects[i]->get_object_type() == "checkpoint") target.draw(*interactive_objects[i], states);
 	}
 	for (int i = 0; i < character_grid.size(); i++) //ATTACKBOX FOR DEBUGGING
 		for (int j = 0; j < character_grid[i].size(); j++)

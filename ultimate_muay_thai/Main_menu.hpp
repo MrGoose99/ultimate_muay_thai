@@ -4,7 +4,9 @@
 #include "Punching_bag.hpp"
 #include "Menu_fighter.hpp"
 #include "Character.hpp"
+#include "Game_status.hpp"
 
+class Game;
 class Main_menu : public sf::Drawable, public sf::Transformable
 {
 protected:
@@ -101,8 +103,8 @@ protected:
 
 public:
 	Main_menu();
-	void button_enter(sf::RenderWindow& window, int& status, short int& current_level);
-	void button_escape(sf::RenderWindow& window, int& status, short int& current_level);
+	void button_enter(sf::RenderWindow& window, Game_status& status, short int& current_level);
+	void button_escape(sf::RenderWindow& window, Game_status& status, short int& current_level);
 	void check_buttons_activation_texture();
 	void button_up();
 	void button_down();

@@ -7,6 +7,7 @@
 #include "Interactive.hpp"
 #include "Player.hpp"
 #include "Character.hpp"
+#include "Checkpoint.hpp"
 
 
 class Level :public TileMap
@@ -29,12 +30,11 @@ protected:
 	short int width;
 	short int height;
 	int tiles_in_level;
-
 	
 public:
 	void set_lvl_background(); //setting the background of the level
 	TileMap& get_tilemap(); //getting the tilemap of the level
-	void load_level(const std::string& path);
+	void load_level(const std::string& path, Player& p1);
 	void set_camera_center(sf::Vector2f center_pos);
 	void update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbox, sf::Vector2f& player_pos, Player& p1, int tiles_in_row);
 
