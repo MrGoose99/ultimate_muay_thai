@@ -562,7 +562,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				else right_side = 1;
 			}
 		}
-		if (keyPressed->scancode == sf::Keyboard::Scancode::W && !is_falling && !is_fighting && !is_jumping)
+		if (keyPressed->scancode == sf::Keyboard::Scancode::W && on_ground)
 		{
 				is_jumping = 1;
 				on_ground = 0;

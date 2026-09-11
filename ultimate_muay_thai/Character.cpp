@@ -212,7 +212,7 @@ void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_arra
 		if (velocity_y > 0.f)
 		{
 			falling_time += dt;
-			if(falling_time >= sf::seconds(0.1f))
+			if(falling_time >= sf::seconds(0.1f))  //to prevent issues in animation changes
 				is_falling = true;
 		}
 
