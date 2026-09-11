@@ -5,6 +5,7 @@
 #include "Menu_fighter.hpp"
 #include "Character.hpp"
 #include "Game_status.hpp"
+#include <SFML/Audio.hpp>
 
 class Game;
 class Main_menu : public sf::Drawable, public sf::Transformable
@@ -74,11 +75,20 @@ protected:
 
 	sf::Sprite in_game_menu_background_sprite{ in_game_menu_background_texture };
 
+	//GAME_OVER
+	sf::Text game_over_text{ pixeled_font };
+	sf::Text game_over_shadow_text{ pixeled_font };
+
+	//YOU_WIN
+	sf::Text you_win_text{ pixeled_font };
+	sf::Text you_win_shadow_text{ pixeled_font };
+
 	short int current_volume_value;
 	short int volume_value;
 
 	short int active_button;
 
+public:
 	enum class Menu_status
 	{
 		None,
@@ -86,9 +96,11 @@ protected:
 		Settings_menu,
 		Start_game_menu,
 		In_game_menu,
-		In_game_settings_menu
+		In_game_settings_menu,
+		Game_over_menu,
+		You_win_menu
 	};
-
+protected:
 	enum class Resolution
 	{
 		_1920x1080,
@@ -100,6 +112,10 @@ protected:
 
 	Resolution resolution;
 	Resolution current_resolution;
+
+	//SOUND
+	sf::Music main_menu_music{ "sound/music/main_menu_music.wav" };
+	bool music_playing = { false };
 
 public:
 	Main_menu();
@@ -115,8 +131,16 @@ public:
 	void start_game_menu_set_up();
 	void settings_menu_set_up();
 	void in_game_menu_set_up();
+	void game_over_menu_set_up();
 	void update_menu_fighter_animation(sf::Time& dt);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+
+	const Menu_status& get_menu_status() const;
+
+	void set_menu_status(const Menu_status& status);
+	void you_win_menu_set_up();
+
+	void main_menu_sound();
 
 
 };

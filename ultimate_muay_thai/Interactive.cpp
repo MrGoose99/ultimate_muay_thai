@@ -116,7 +116,7 @@ void Interactive::set_gem_spawned(bool flag)
 	gem_spawned = flag;
 }
 
-sf::FloatRect const Interactive::get_checkpoint_rect() const
+const sf::FloatRect Interactive::get_checkpoint_rect() const
 {
 	return checkpoint_rect;
 }
@@ -130,3 +130,4 @@ const bool Interactive::get_checkpoint_is_drawing() const
 {
 	return checkpoint_is_drawing;
 }
+

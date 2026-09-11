@@ -1,6 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Game_status.hpp"
 
+class Main_menu;
 class Character;
 class Player;
 class Interactive: public sf::Drawable, public sf::Transformable
@@ -76,6 +78,5 @@ public:
 	void set_by_bullet(const bool flag);
 	void set_gem_spawned(bool flag);
 	void set_checkpoint_is_drawing();
-
 
 };

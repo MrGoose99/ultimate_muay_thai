@@ -66,7 +66,7 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 			main_menu->button_in_game_menu();
 			return;
 		}
-		if(!player.get_player_dead())player.check_player_events(event, dt);
+		if(!player.get_player_dead())player.check_player_events(event, dt, status);
 
 	}
 	
@@ -171,9 +171,8 @@ void Game::draw(sf::RenderWindow& window)
 			window.setView(window.getDefaultView());
 			window.draw(hud);
 		}
-		if (status == Game_status::In_game_menu)
+		if (status == Game_status::In_game_menu || status == Game_status::Game_over)
 		{
-			std::cout << "DRAWING IN_GAME_MENU" << std::endl;
 			window.draw(*main_menu);
 		}
 	}
@@ -200,8 +199,13 @@ void Game::animations_update(sf::Time& dt)
 	if (level != nullptr)
 	{
 		//PLAYER
-		player.update_frame_status(dt);
-		player.update_character_animation(dt);
+		if (status == Game_status::Running || status == Game_status::Game_over)
+		{
+			player.update_frame_status(dt);
+			player.update_character_animation(dt);
+		}
+		else if (status == Game_status::Cutscene)
+		player.update_cutscenes(dt, status, level->camera);
 	}
 }
 
@@ -210,32 +214,65 @@ void Game::position_update(sf::Time& dt)
 	if (level != nullptr)
 	{
 		//PLAYER
-		player.check_pressed();
-		level->update_interactive_objects(dt, player.get_character_hitbox(), player.get_player_position(), player, level->get_tiles_in_row());
-		player.apply_platform_velocity();
-		player.character_position_update();
-		player.check_player_collisions_with_interactive(level->get_tiles_in_row(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_character_grid());
-		if(!player.get_player_dead())player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_row(), level->get_tiles_in_level(), level->get_character_grid());
-		player.check_velocity_y(dt, level->get_collision_array(), level->get_tiles_in_row(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_character_grid());
-		player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_tiles_in_row(), level->get_character_grid());
-		player.character_position_update();
-		if(player.get_pistol_mode()) player.pistol_mode_check(dt);
-		if(player.get_attacked()) player.check_attacked(dt);
-		else player.attack(dt);
-		player.check_hp();
+		if (status == Game_status::Running || status == Game_status::Game_over)
+		{
 
-		//INTERACITVE
-		player.knocked_moving_latency(dt);
+			player.check_pressed();
+			level->update_interactive_objects(dt, player.get_character_hitbox(), player.get_player_position(), player, level->get_tiles_in_row());
+			player.apply_platform_velocity();
+			player.character_position_update();
+			player.check_player_collisions_with_interactive(level->get_tiles_in_row(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_character_grid());
+			if (!player.get_player_dead())player.character_moving(dt, 375.f, 100.f, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_row(), level->get_tiles_in_level(), level->get_character_grid());
+			player.check_velocity_y(dt, level->get_collision_array(), level->get_tiles_in_row(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_character_grid());
+			player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_tiles_in_row(), level->get_character_grid());
+			player.character_position_update();
+			if (player.get_pistol_mode() && !player.get_player_dead()) player.pistol_mode_check(dt);
+			if (player.get_attacked() && !player.get_player_dead()) player.check_attacked(dt);
+			else player.attack(dt);
+			player.check_hp(main_menu, status, current_level, level);
 
+			if (player.get_player_win())
+			{
+				you_win_time += dt;
+				status = Game_status::Game_over;
+				main_menu->you_win_menu_set_up();
+				main_menu->set_menu_status(Main_menu::Menu_status::You_win_menu);
+				if (you_win_time >= sf::seconds(3.5f))
+				{
+					level = nullptr;
+					current_level = 0;
+					main_menu->main_menu_set_up();
+					status = Game_status::Main_menu();
+					main_menu->set_menu_status(Main_menu::Menu_status::Main_menu);
+					player.set_hp_to_default(); player.set_lifes_to_default(); player.set_special_to_default();
+					player.set_player_win(false);
+					you_win_time = sf::seconds(0.f);
+				}
+			}
+			else you_win_time = sf::seconds(0.f);
+			
+		}
+		else if (status == Game_status::Cutscene)
+		{
+			player.character_position_update();
+		}
 
-		//LEVEL
-		level->set_camera_center(player.get_player_center());
-		
-		//HUD
-		hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points(), player.get_pistol_mode(), dt);
+		if (level != nullptr)
+		{
+			//INTERACITVE
+			player.knocked_moving_latency(dt);
+
+			//LEVEL
+			level->set_camera_center(player.get_player_center());
+
+			//HUD
+			hud.hud_update(player.get_hp(), player.get_max_hp(), player.get_special_points(), player.get_max_special_points(), player.get_pistol_mode(), dt, player.get_lifes());
+		}
+
 	}
 	else if (status == Game_status::Main_menu)
 	{
+		main_menu->main_menu_sound();
 		main_menu->update_menu_fighter_animation(dt);
 	}
 }

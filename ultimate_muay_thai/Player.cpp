@@ -6,6 +6,9 @@
 #include "Gem.hpp"	
 #include <vector>
 #include <cstdlib>
+#include <SFML/Audio.hpp>
+#include "Game_status.hpp"
+
 
 
 Player::Player()
@@ -40,6 +43,9 @@ Player::Player()
 	special_points = 0;
 	max_special_points = 20;
 
+	//LIFES
+	lifes = MAX_LIFES;
+
 	//knocked
 	knocked = 0;
 	time_knocked = sf::seconds(0.f);
@@ -52,6 +58,55 @@ Player::Player()
 
 	//platform
 	standing_on_platform = nullptr ;
+}
+
+void Player::update_cutscenes(sf::Time& dt, Game_status& status, sf::View& camera)
+{
+	time_animation += dt;
+	if (pistol_mode)
+	{
+		cutscene_in_progress = true;
+
+		if (camera.getSize().x > 480.f)
+			camera.setSize({ camera.getSize().x - 1440.f * dt.asSeconds(), camera.getSize().y });
+		if (camera.getSize().y > 270.f)
+			camera.setSize({ camera.getSize().x, camera.getSize().y - 810.f * dt.asSeconds() });
+
+		if (devils_head_difference >= DEVILS_HEAD_DIFFERENCE_MAX)
+			devils_head_up = false;
+		else if (devils_head_difference <= 0.f)
+			devils_head_up = true;
+		if(devils_head_up)
+		{
+			devils_head_difference += 10.f * dt.asSeconds();
+			devils_head_sprite.move({ 0.f, -10.f * dt.asSeconds() });
+		}
+		else
+		{
+			devils_head_difference -= 10.f * dt.asSeconds();
+			devils_head_sprite.move({ 0.f, 10.f * dt.asSeconds() });
+		}
+
+
+		if (pistol_mode_cutscene_music.getStatus() != sf::Music::Status::Playing)
+			pistol_mode_cutscene_music.play();
+		if (time_animation <= sf::seconds(5.259f))
+			pistol_mode_cutscene_music.setPan(0.8f);
+		else pistol_mode_cutscene_music.setPan(0.f);
+		if (time_animation <= sf::seconds(8.74f))
+			character_sprite.setTextureRect(get_frame_position(37));
+		else if (time_animation <= sf::seconds(10.833f))
+			character_sprite.setTextureRect(get_frame_position(38));
+		else character_sprite.setTextureRect(get_frame_position(39));
+		if (time_animation >= sf::seconds(11.609f))
+		{
+			status = Game_status::Running;
+			pistol_mode_time = sf::seconds(0.f);
+			camera.setSize({ 1920,1080 });
+			cutscene_in_progress = false;
+			pistol_mode_cutscene_music.stop();
+		}
+	}
 }
 
 void Player::update_character_animation(sf::Time& dt)
@@ -191,6 +246,8 @@ void Player::update_character_animation(sf::Time& dt)
 				else character_sprite.setTextureRect(get_frame_position(30));
 		}
 	}
+	if (on_ground)std::cout << "ON_GROUND" << std::endl;
+	else std::cout << "NOT ON GROUND\n";
 }
 
 void Player::update_frame_status(sf::Time& dt)
@@ -405,7 +462,7 @@ void Player::set_is_blocking(const bool status)
 	is_blocking = status;
 }
 
-void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time& dt)
+void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time& dt, Game_status& status)
 {
 	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 	{
@@ -514,7 +571,9 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 		if (keyPressed->scancode == sf::Keyboard::Scancode::U && special_points == max_special_points && !is_jumping && !is_falling && !pistol_mode)
 		{
 			pistol_mode = true;
-			pistol_mode_time = sf::seconds(0.f);
+			status = Game_status::Cutscene;
+			devils_head_sprite.setPosition({ character_position.x + 80.f, character_position.y + 10.f });
+			time_animation = sf::seconds(0.f);
 		}
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Numpad1)
 		{
@@ -539,7 +598,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 	}
 }
 
-void Player::check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid)
+void Player::check_player_collisions_with_interactive(const int tiles_in_row, const std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid)	
 {
 
 	standing_on_platform = nullptr;
@@ -682,6 +741,10 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 						interactive_grid[index][i]->set_checkpoint_is_drawing();
 						respawn_position = interactive_grid[index][i]->get_checkpoint_rect().position;
 					}
+					else if (checking_rect.findIntersection(interactive_grid[index][i]->get_checkpoint_rect()) && interactive_grid[index][i]->get_object_type() == "you_win")
+					{
+						player_win = true;
+					}
 
 
 
@@ -760,7 +823,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, st
 
 void Player::check_pressed()
 {
-	if (is_fighting && sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::B))
+	if (is_fighting && sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl))
 	{
 		is_blocking = 1;
 		moving_fight = 0;
@@ -947,18 +1010,35 @@ const bool& Player::get_player_dead() const
 	return player_dead;
 }
 
-void Player::check_hp()
+void Player::check_hp(std::unique_ptr<Main_menu>& main_menu, Game_status& game_status, short int& current_level, std::unique_ptr<Level>& level)
 {
 	if (hp <= 0)
 		set_player_dead();
-	if (player_dead && time_animation >= sf::seconds(2.f))
+	if (player_dead && time_animation >= sf::seconds(2.f) && lifes > 0)
 		respawn();
+	else if (player_dead && lifes == 0)
+	{
+		game_status = Game_status::Game_over;
+		main_menu->game_over_menu_set_up();
+		main_menu->set_menu_status(Main_menu::Menu_status::Game_over_menu);
+		if (time_animation >= sf::seconds(5.f))
+		{
+			main_menu->main_menu_set_up();
+			current_level = 0;
+			level = nullptr;
+			set_hp_to_default(); set_special_to_default(); set_lifes_to_default();
+			player_dead = false;
+			time_animation = sf::seconds(0.f);
+			main_menu->set_menu_status(Main_menu::Menu_status::Main_menu);
+			game_status = Game_status::Main_menu;
+		}		
+	}
 }
 
 void Player::respawn()
 {
 	hp = max_hp;
-	special_points = 0;
+	lifes--;
 	player_dead = false;
 	character_position = respawn_position;
 	knocked = true;
@@ -966,6 +1046,39 @@ void Player::respawn()
 
 void Player::set_start_respawn(sf::Vector2f pos)
 {
+	std::cout << "POS_X: " << pos.x << " POS_Y: " << pos.y << std::endl;
 	respawn_position = pos;
 	character_position = pos;
+	character_sprite.setPosition(pos);
+}
+
+const short int Player::get_lifes() const
+{
+	return lifes;
+}
+
+void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	states.transform *= getTransform();
+	states.texture = &character_texture;
+	target.draw(character_sprite, states);
+	if (pistol_mode && cutscene_in_progress)
+	{
+		target.draw(devils_head_sprite, states);
+	}
+}
+
+void Player::set_lifes_to_default()
+{
+	lifes = MAX_LIFES;
+}
+
+const bool& Player::get_player_win() const
+{
+	return player_win;
+}
+
+void Player::set_player_win(bool w)
+{
+	player_win = w;
 }

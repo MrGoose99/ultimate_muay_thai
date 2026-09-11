@@ -23,6 +23,7 @@ protected:
 	std::unique_ptr<Main_menu> main_menu; //main menu of the game
 	short int current_level;
 	Game_status status;
+	sf::Time you_win_time = { sf::seconds(0.f) };
 
 public:
 	Game();

@@ -66,6 +66,8 @@ Main_menu::Main_menu()
 
 	current_resolution = Resolution::_1920x1080;
 	resolution = Resolution::_1920x1080;
+
+	main_menu_music.setLooping(true);
 }
 
 void Main_menu::main_menu_set_up()
@@ -820,5 +822,68 @@ void Main_menu::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		target.draw(volume_text, states);
 		target.draw(apply_text, states);
 		target.draw(return_text, states);
+	}
+	else if (menu_status == Menu_status::Game_over_menu)
+	{
+		target.draw(game_over_shadow_text, states);
+		target.draw(game_over_text, states);
+	}
+	else if (menu_status == Menu_status::You_win_menu)
+	{
+		target.draw(you_win_shadow_text, states);
+		target.draw(you_win_text, states);
+	}
+}
+
+void Main_menu::game_over_menu_set_up()
+{
+	game_over_text.setFillColor(sf::Color::White);
+	game_over_text.setString("GAME OVER");
+	game_over_text.setCharacterSize(150);
+	game_over_text.setPosition({ 298,425 });
+
+	game_over_shadow_text.setFillColor(sf::Color::Black);
+	game_over_shadow_text.setString("GAME OVER");
+	game_over_shadow_text.setCharacterSize(150);
+	game_over_shadow_text.setPosition({ 303,430 });
+}
+
+void Main_menu::you_win_menu_set_up()
+{
+	you_win_text.setFillColor(sf::Color::White);
+	you_win_text.setString("YOU WIN");
+	you_win_text.setCharacterSize(150);
+	you_win_text.setPosition({ 493,425 });
+
+	you_win_shadow_text.setFillColor(sf::Color::Black);
+	you_win_shadow_text.setString("YOU WIN");
+	you_win_shadow_text.setCharacterSize(150);
+	you_win_shadow_text.setPosition({ 498,430 });
+}
+
+const Main_menu::Menu_status& Main_menu::get_menu_status() const
+{
+	return menu_status;
+}
+
+void Main_menu::set_menu_status(const Menu_status& status)
+{
+	menu_status = status;
+}
+
+void Main_menu::main_menu_sound()
+{
+	if (menu_status == Menu_status::Main_menu || menu_status == Menu_status::Settings_menu)
+	{
+		if (!music_playing)
+		{
+			main_menu_music.play();
+			music_playing = true;
+		}
+	}
+	else
+	{
+		main_menu_music.stop();
+		music_playing = false;
 	}
 }

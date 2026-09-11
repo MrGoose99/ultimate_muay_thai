@@ -5,6 +5,11 @@
 #include <array>
 #include <vector>
 #include "Interactive.hpp"
+#include "Game_status.hpp"
+#include <SFML/Audio.hpp>
+#include "Level.hpp"
+#include "Main_menu.hpp"
+#include "Game_status.hpp"
 
 class Player : public Character
 {
@@ -20,6 +25,9 @@ protected:
 	//SPECIAL
 	short int special_points;
 	short int max_special_points;
+
+	short int lifes;
+	const short int MAX_LIFES = { 3 };
 
 	bool starting_strike = { 0 };
 
@@ -41,6 +49,21 @@ protected:
 	sf::Vector2f respawn_position = { 0,0 };
 
 	bool player_dead = { false };
+	bool player_game_over = { false };
+
+	bool player_win = { false };
+
+	//PISTOL_MODE_CUTSCENE
+	sf::Texture devils_head_texture{ "textures/devils_head.png" };
+	sf::Sprite devils_head_sprite{ devils_head_texture };
+	float devils_head_difference = { 0.f };
+	float DEVILS_HEAD_DIFFERENCE_MAX = { 10.f };
+	bool devils_head_up = { true };
+	bool cutscene_in_progress = { false };
+
+	//AUDIO
+		//pistol_mode cutscene
+	sf::Music pistol_mode_cutscene_music{ "sound/effects/bulletproof.wav" };
 
 public:
 	friend class Level;
@@ -56,20 +79,25 @@ public:
 	void update_character_animation(sf::Time& dt) override; //setting the move animation of the character:
 										//0 - 1 - default pose normal, 2-3 - default pose fight, 4 - block, 5-7 - moving normal, 8-9 - moving fight
 	void update_frame_status(sf::Time& dt) override; //updating the status of the frame (for example, for a 2-frame animation, it will be 0 for the first frame and 1 for the second frame)
+
+	void update_cutscenes(sf::Time& dt, Game_status& status, sf::View& camera);
 	
 	//checking events//////////////////////////////////////////////////////////////////////////////////////
-	void check_player_events(const std::optional<sf::Event>& event, sf::Time& dt); //checking events related to the player
+	void check_player_events(const std::optional<sf::Event>& event, sf::Time& dt, Game_status& status); //checking events related to the player
 	void check_pressed(); //checking pressed buttons
 	void knocked_moving_latency(sf::Time& dt); //change knocked boolean
 	void check_attacked(sf::Time& dt);
 	void pistol_mode_check(sf::Time& dt);
-	void check_hp();
+	void check_hp(std::unique_ptr<Main_menu>& main_menu, Game_status& game_status, short int& current_level, std::unique_ptr<Level>& level);
 
 	void respawn();
 
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+
+
 
 	//collisions//////////////////////////////////////////////////////////////////////////////////////
-	void check_player_collisions_with_interactive(const int tiles_in_row, std::vector<std::vector<Interactive*>> interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid); //checking collisions of the player with interactive objects (for example, with a health pack)
+	void check_player_collisions_with_interactive(const int tiles_in_row, const std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid); //checking collisions of the player with interactive objects (for example, with a health pack)
 	
 	//getters//////////////////////////////////////////////////////////////////////////////////////
 	bool get_is_fighting() const; //returning the fighting status of the player
@@ -86,6 +114,8 @@ public:
 	const bool& get_is_shooting() const;
 	const sf::Vector2u& get_player_size() const;
 	const bool& get_player_dead() const;
+	const short int get_lifes() const;
+	const bool& get_player_win() const;
 
 
 	//setters//////////////////////////////////////////////////////////////////////////////////////
@@ -98,5 +128,7 @@ public:
 	void set_special_to_default();
 	void set_player_dead();
 	void set_start_respawn(sf::Vector2f pos);
+	void set_lifes_to_default();
+	void set_player_win(bool w);
 
 };

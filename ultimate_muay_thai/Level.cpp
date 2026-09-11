@@ -14,7 +14,7 @@
 #include "Enemy.hpp"
 #include "Bullet.hpp"
 #include "Checkpoint.hpp"
-#include "Player.hpp"
+#include "You_win.hpp"
 
 
 using json = nlohmann::json;
@@ -81,7 +81,9 @@ void Level::load_level(const std::string& path, Player& p1)
 	character_grid.resize(tiles_in_level);
 	for (auto& tile : level_data["tiles"])
 		tilemap_array.push_back(tile);
-	p1.set_start_respawn({ (level_data["starting_tile"]["x"] % tiles_in_row * 128.f), (level_data["starting_tile"]["y"] / tiles_in_row * 128.f )});
+	float starting_pos_x = level_data["starting_tile"]["x"].get<float>() * 128.f;
+	float starting_pos_y = level_data["starting_tile"]["y"].get<float>() * 128.f;
+	p1.set_start_respawn({ starting_pos_x, starting_pos_y });
 	for (auto& obj : level_data["objects"])
 	{
 		int tile_x = obj["x"].get<int>();
@@ -102,6 +104,8 @@ void Level::load_level(const std::string& path, Player& p1)
 			interactive_objects.push_back(std::make_unique<Enemy>(tile, interactive_grid, character_grid, tiles_in_row));
 		else if (obj["type"] == "checkpoint")
 			interactive_objects.push_back(std::make_unique<Checkpoint>(tile_x, tile_y, tile, tiles_in_row));
+		else if (obj["type"] == "you_win")
+			interactive_objects.push_back(std::make_unique<You_win>(tile_x, tile_y, tile, tiles_in_row));
 	}
 
 
@@ -200,7 +204,6 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 				continue;
 			}
 		}
-
 		if (interactive_objects[i]->get_punched() > 0)
 			interactive_objects[i]->update_punched(dt);
 

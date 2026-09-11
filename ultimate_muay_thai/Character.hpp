@@ -16,6 +16,7 @@ protected:
 	sf::Sprite character_sprite{ character_texture }; //sprite of the character
 	short unsigned int animation_stage = 0; //boolean variable to check the stage of the animation (for example, for a 2-frame animation, it will be 0 for the first frame and 1 for the second frame)
 	bool moving_flag = { 0 }; //boolean variable to make loop of moving animation
+
 	//stats//////////////////////////////////////////////////////////////////////////////////////
 	short int hp; //health points
 	short int max_hp; //maximum health points
@@ -30,6 +31,20 @@ protected:
 	const float max_fall_speed = { 800.f }; //maximum speed of falling
 	float velocity_y = { 0.f }; //up/down moving
 	float velocity_x = { 0.f }; //left/right moving for special occasion
+
+	//states
+	enum class Character_state
+	{
+		Standing,
+		Moving,
+		Jumping,
+		Falling,
+		Dying
+	};
+	Character_state character_state;
+
+	bool is_fighting; //boolean variable to check if the player is in fighting mode or not
+	bool right_side; //is character_sprite looking on the right?
 
 	//attack////////////////////////////////////////////////////////////////////////////////////////
 	sf::FloatRect attackbox; //attack zone
@@ -57,8 +72,8 @@ protected:
 	sf::Time attacked_time = { sf::seconds(0.f) };
 
 	//flags//////////////////////////////////////////////////////////////////////////////////////
-	bool right_side; //is character_sprite looking on the right?
-	bool is_fighting; //boolean variable to check if the player is in fighting mode or not
+
+
 	bool is_falling; //boolean variable to check if the player is falling
 	bool is_moving; //boolean variable to check if the player is moving
 	bool is_jumping = { 0 }; //checking is on air and going up

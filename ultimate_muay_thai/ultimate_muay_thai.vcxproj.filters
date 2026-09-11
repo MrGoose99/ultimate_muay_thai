@@ -102,6 +102,9 @@
     <ClCompile Include="Checkpoint.cpp">
       <Filter>Pliki źródłowe\Interactive</Filter>
     </ClCompile>
+    <ClCompile Include="You_win.cpp">
+      <Filter>Pliki źródłowe\Interactive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -167,6 +170,9 @@
     <ClInclude Include="Checkpoint.hpp">
       <Filter>Pliki nagłówkowe\Interactive</Filter>
     </ClInclude>
+    <ClInclude Include="You_win.hpp">
+      <Filter>Pliki nagłówkowe\Interactive</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\level_1_background.png">
@@ -183,6 +189,9 @@
       <Filter>Pliki zasobów</Filter>
     </None>
     <None Include="json\level_test.json">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+    <None Include="json\lvl_one.json">
       <Filter>Pliki zasobów</Filter>
     </None>
   </ItemGroup>

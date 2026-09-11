@@ -24,7 +24,7 @@ LevelOne::LevelOne(Player& p1)
 	background_shape.setTexture(&background);
 	background_shape.setPosition({ 0,0 });
 
-	LevelOne::load_level("json/level_one.json", p1); //TESTING LEVEL
+	LevelOne::load_level("json/lvl_one.json", p1); //TESTING LEVEL
 
 	LevelOne::tilemap.set_tilemap("tilesets/tileset_lvl_1.png", { 128,128 }, tilemap_array.data(), width, height);
 
@@ -48,7 +48,6 @@ LevelOne::LevelOne(Player& p1)
 		else
 			interactive_grid[tile].push_back(int_obj.get());
 	}
-	std::cout << "STARTING INT_GRID SIZE: " << interactive_grid.size() << std::endl;
 }
 
 void LevelOne::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -57,17 +56,27 @@ void LevelOne::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.setView(target.getDefaultView());
 	target.draw(background_shape, states); //drawing the background of the level
 	target.setView(camera);
-	target.draw(tilemap, states); //drawing the tilemap of the level
+	target.draw(tilemap, states);
+	//tilemap.draw_culled(target, states, camera);
+	// compute view bounds in world coordinates for culling
+	sf::FloatRect view_bounds;
+	view_bounds.position = { camera.getCenter().x - camera.getSize().x / 2.f,
+							 camera.getCenter().y - camera.getSize().y / 2.f };
+	view_bounds.size = { camera.getSize().x, camera.getSize().y };
+
 	for (int i = 0; i < interactive_objects.size(); i++) //drawing the interactive objects of the level
 	{
-		if (interactive_objects[i]->get_status())target.draw(*interactive_objects[i], states);
-		else if (interactive_objects[i]->get_object_type() == "checkpoint") target.draw(*interactive_objects[i], states);
+		const sf::FloatRect obj_bounds = interactive_objects[i]->get_object_sprite().getGlobalBounds();
+		if (interactive_objects[i]->get_status() && obj_bounds.findIntersection(view_bounds))
+			target.draw(*interactive_objects[i], states);
+		else if (interactive_objects[i]->get_object_type() == "checkpoint")
+			target.draw(*interactive_objects[i], states);
 	}
-	for (int i = 0; i < character_grid.size(); i++) //ATTACKBOX FOR DEBUGGING
+	/*for (int i = 0; i < character_grid.size(); i++) //ATTACKBOX FOR DEBUGGING
 		for (int j = 0; j < character_grid[i].size(); j++)
 		{
 			target.draw(character_grid[i][j]->get_debug_2_shape(), states);
-		}
+		}*/
 }
 
 

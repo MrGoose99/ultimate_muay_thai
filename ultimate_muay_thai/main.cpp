@@ -11,7 +11,7 @@ using namespace sf;
 
 int main()
 {
-	sf::RenderWindow window(VideoMode({ 1920, 1080 }), "Ultimate_Muay_Thai");
+	sf::RenderWindow window(VideoMode({ 1920, 1080 }), "Ultimate_Muay_Thai", State::Fullscreen);
 	Game game;
 	Clock clock;
 	clock.start();
@@ -23,6 +23,8 @@ int main()
 		if (dt >= sf::seconds(0.05f)) dt = sf::seconds(0.f); //prevent to SUM dt when game freezes
 		while (const optional<Event> event = window.pollEvent()) //events checking (can't be a methode because of SFML limitations)
 		{
+			if (event->is<sf::Event::Closed>()) // closing the window by every possible way (but not from keyboard)
+				window.close();
 			if (game.get_status() == Game_status::Running) //running
 			{
 				game.checkEvents_running(event, window, dt);
@@ -40,7 +42,7 @@ int main()
 				game.checkEvents_in_game_menu(event, window);
 			}
 		}
-		if (game.get_status() == Game_status::Running || game.get_status() == Game_status::Main_menu)
+		if (game.get_status() == Game_status::Running || game.get_status() == Game_status::Main_menu || game.get_status() == Game_status::Cutscene || game.get_status() == Game_status::Game_over)
 		{
 			game.position_update(dt); //checking positions every frame
 			game.animations_update(dt); //checking animations update every frame

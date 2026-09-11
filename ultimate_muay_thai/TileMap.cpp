@@ -1,9 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include "TileMap.hpp"
 #include <iostream>
+#include <cmath>
 
 bool TileMap::set_tilemap(const std::filesystem::path& tileset, sf::Vector2u tile_size, const int* tiles, unsigned int width, unsigned int height)
 {
+
+	m_height = height; //setting height of the tilemap
+	m_width = width; //setting width of the tilemap
+
 	if (!m_tileset.loadFromFile(tileset)) //error control and loading the tileset
 	{
 		std::cout << "Error loading tileset" << std::endl;
@@ -51,6 +56,49 @@ void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	states.texture = &m_tileset; //applying the tileset texture
 
 	target.draw(m_vertices, states); //drawing the tilemap
+}
+
+void TileMap::draw_culled(sf::RenderTarget& target, sf::RenderStates states, const sf::View& camera) const
+{
+	states.transform *= getTransform();
+	states.texture = &m_tileset;
+
+	constexpr float tile_size = 128.f;
+	constexpr float additional_tiles = 2 * 128.f;
+
+	sf::Vector2f center = camera.getCenter();
+	sf::Vector2f size = camera.getSize();
+
+	float left = center.x - size.x / 2.f;
+	float right = center.x + size.x / 2.f;
+	float top = center.y - size.y / 2.f;
+	float bottom = center.y + size.y / 2.f;
+
+	int start_x = static_cast<int>(left / tile_size) - additional_tiles;
+	int end_x = static_cast<int>(right / tile_size) + additional_tiles;
+
+	int start_y = static_cast<int>(top / tile_size) - additional_tiles;
+	int end_y = static_cast<int>(bottom / tile_size) + additional_tiles;
+
+	start_x = std::max(0, start_x);
+	start_y = std::max(0, start_y);
+	
+	end_x = std::min(static_cast<int>(m_width) - 1, end_x);
+	end_y = std::min(static_cast<int>(m_height) - 1, end_y);
+
+	for (int y = start_y; y <= end_y; ++y)
+	{
+		for (int x = start_x; x <= end_x; ++x)
+		{
+			int index = (x + y * m_width);
+
+			const sf::Vertex* triangles = &m_vertices[index * 6];
+
+			target.draw(triangles, 6, sf::PrimitiveType::Triangles, states);
+		}
+	}
+
+
 }
 
 

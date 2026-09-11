@@ -24,7 +24,6 @@ protected:
 	std::vector<std::unique_ptr<Interactive>> interactive_objects;
 	std::vector<std::vector<Interactive*>> interactive_grid;
 	std::vector<std::vector<Character*>> character_grid;
-	sf::View camera; //camera of the level
 
 	short int tiles_in_row; //number of tiles in a row of the level
 	short int width;
@@ -32,6 +31,8 @@ protected:
 	int tiles_in_level;
 	
 public:
+	sf::View camera; //camera of the level
+
 	void set_lvl_background(); //setting the background of the level
 	TileMap& get_tilemap(); //getting the tilemap of the level
 	void load_level(const std::string& path, Player& p1);

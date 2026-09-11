@@ -164,7 +164,7 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 					}
 					for(short int i = 0; i < character_grid[index].size(); i++)
 					{
-						if (character_grid[index][i] != this && !character_grid[index][i]->get_character_is_dying())
+						if (character_grid[index][i] != this && !character_grid[index][i]->get_character_is_dying()) //landing on enemy
 						{
 							sf::FloatRect tile = { character_grid[index][i]->get_character_hitbox()};
 							sf::FloatRect checking_tile = { {tile.position.x + tile.size.x / 4, tile.position.y}, {tile.size.x - tile.size.x / 4 * 2, tile.size.y} };
@@ -228,6 +228,7 @@ void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_arra
 	is_falling = (!on_ground && velocity_y > 0.f);
 	is_jumping = (!on_ground && velocity_y < 0.f);
 	//std::cout << "on_ground = " << on_ground << std::endl; //DEBUG
+	//std::cout << "velocity_y = " << velocity_y << std::endl; //DEBUG
 }
 
 void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, const int tiles_in_row, std::vector<std::vector<Character*>>& character_grid)
