@@ -246,8 +246,8 @@ void Player::update_character_animation(sf::Time& dt)
 				else character_sprite.setTextureRect(get_frame_position(30));
 		}
 	}
-	if (on_ground)std::cout << "ON_GROUND" << std::endl;
-	else std::cout << "NOT ON GROUND\n";
+	//if (on_ground)std::cout << "ON_GROUND" << std::endl;
+	//else std::cout << "NOT ON GROUND\n";
 }
 
 void Player::update_frame_status(sf::Time& dt)

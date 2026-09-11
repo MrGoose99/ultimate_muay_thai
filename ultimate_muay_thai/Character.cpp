@@ -201,7 +201,6 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 
 void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_array, const int tiles_in_row, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid)
 {
-	on_ground = 0;
 	velocity_y += gravity * dt.asSeconds();
 	float change = std::min(velocity_y, max_fall_speed);
 	sf::Vector2f next_pos = { character_position.x, character_position.y + (change * dt.asSeconds()) };
@@ -210,25 +209,27 @@ void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_arra
 	{
 
 		character_position = next_pos;
+		if (velocity_y > 0.f)
+		{
+			falling_time += dt;
+			if(falling_time >= sf::seconds(0.1f))
+				is_falling = true;
+		}
 
 	}
 	else
 	{
-		if (velocity_y > 0.f)
-		{
-			on_ground = 1;
-			velocity_y = 0.f;
-		}
-		else
-		{
-			velocity_y = 0.f;
+		falling_time = sf::seconds(0.f);
+		on_ground = 1;
+		velocity_y = 0.f;
+		is_falling = false;
 
-		}
 	}
-	is_falling = (!on_ground && velocity_y > 0.f);
+	//is_falling = (!on_ground && velocity_y > 0.f);
 	is_jumping = (!on_ground && velocity_y < 0.f);
-	//std::cout << "on_ground = " << on_ground << std::endl; //DEBUG
-	//std::cout << "velocity_y = " << velocity_y << std::endl; //DEBUG
+	std::cout << "on_ground = " << on_ground << std::endl; //DEBUG
+	std::cout << "is_falling = " << is_falling << std::endl;
+	std::cout << "velocity_y = " << velocity_y << std::endl; //DEBUG
 }
 
 void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, const int tiles_in_row, std::vector<std::vector<Character*>>& character_grid)

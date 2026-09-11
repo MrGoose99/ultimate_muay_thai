@@ -46,6 +46,8 @@ protected:
 	bool is_fighting; //boolean variable to check if the player is in fighting mode or not
 	bool right_side; //is character_sprite looking on the right?
 
+	sf::Time falling_time = { sf::seconds(0.f) };
+
 	//attack////////////////////////////////////////////////////////////////////////////////////////
 	sf::FloatRect attackbox; //attack zone
 		

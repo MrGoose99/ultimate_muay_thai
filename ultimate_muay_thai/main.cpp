@@ -11,7 +11,8 @@ using namespace sf;
 
 int main()
 {
-	sf::RenderWindow window(VideoMode({ 1920, 1080 }), "Ultimate_Muay_Thai", State::Fullscreen);
+	sf::RenderWindow window(VideoMode({ 1920, 1080 }), "Ultimate_Muay_Thai", State::Windowed);
+	window.setVerticalSyncEnabled(true);
 	Game game;
 	Clock clock;
 	clock.start();
