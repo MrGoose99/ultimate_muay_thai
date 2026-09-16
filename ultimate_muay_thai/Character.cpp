@@ -212,24 +212,33 @@ void Character::check_velocity_y(sf::Time& dt, std::vector<bool>& collision_arra
 		if (velocity_y > 0.f)
 		{
 			falling_time += dt;
-			if(falling_time >= sf::seconds(0.1f))  //to prevent issues in animation changes
+			if (falling_time >= sf::seconds(0.1f))  //to prevent issues in animation changes
+			{
 				is_falling = true;
+				on_ground = false;
+			}
 		}
 
 	}
 	else
 	{
-		falling_time = sf::seconds(0.f);
-		on_ground = 1;
-		velocity_y = 0.f;
-		is_falling = false;
-
+		if (velocity_y < 0.f)
+		{
+			falling_time = sf::seconds(0.f);
+			velocity_y = 0.f;
+		}
+		else
+		{
+			falling_time = sf::seconds(0.f);
+			velocity_y = 0.f;
+			on_ground = true;
+			is_falling = false;
+		}
 	}
-	//is_falling = (!on_ground && velocity_y > 0.f);
 	is_jumping = (!on_ground && velocity_y < 0.f);
-	std::cout << "on_ground = " << on_ground << std::endl; //DEBUG
-	std::cout << "is_falling = " << is_falling << std::endl;
-	std::cout << "velocity_y = " << velocity_y << std::endl; //DEBUG
+	//std::cout << "on_ground = " << on_ground << std::endl; //DEBUG
+	//std::cout << "is_falling = " << is_falling << std::endl;
+	//std::cout << "velocity_y = " << velocity_y << std::endl; //DEBUG
 }
 
 void Character::check_velocity_x(sf::Time& dt, std::vector<bool>& collision_array, std::vector<std::vector<Interactive*>>& interactive_grid, const int& tiles_in_level, const int tiles_in_row, std::vector<std::vector<Character*>>& character_grid)

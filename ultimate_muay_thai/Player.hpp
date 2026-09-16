@@ -62,8 +62,35 @@ protected:
 	bool cutscene_in_progress = { false };
 
 	//AUDIO
-		//pistol_mode cutscene
+		//player_sounds
 	sf::Music pistol_mode_cutscene_music{ "sound/effects/bulletproof.wav" };
+	sf::SoundBuffer gunshot_soundbuffer{ "sound/effects/gunshot.wav" };
+
+	sf::Sound gunshot_sound{ gunshot_soundbuffer };
+	sf::SoundBuffer jump_soundbuffer{ "sound/effects/jump.wav" };
+	sf::Sound jump_sound{ jump_soundbuffer };
+
+	sf::SoundBuffer running_soundbuffer{ "sound/effects/running.wav" };
+	sf::Sound running_sound{ running_soundbuffer };
+	sf::Time running_time = { sf::seconds(0.f) };
+	sf::SoundBuffer running_fight_soundbuffer{ "sound/effects/running_fight.wav" };
+	sf::Sound running_fight_sound{ running_fight_soundbuffer };
+
+	sf::SoundBuffer huff_punch_soundbuffer{ "sound/effects/punch_huff.wav" };
+	sf::Sound huff_punch_sound{ huff_punch_soundbuffer };
+	sf::SoundBuffer kick_shout_soundbuffer{ "sound/effects/kick_shout.wav" };
+	sf::Sound kick_shout_sound{ kick_shout_soundbuffer };
+
+	//interaction_sounds
+	sf::SoundBuffer punching_bag_attack_soundbuffer{ "sound/effects/punching_bag_attack.wav" };
+	sf::Sound punching_bag_attack_sound{ punching_bag_attack_soundbuffer };
+
+	sf::SoundBuffer enemy_hit_1_soundbuffer{ "sound/effects/enemy_hit_1.wav" };
+	sf::SoundBuffer enemy_hit_2_soundbuffer{ "sound/effects/enemy_hit_2.wav" };
+	sf::SoundBuffer enemy_hit_dead_soundbuffer{ "sound/effects/enemy_hit_dead.wav" };
+	sf::Sound enemy_hit_sounds[3] = { sf::Sound{ enemy_hit_1_soundbuffer }, sf::Sound{ enemy_hit_2_soundbuffer }, sf::Sound{ enemy_hit_dead_soundbuffer } };
+	sf::SoundBuffer block_hit_soundbuffer{ "sound/effects/block_hit.wav" };
+	sf::Sound block_hit_sound{ block_hit_soundbuffer };
 
 public:
 	friend class Level;
@@ -84,7 +111,7 @@ public:
 	
 	//checking events//////////////////////////////////////////////////////////////////////////////////////
 	void check_player_events(const std::optional<sf::Event>& event, sf::Time& dt, Game_status& status); //checking events related to the player
-	void check_pressed(); //checking pressed buttons
+	void check_pressed(sf::Time& dt); //checking pressed buttons
 	void knocked_moving_latency(sf::Time& dt); //change knocked boolean
 	void check_attacked(sf::Time& dt);
 	void pistol_mode_check(sf::Time& dt);

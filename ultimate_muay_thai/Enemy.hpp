@@ -27,6 +27,10 @@ protected:
 
 	float dying_transparenting = 255.f;
 
+	//sound
+	sf::SoundBuffer enemy_hit_dead_soundbuffer{ "sound/effects/enemy_hit_dead.wav" };
+	sf::Sound enemy_hit_dead_sound{ enemy_hit_dead_soundbuffer };
+
 
 	
 public:

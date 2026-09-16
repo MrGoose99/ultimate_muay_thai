@@ -68,13 +68,22 @@ void Bullet::update(sf::Time& dt, float moving_speed, std::vector<std::vector<In
 				for (short int i = 0; i < moving_objects[index].size(); i++)
 				{
 					if (moving_objects[index][i]->get_object_type() == "spiked_roller"
-						|| moving_objects[index][i]->get_object_type() == "spikes"
-						|| moving_objects[index][i]->get_object_type() == "punching_bag")
+						|| moving_objects[index][i]->get_object_type() == "spikes")
 					{
 						sf::FloatRect checking_tile = { moving_objects[index][i]->get_object_sprite().getGlobalBounds() };
 						if (checking_tile.findIntersection(checking_rect))
 						{
 							this->set_destroyed(1);
+							return;
+						}
+					}
+					else if (moving_objects[index][i]->get_object_type() == "punching_bag")
+					{
+						sf::FloatRect checking_tile = { moving_objects[index][i]->get_object_sprite().getGlobalBounds() };
+						if (checking_tile.findIntersection(checking_rect))
+						{
+							moving_objects[index][i]->set_destroyed(true);
+							this->set_destroyed(true);
 							return;
 						}
 					}
@@ -85,8 +94,10 @@ void Bullet::update(sf::Time& dt, float moving_speed, std::vector<std::vector<In
 						{
 							moving_objects[index][i]->decrease_hp(1000);
 							if (moving_objects[index][i]->get_hp() <= 0)
+							{
 								moving_objects[index][i]->set_by_bullet(true);
 								moving_objects[index][i]->set_is_dying(true);
+							}
 							this->set_destroyed(1);
 							return;
 						}

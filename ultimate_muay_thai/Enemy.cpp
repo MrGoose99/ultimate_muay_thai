@@ -137,7 +137,7 @@ void Enemy::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Int
 		patroling_time = sf::seconds(0.f);
 		blocking_time = sf::seconds(0.f);
 
-		if(time_to_attack < sf::seconds(0.3f)) time_to_attack += dt;
+		if(time_to_attack < sf::seconds(1.f)) time_to_attack += dt;
 		if (punched != 0) attacked_time += dt;
 		else attacked_time = sf::seconds(0.f);
 
@@ -146,14 +146,15 @@ void Enemy::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Int
 
 		if (punched != 0)
 		{
-			if (attacked_time >= sf::seconds(0.4f))
+			if (attacked_time >= sf::seconds(0.7f))
 			{
 				punched = 0;
-				time_to_attack = sf::seconds(0.1f);
+				time_to_attack = sf::seconds(0.f);
+				attack_time = sf::seconds(0.f);
 			}
 			else attackbox_active = 0;
 		}
-		else if (attack_time == sf::seconds(0.f) && time_to_attack >= sf::seconds(0.3f))
+		else if (attack_time == sf::seconds(0.f) && time_to_attack >= sf::seconds(1.f))
 		{
 			if (meele_attack_state == MeeleAttackState::None && kick_attack_state == KickAttackState::None)
 			{
@@ -448,13 +449,19 @@ void Enemy::update_character_animation(sf::Time& dt)
 		color.a = 127.f;
 		character_sprite.setColor(color);
 	}
-
 	if(is_dying)
 	{
 		if (dying_time < sf::seconds(0.25f))
 			if (!by_bullet)
 				character_sprite.setTextureRect(get_frame_position(26));
-			else character_sprite.setTextureRect(get_frame_position(36));
+			else
+			{
+				character_sprite.setTextureRect(get_frame_position(36));
+				if (enemy_hit_dead_sound.getStatus() != sf::SoundSource::Status::Playing)
+				{
+						enemy_hit_dead_sound.play(); //WARNING - SOUND IN THIS METHOD!!!!
+				}
+			}
 		else if (dying_time < sf::seconds(0.6f))
 			character_sprite.setTextureRect(get_frame_position(27));
 		else character_sprite.setTextureRect(get_frame_position(28));

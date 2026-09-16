@@ -19,7 +19,7 @@ Checkpoint::Checkpoint(float x, float y, int tile, int tiles_in_row)
 	checkpoint_text_shadow.setFillColor(sf::Color::Black);
 	checkpoint_text_shadow.setCharacterSize(20);
 	checkpoint_text_shadow.setOrigin({ checkpoint_text_shadow.getLocalBounds().size.x / 2, checkpoint_text_shadow.getLocalBounds().size.y / 2 });
-	checkpoint_text_shadow.setPosition({ checkpoint_text.getGlobalBounds().position.x + 5.f, checkpoint_text.getGlobalBounds().position.y + 5.f });
+	checkpoint_text_shadow.setPosition({ position_x + 69.f, position_y + 25.f });
 
 	checkpoint_is_drawing = false;
 }
@@ -30,13 +30,15 @@ void Checkpoint::update(sf::Time& dt, float moving_speed, std::vector<std::vecto
 	{
 		drawing_time += dt;
 		checkpoint_text.move({ 0.f, -moving_speed * dt.asSeconds() });
-		checkpoint_text_shadow.setPosition({ checkpoint_text.getPosition().x + 5.f, checkpoint_text.getPosition().y + 5.f });
-		if (drawing_time >= sf::seconds(0.7f) && checkpoint_text.getFillColor().a > 0.f && checkpoint_text_shadow.getFillColor().a > 0.f)
+		//checkpoint_text_shadow.setPosition({ checkpoint_text.getPosition().x + 5.f, checkpoint_text.getPosition().y + 5.f });
+		checkpoint_text_shadow.move({ 0.f, -moving_speed * dt.asSeconds() });
+		if (drawing_time >= sf::seconds(0.7f))
 		{
-			checkpoint_text.setFillColor(sf::Color(255, 255, 255, checkpoint_text.getFillColor().a - 255.f * dt.asSeconds()));
-			checkpoint_text_shadow.setFillColor(sf::Color(0, 0, 0, checkpoint_text.getFillColor().a - 255.f * dt.asSeconds()));
+			alpha -= 255.f * dt.asSeconds();
+			checkpoint_text.setFillColor(sf::Color(255, 255, 255, alpha));
+			checkpoint_text_shadow.setFillColor(sf::Color(0, 0, 0, alpha));
 		}
-		if (checkpoint_text.getFillColor().a <= 0.f && checkpoint_text_shadow.getFillColor().a <= 0.f)
+		if (alpha <= 0)
 		{
 			checkpoint_is_drawing = false;
 			is_destroyed = true;

@@ -217,7 +217,7 @@ void Game::position_update(sf::Time& dt)
 		if (status == Game_status::Running || status == Game_status::Game_over)
 		{
 
-			player.check_pressed();
+			player.check_pressed(dt);
 			level->update_interactive_objects(dt, player.get_character_hitbox(), player.get_player_position(), player, level->get_tiles_in_row());
 			player.apply_platform_velocity();
 			player.character_position_update();

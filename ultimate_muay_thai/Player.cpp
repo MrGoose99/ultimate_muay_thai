@@ -58,6 +58,10 @@ Player::Player()
 
 	//platform
 	standing_on_platform = nullptr ;
+
+	//sounds
+	running_sound.setLooping(true);
+	running_fight_sound.setLooping(true);
 }
 
 void Player::update_cutscenes(sf::Time& dt, Game_status& status, sf::View& camera)
@@ -471,6 +475,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 			if (is_fighting)
 				is_fighting = false;
 			else is_fighting = true;
+			running_fight_sound.stop(); running_sound.stop();
 		}
 
 		if (pistol_mode)
@@ -484,6 +489,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				animation_stage = 0;
 				time_animation = sf::seconds(0.f);
 				shooting_latency += dt;
+				gunshot_sound.play();
 			}
 		}
 		if (is_fighting)
@@ -499,6 +505,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				{
 					meele_attack_state = MeeleAttackState::Attack1;
 					attack_time = sf::seconds(0.f);
+					huff_punch_sound.play();
 					break;
 				}
 				case MeeleAttackState::Attack1:
@@ -507,6 +514,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 					{
 						meele_attack_state = MeeleAttackState::Attack2;
 						attack_time = sf::seconds(0.f);
+						huff_punch_sound.play();
 					}
 					break;
 				}
@@ -516,6 +524,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 					{
 						meele_attack_state = MeeleAttackState::Attack3;
 						attack_time = sf::seconds(0.f);
+						huff_punch_sound.play();
 					}
 					break;
 				}
@@ -525,6 +534,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 					{
 						meele_attack_state = MeeleAttackState::Attack1;
 						attack_time = sf::seconds(0.f);
+						huff_punch_sound.play();
 					}
 					break;
 				}
@@ -543,16 +553,19 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 					{
 						kick_attack_state = KickAttackState::AttackMiddle;
 						attack_time = sf::seconds(0.f);
+						kick_shout_sound.play();
 					}
 					else if (attack_dir == 1)
 					{
 						kick_attack_state = KickAttackState::AttackHigh;
 						attack_time = sf::seconds(0.f);
+						kick_shout_sound.play();
 					}
 					else if (attack_dir == 2)
 					{
 						kick_attack_state = KickAttackState::AttackLow;
 						attack_time = sf::seconds(0.f);
+						kick_shout_sound.play();
 					}
 				}
 			}
@@ -562,11 +575,12 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				else right_side = 1;
 			}
 		}
-		if (keyPressed->scancode == sf::Keyboard::Scancode::W && on_ground)
+		if (keyPressed->scancode == sf::Keyboard::Scancode::W && on_ground && !is_fighting)
 		{
 				is_jumping = 1;
 				on_ground = 0;
 				velocity_y = -1000.f;
+				jump_sound.play();
 		}
 		if (keyPressed->scancode == sf::Keyboard::Scancode::U && special_points == max_special_points && !is_jumping && !is_falling && !pistol_mode)
 		{
@@ -780,38 +794,65 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 					}
 
 
-					if (attackbox.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && attackbox_active && interactive_grid[index][i]->get_punched() == 0 && interactive_grid[index][i]->get_status() && !interactive_grid[index][i]->get_blocking_status())
+					if (attackbox.findIntersection(interactive_grid[index][i]->get_object_sprite().getGlobalBounds()) && attackbox_active && interactive_grid[index][i]->get_punched() == 0 && interactive_grid[index][i]->get_status())
 					{
+
 						if (interactive_grid[index][i]->get_object_type() == "punching_bag") //PUNCHING BAG
 						{
 							//std::cout << interactive_objects[index]->get_hp() << std::endl;
 							interactive_grid[index][i]->decrease_hp(get_damage());
+							punching_bag_attack_sound.play();
 							if (right_side)
 								interactive_grid[index][i]->set_punched(1);
 							else if (!right_side)
 								interactive_grid[index][i]->set_punched(2);
-							//std::cout << right_side << std::endl;
 							if (interactive_grid[index][i]->get_hp() <= 0)
 								interactive_grid[index][i]->set_destroyed(true);
 						}
 						else if (interactive_grid[index][i]->get_object_type() == "enemy") //ENEMY
 						{
+							if (!interactive_grid[index][i]->get_blocking_status())
+							{
 								interactive_grid[index][i]->decrease_hp(get_damage());
 								attackbox_active = false;
 								interactive_grid[index][i]->set_punched(1);
 								if (interactive_grid[index][i]->get_hp() <= 0)
+								{
+									if (!interactive_grid[index][i]->get_is_dying())
+									{
+										enemy_hit_sounds[2].play();
+									}
 									interactive_grid[index][i]->set_is_dying(true);
+
+								}
+								if (!interactive_grid[index][i]->get_is_dying())
+									enemy_hit_sounds[rand() % 2].play();
+							}
+							else
+							{
+								attackbox_active = false;
+								block_hit_sound.play();
+							}
 						}
+
+							
 					}
 
 				}
 				for (int i = 0; i < character_grid[index].size(); i++)
 				{
-					if (checking_rect.findIntersection(character_grid[index][i]->get_character_attackbox()) && character_grid[index][i]->get_character_attackbox_status() && !attacked && !is_blocking && character_grid[index][i] != this)
+					if (checking_rect.findIntersection(character_grid[index][i]->get_character_attackbox()) && character_grid[index][i]->get_character_attackbox_status() && !attacked && character_grid[index][i] != this)
+						{
+						if (!is_blocking)
 						{
 							hp -= character_grid[index][i]->get_damage();
 							attacked = true;
 							attackbox_active = false;
+						}
+						else
+						{
+							block_hit_sound.play();
+						}
 						}
 				}
 				
@@ -821,7 +862,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 	//else std::cout << "NOT platform\n";
 	}	
 
-void Player::check_pressed()
+void Player::check_pressed(sf::Time& dt)
 {
 	if (is_fighting && sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl))
 	{
@@ -836,29 +877,73 @@ void Player::check_pressed()
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D) && !moving_block)
 		{
+			running_time += dt;
 			moving_normal = 2;
 			moving_fight = 0;
+			if (running_sound.getStatus() != sf::SoundSource::Status::Playing && running_time >= sf::seconds(0.02f))
+				running_sound.play();
+			else if (!on_ground || is_jumping || is_falling)
+			{
+				running_sound.stop();
+				running_time = sf::seconds(0.f);
+			}
+			
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A) && !moving_block)
 		{
+			running_time += dt;
 			moving_normal = 1;
 			moving_fight = 0;
+			if (running_sound.getStatus() != sf::SoundSource::Status::Playing && running_time >= sf::seconds(0.02f))
+				running_sound.play();
+			else if (!on_ground || is_jumping || is_falling)
+			{
+				running_sound.stop();
+				running_time = sf::seconds(0.f);
+			}
 		}
-		else moving_normal = 0;
+		else
+		{
+			moving_normal = 0;
+			running_sound.pause();
+			running_time = sf::seconds(0.f);
+		}
 	}
 	else if(is_fighting && !is_falling && !is_jumping && !is_blocking)
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D))
 		{
+			running_time += dt;
 			moving_fight = 2;
 			moving_normal = 0;
+			if (running_fight_sound.getStatus() != sf::SoundSource::Status::Playing && running_time >= sf::seconds(0.02f))
+				running_fight_sound.play();
+			else if (is_falling || is_jumping || !on_ground)
+			{
+				running_fight_sound.stop();
+				running_time = sf::seconds(0.f);
+			}
+			
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A))
 		{
+			running_time += dt;
 			moving_fight = 1;
 			moving_normal = 0;
+			if (running_fight_sound.getStatus() != sf::SoundSource::Status::Playing && running_time >= sf::seconds(0.02f))
+				running_fight_sound.play();
+			else if (is_falling || is_jumping || !on_ground)
+			{
+				running_fight_sound.stop();
+				running_time = sf::seconds(0.f);
+			}
 		}
-		else moving_fight = 0;
+		else
+		{
+			moving_fight = 0;
+			running_fight_sound.pause();
+			running_time = sf::seconds(0.f);
+		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W))
 		{

@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Interactive.hpp"
 
 class Bullet : public Interactive
@@ -13,6 +14,7 @@ protected:
 	bool direction = { 0 }; //0 - left, 1 - right
 	int starting_tile;
 	sf::Vector2f starting_position;
+
 
 public:
 	Bullet(int starting, bool dir, int tiles_in_row, sf::Vector2f& start_pos);

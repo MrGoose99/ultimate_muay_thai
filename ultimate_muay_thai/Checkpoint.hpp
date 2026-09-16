@@ -12,6 +12,7 @@ protected:
 	sf::Text checkpoint_text{ font };
 	sf::Text checkpoint_text_shadow{ font };
 	sf::Time drawing_time = { sf::seconds(0.f) };
+	int alpha = { 255 };
 public:
 	Checkpoint(float x, float y, int tile, int tiles_in_row);
 	void update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid) override;

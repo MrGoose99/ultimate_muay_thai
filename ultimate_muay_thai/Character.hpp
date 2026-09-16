@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <array>
 #include "Interactive.hpp"
 #include "Punching_bag.hpp"
@@ -101,6 +102,9 @@ protected:
 
 	//dying
 	bool character_is_dying = { false };
+
+
+
 
 public:
 	
