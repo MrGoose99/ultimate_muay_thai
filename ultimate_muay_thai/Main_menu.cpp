@@ -408,6 +408,7 @@ void Main_menu::button_enter(sf::RenderWindow& window, Game_status& status, shor
 			}
 			current_volume_value = volume_value;
 			current_resolution = resolution;
+			sf::Listener::setGlobalVolume(current_volume_value * 10);
 			break;
 		case 4:
 			if (status == Game_status::Main_menu)
@@ -430,6 +431,7 @@ void Main_menu::button_enter(sf::RenderWindow& window, Game_status& status, shor
 		{
 		case 1:
 			menu_status = Menu_status::None;
+			main_menu_music.stop();
 			status = Game_status::Running;
 			current_level = 1;
 			break;
@@ -670,6 +672,7 @@ void Main_menu::button_left()
 			break;
 		case 2:
 			if (volume_value > 0) volume_value--;
+			sf::Listener::setGlobalVolume(volume_value * 10);
 			break;
 		case 3:
 			active_button = 4;
@@ -707,6 +710,7 @@ void Main_menu::button_right()
 			break;
 		case 2:
 			if (volume_value < 10) volume_value++;
+			sf::Listener::setGlobalVolume(volume_value * 10);
 			break;
 		case 3:
 			break;
@@ -873,17 +877,10 @@ void Main_menu::set_menu_status(const Menu_status& status)
 
 void Main_menu::main_menu_sound()
 {
-	if (menu_status == Menu_status::Main_menu || menu_status == Menu_status::Settings_menu)
+	if (menu_status == Menu_status::Main_menu || menu_status == Menu_status::Settings_menu || menu_status == Menu_status::Start_game_menu)
 	{
-		if (!music_playing)
-		{
+		if (main_menu_music.getStatus() != sf::SoundSource::Status::Playing)
 			main_menu_music.play();
-			music_playing = true;
-		}
-	}
-	else
-	{
-		main_menu_music.stop();
-		music_playing = false;
-	}
+	}	
 }
+

@@ -115,6 +115,17 @@ void Player::update_cutscenes(sf::Time& dt, Game_status& status, sf::View& camer
 
 void Player::update_character_animation(sf::Time& dt)
 {
+
+	if (moving_normal == 0 && moving_fight == 0)
+	{
+		running_sound.stop();
+		running_fight_sound.stop();
+	}
+	if (is_falling)
+	{
+		running_fight_sound.stop();
+	}
+	
 	if (right_side)
 	{
 		character_sprite.setScale({ 1.0f, 1.0f });
@@ -468,14 +479,16 @@ void Player::set_is_blocking(const bool status)
 
 void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time& dt, Game_status& status)
 {
+
 	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 	{
-		if (keyPressed->scancode == sf::Keyboard::Scancode::Space && !is_jumping && !is_falling && !pistol_mode)
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Space && !pistol_mode)
 		{
 			if (is_fighting)
 				is_fighting = false;
 			else is_fighting = true;
 			running_fight_sound.stop(); running_sound.stop();
+			animation_stage = 0;
 		}
 
 		if (pistol_mode)
@@ -503,9 +516,12 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				{
 				case MeeleAttackState::None:
 				{
-					meele_attack_state = MeeleAttackState::Attack1;
-					attack_time = sf::seconds(0.f);
-					huff_punch_sound.play();
+					if (attack_latency >= sf::seconds(0.2f))
+					{
+						meele_attack_state = MeeleAttackState::Attack1;
+						attack_time = sf::seconds(0.f);
+						huff_punch_sound.play();
+					}
 					break;
 				}
 				case MeeleAttackState::Attack1:
@@ -532,9 +548,9 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				{
 					if (attack_time >= sf::seconds(0.3f))
 					{
-						meele_attack_state = MeeleAttackState::Attack1;
+						meele_attack_state = MeeleAttackState::None;
+						attack_latency = sf::seconds(0.f);
 						attack_time = sf::seconds(0.f);
-						huff_punch_sound.play();
 					}
 					break;
 				}
@@ -547,7 +563,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				moving_fight = 0;
 				meele_attack_state = MeeleAttackState::None;
 				starting_strike = 1;
-				if (kick_attack_state == KickAttackState::None)
+				if (kick_attack_state == KickAttackState::None && attack_latency >= sf::seconds(0.6f))
 				{
 					if (attack_dir == 0)
 					{
@@ -567,6 +583,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 						attack_time = sf::seconds(0.f);
 						kick_shout_sound.play();
 					}
+					attack_latency = sf::seconds(0.f);
 				}
 			}
 			if (keyPressed->scancode == sf::Keyboard::Scancode::Y)
@@ -622,7 +639,6 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 	int top = checking_rect.position.y / 128.f;
 	int bottom = (checking_rect.position.y + hitbox.size.y) / 128.f;
 
-
 	for(int y = top; y <= bottom + 1; y++) //more tiles are checking
 		for (int x = left; x <= right; x++)
 		{
@@ -640,11 +656,13 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 						if (interactive_grid[index][i]->get_object_type() == "hp_gem" && hp < max_hp) //HP GEM
 						{
 							hp++;
+							gem_sound.play();
 							interactive_grid[index][i]->set_destroyed(1);
 						}
 						else if (interactive_grid[index][i]->get_object_type() == "special_gem" && special_points < max_special_points) //SPECIAL GEM
 						{
 							special_points++;
+							gem_sound.play();
 							interactive_grid[index][i]->set_destroyed(1);
 						}
 						else if (interactive_grid[index][i]->get_object_type() == "spiked_roller" ) //SPIKED ROLLER
@@ -678,6 +696,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 								hp--;
 								knocked = 1;
 							}
+							spike_hurt_sound.play();
 							
 						}
 						else if (interactive_grid[index][i]->get_object_type() == "spikes") //SPIKES
@@ -744,19 +763,22 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 								knocked = 1;
 								hp--;
 							}
-							
+							spike_hurt_sound.play();
 						}
 
 					}
 					
 					if (checking_rect.findIntersection(interactive_grid[index][i]->get_checkpoint_rect()) && interactive_grid[index][i]->get_object_type() == "checkpoint" && interactive_grid[index][i]->get_status()) // CHECKPOINT
 					{
+						if (interactive_grid[index][i]->get_status()) checkpoint_sound.play();
 						interactive_grid[index][i]->set_status(false);
 						interactive_grid[index][i]->set_checkpoint_is_drawing();
 						respawn_position = interactive_grid[index][i]->get_checkpoint_rect().position;
+						
 					}
 					else if (checking_rect.findIntersection(interactive_grid[index][i]->get_checkpoint_rect()) && interactive_grid[index][i]->get_object_type() == "you_win")
 					{
+						if(!player_win) win_sound.play();
 						player_win = true;
 					}
 
@@ -848,6 +870,11 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 							hp -= character_grid[index][i]->get_damage();
 							attacked = true;
 							attackbox_active = false;
+							if (hp <= 0)
+								player_hit_sounds[2].play();
+							else
+								player_hit_sounds[rand() % 2].play();
+
 						}
 						else
 						{
@@ -980,6 +1007,9 @@ const short int Player::get_max_special_points()
 
 void Player::knocked_moving_latency(sf::Time& dt)
 {
+	if (is_fighting) attack_latency += dt; //ATTACK LATENCY
+	else attack_latency = sf::seconds(0.5f);
+
 	if (knocked)
 	{
 		time_knocked += dt;
@@ -1051,8 +1081,6 @@ void Player::pistol_mode_check(sf::Time& dt)
 		pistol_mode = false;
 		shooting_latency = sf::seconds(0.f);
 	}
-
-
 }
 
 const bool& Player::get_pistol_mode() const
@@ -1095,7 +1123,7 @@ const bool& Player::get_player_dead() const
 	return player_dead;
 }
 
-void Player::check_hp(std::unique_ptr<Main_menu>& main_menu, Game_status& game_status, short int& current_level, std::unique_ptr<Level>& level)
+void Player::check_hp(std::unique_ptr<Main_menu>& main_menu, Game_status& game_status, short int& current_level, std::unique_ptr<Level>& level, sf::Music& music)
 {
 	if (hp <= 0)
 		set_player_dead();
@@ -1110,6 +1138,7 @@ void Player::check_hp(std::unique_ptr<Main_menu>& main_menu, Game_status& game_s
 		{
 			main_menu->main_menu_set_up();
 			current_level = 0;
+			music.stop();
 			level = nullptr;
 			set_hp_to_default(); set_special_to_default(); set_lifes_to_default();
 			player_dead = false;
@@ -1166,4 +1195,14 @@ const bool& Player::get_player_win() const
 void Player::set_player_win(bool w)
 {
 	player_win = w;
+}
+
+void Player::set_attack_latency_to_zero()
+{
+	attack_latency = sf::seconds(0.f);
+}
+
+void Player::set_meele_attack_state_to_none()
+{
+	meele_attack_state = MeeleAttackState::None;
 }

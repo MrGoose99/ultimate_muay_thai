@@ -137,7 +137,7 @@ void Enemy::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Int
 		patroling_time = sf::seconds(0.f);
 		blocking_time = sf::seconds(0.f);
 
-		if(time_to_attack < sf::seconds(1.f)) time_to_attack += dt;
+		if(time_to_attack < sf::seconds(0.5f)) time_to_attack += dt;
 		if (punched != 0) attacked_time += dt;
 		else attacked_time = sf::seconds(0.f);
 
@@ -152,13 +152,14 @@ void Enemy::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Int
 				time_to_attack = sf::seconds(0.f);
 				attack_time = sf::seconds(0.f);
 			}
-			else attackbox_active = 0;
+			else 
+				attackbox_active = 0;
 		}
-		else if (attack_time == sf::seconds(0.f) && time_to_attack >= sf::seconds(1.f))
+		else if (attack_time == sf::seconds(0.f) && time_to_attack >= sf::seconds(0.5f))
 		{
 			if (meele_attack_state == MeeleAttackState::None && kick_attack_state == KickAttackState::None)
 			{
-				if (std::rand() % 100 < 50)
+				if (std::rand() % 100 < 60)
 				{
 					int random = std::rand() % 100;
 					if (random <= 100 / 3)
@@ -167,6 +168,7 @@ void Enemy::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Int
 						meele_attack_state = MeeleAttackState::Attack2;
 					else meele_attack_state = MeeleAttackState::Attack3;
 					kick_attack_state = KickAttackState::None;
+
 				}
 				else
 				{
@@ -177,31 +179,24 @@ void Enemy::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Int
 						kick_attack_state = KickAttackState::AttackMiddle;
 					else kick_attack_state = KickAttackState::AttackLow;
 					meele_attack_state = MeeleAttackState::None;
+
 				}
 			}
-			else if (meele_attack_state == MeeleAttackState::Attack1 && kick_attack_state == KickAttackState::None)
-			{
-				if (std::rand() % 100 < 80)
-					meele_attack_state = MeeleAttackState::Attack2;
-				else meele_attack_state = MeeleAttackState::None;
-			}
-			else if (meele_attack_state == MeeleAttackState::Attack2 && kick_attack_state == KickAttackState::None)
-			{
-				if (std::rand() % 100 < 80)
-					meele_attack_state = MeeleAttackState::Attack3;
-				else meele_attack_state = MeeleAttackState::None;
-			}
-			else if (meele_attack_state == MeeleAttackState::Attack3 && kick_attack_state == KickAttackState::None)
-				meele_attack_state = MeeleAttackState::None;
 			else if (kick_attack_state != KickAttackState::None && meele_attack_state == MeeleAttackState::None)
+			{
 				kick_attack_state = KickAttackState::None;
+				time_to_attack = sf::seconds(0.f);
+			}
 		}
 		else
 		{
-			if (attack_time >= sf::seconds(1.f))
+			if (attack_time >= sf::seconds(3.f))
 			{
 				attack_time = sf::seconds(0.f);
+
+				time_to_attack = sf::seconds(0.f);
 			}
+		
 		}
 		//std::cout << "HP = " << Interactive::hp << std::endl;
 		//std::cout << "PUNCHED = " << punched << std::endl;
@@ -354,8 +349,8 @@ void Enemy::state_update(Player& p1)
 			else if (p1.get_starting_strike())
 			{
 				int random = rand() % 100;
-				p1.set_starting_strike(0);
-				if (random <= 25)
+				p1.set_starting_strike(false);
+				if (random <= 40)
 				{
 					enemy_state = EnemyState::Blocking;
 				}
@@ -364,9 +359,22 @@ void Enemy::state_update(Player& p1)
 		}
 		case EnemyState::Blocking:
 		{
-			if (blocking_time >= sf::seconds(0.5f))
+			if (blocking_time >= sf::seconds(0.7f))
 			{
 				blocking_time = sf::seconds(0.f);
+				enemy_state = EnemyState::Attacking;
+
+			}
+			if (p1.get_starting_strike())
+			{
+					p1.set_starting_strike(false);
+					blocking_time = sf::seconds(0.f);
+			}
+			else if (!p1.get_starting_strike() && rand() % 100 == 0)
+			{
+				attack_time = sf::seconds(2.f);
+				p1.set_attack_latency_to_zero();
+				p1.set_meele_attack_state_to_none();
 				enemy_state = EnemyState::Attacking;
 			}
 			break;

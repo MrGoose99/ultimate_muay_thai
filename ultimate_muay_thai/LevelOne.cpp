@@ -24,7 +24,7 @@ LevelOne::LevelOne(Player& p1)
 	background_shape.setTexture(&background);
 	background_shape.setPosition({ 0,0 });
 
-	LevelOne::load_level("json/lvl_one.json", p1); //TESTING LEVEL
+	LevelOne::load_level("json/lvl_one.json", p1); //LEVEL
 
 	LevelOne::tilemap.set_tilemap("tilesets/tileset_lvl_1.png", { 128,128 }, tilemap_array.data(), width, height);
 
@@ -43,7 +43,6 @@ LevelOne::LevelOne(Player& p1)
 		if (tile < 0 || tile >= interactive_grid.size())
 		{
 			std::cout << "OUT OF BOUNDS! Tile value =  " << tile << std::endl;
-
 		}
 		else
 			interactive_grid[tile].push_back(int_obj.get());

@@ -45,6 +45,8 @@ protected:
 	sf::Time shooting_latency = { sf::seconds(0.f) };
 
 	sf::Time player_dying_time = { sf::seconds(0.f) };
+
+	sf::Time attack_latency = { sf::seconds(0.5f) };
 	
 	sf::Vector2f respawn_position = { 0,0 };
 
@@ -92,6 +94,23 @@ protected:
 	sf::SoundBuffer block_hit_soundbuffer{ "sound/effects/block_hit.wav" };
 	sf::Sound block_hit_sound{ block_hit_soundbuffer };
 
+	sf::SoundBuffer player_hit_1_soundbuffer{ "sound/effects/player_hit_1.wav" };
+	sf::SoundBuffer player_hit_2_soundbuffer{ "sound/effects/player_hit_2.wav" };
+	sf::SoundBuffer player_hit_dead_soundbuffer{ "sound/effects/enemy_hit_dead.wav" };
+	sf::Sound player_hit_sounds[3] = { sf::Sound{ player_hit_1_soundbuffer }, sf::Sound{ player_hit_2_soundbuffer }, sf::Sound{ player_hit_dead_soundbuffer } };
+
+	sf::SoundBuffer spike_hurt_soundbuffer{ "sound/effects/spike_hurt.wav" };
+	sf::Sound spike_hurt_sound{ spike_hurt_soundbuffer };
+
+	sf::SoundBuffer win_soundbuffer{ "sound/effects/win_sound.wav" };
+	sf::Sound win_sound{ win_soundbuffer };
+
+	sf::SoundBuffer checkpoint_soundbuffer{ "sound/effects/checkpoint_sound.wav" };
+	sf::Sound checkpoint_sound{ checkpoint_soundbuffer };
+
+	sf::SoundBuffer gem_soundbuffer{ "sound/effects/gem_sound.wav" };
+	sf::Sound gem_sound{ gem_soundbuffer };
+
 public:
 	friend class Level;
 	friend class HUD;
@@ -115,7 +134,7 @@ public:
 	void knocked_moving_latency(sf::Time& dt); //change knocked boolean
 	void check_attacked(sf::Time& dt);
 	void pistol_mode_check(sf::Time& dt);
-	void check_hp(std::unique_ptr<Main_menu>& main_menu, Game_status& game_status, short int& current_level, std::unique_ptr<Level>& level);
+	void check_hp(std::unique_ptr<Main_menu>& main_menu, Game_status& game_status, short int& current_level, std::unique_ptr<Level>& level, sf::Music& music);
 
 	void respawn();
 
@@ -157,5 +176,7 @@ public:
 	void set_start_respawn(sf::Vector2f pos);
 	void set_lifes_to_default();
 	void set_player_win(bool w);
+	void set_attack_latency_to_zero();
+	void set_meele_attack_state_to_none();
 
 };

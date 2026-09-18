@@ -16,6 +16,7 @@ Game::Game()
 	status = Game_status::Main_menu;
 	main_menu = std::make_unique<Main_menu>();
 	current_level = 0;
+	background_music.setLooping(true);
 }
 
 void Game::checkEvents_paused(const std::optional<sf::Event>& event, sf::RenderWindow& window)
@@ -101,6 +102,10 @@ void Game::checkEvents_main_menu(const std::optional<sf::Event>& event, sf::Rend
 			{
 				level = std::make_unique<LevelOne>(player);
 				player.set_hp_to_default(); player.set_special_to_default();
+				if (background_music.getStatus() != sf::SoundSource::Status::Playing)
+				{
+					background_music.play();
+				}
 			}
 		}
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
@@ -141,6 +146,7 @@ void Game::checkEvents_in_game_menu(const std::optional<sf::Event>& event, sf::R
 				status = Game_status::Main_menu;
 				current_level = 0;
 				level = nullptr;
+				background_music.stop();
 			}
 		}
 		if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
@@ -211,6 +217,7 @@ void Game::animations_update(sf::Time& dt)
 
 void Game::position_update(sf::Time& dt)
 {
+
 	if (level != nullptr)
 	{
 		//PLAYER
@@ -229,7 +236,7 @@ void Game::position_update(sf::Time& dt)
 			if (player.get_pistol_mode() && !player.get_player_dead()) player.pistol_mode_check(dt);
 			if (player.get_attacked() && !player.get_player_dead()) player.check_attacked(dt);
 			else player.attack(dt);
-			player.check_hp(main_menu, status, current_level, level);
+			player.check_hp(main_menu, status, current_level, level, background_music);
 
 			if (player.get_player_win())
 			{
@@ -240,6 +247,7 @@ void Game::position_update(sf::Time& dt)
 				if (you_win_time >= sf::seconds(3.5f))
 				{
 					level = nullptr;
+					background_music.stop();
 					current_level = 0;
 					main_menu->main_menu_set_up();
 					status = Game_status::Main_menu();
@@ -275,4 +283,5 @@ void Game::position_update(sf::Time& dt)
 		main_menu->main_menu_sound();
 		main_menu->update_menu_fighter_animation(dt);
 	}
+
 }

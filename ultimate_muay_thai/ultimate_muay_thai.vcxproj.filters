@@ -37,9 +37,6 @@
     <Filter Include="Pliki źródłowe\Main_menu">
       <UniqueIdentifier>{7671b702-31c0-4a96-b10c-cbee3ec023a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Pliki nagłówkowe\Main_menu">
-      <UniqueIdentifier>{78857e76-dc63-40e3-942b-62d77f70514c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

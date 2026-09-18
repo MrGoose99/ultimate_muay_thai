@@ -25,6 +25,8 @@ protected:
 	Game_status status;
 	sf::Time you_win_time = { sf::seconds(0.f) };
 
+	sf::Music background_music{ "sound/music/background_music.wav" };
+
 public:
 	Game();
 	void checkEvents_paused(const std::optional<sf::Event>& event, sf::RenderWindow& window); //checking for events when the game is paused

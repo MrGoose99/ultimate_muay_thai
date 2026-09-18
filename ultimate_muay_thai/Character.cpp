@@ -336,12 +336,13 @@ void Character::attack(sf::Time& dt)
 	}
 	else if (this->character_name == "enemy")
 	{
-		if (attack_time >= sf::seconds(0.75f))
+		if (attack_time >= sf::seconds(0.5f))
 		{
 			meele_attack_state = MeeleAttackState::None;
 			kick_attack_state = KickAttackState::None;
-			attack_time = sf::seconds(0.f);
-		}
+			if(attack_time >= sf::seconds(1.f))
+				attack_time = sf::seconds(0.f);
+		}	
 	}
 	else if (this->character_name == "menu_fighter")
 	{

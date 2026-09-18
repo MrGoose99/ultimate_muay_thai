@@ -8,6 +8,7 @@
 #include "Player.hpp"
 #include "Character.hpp"
 #include "Checkpoint.hpp"
+#include <SFML/Audio.hpp>
 
 
 class Level :public TileMap
