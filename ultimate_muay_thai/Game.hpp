@@ -26,6 +26,7 @@ protected:
 	sf::Time you_win_time = { sf::seconds(0.f) };
 
 	sf::Music background_music{ "sound/music/background_music.wav" };
+	sf::Music pistol_mode_music{ "sound/music/pistol_mode_music.wav" };
 
 public:
 	Game();

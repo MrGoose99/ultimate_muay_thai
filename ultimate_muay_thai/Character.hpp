@@ -103,6 +103,8 @@ protected:
 	//dying
 	bool character_is_dying = { false };
 
+	//boss
+	bool boss_hitbox_active;
 
 
 
@@ -151,12 +153,14 @@ public:
 	std::string& get_character_name();
 	const bool get_character_is_dying() const;
 	bool get_right_side() const;
+	bool get_boss_hitbox_active();
 	
 	
 	//setters//////////////////////////////////////////////////////////////////////////////////////
 	void set_character(std::filesystem::path& texture, std::string& char_name, sf::Vector2f& pos); //setting character texture, name and position
 	void set_character_position(float pos_x, float pos_y);
 	void set_attacked(bool at);
+	void set_boss_hitbox_active(bool flag);
 
 
 

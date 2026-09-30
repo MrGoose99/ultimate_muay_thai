@@ -15,6 +15,7 @@
 #include "Bullet.hpp"
 #include "Checkpoint.hpp"
 #include "You_win.hpp"
+#include "Boss.hpp"
 
 
 using json = nlohmann::json;
@@ -102,6 +103,8 @@ void Level::load_level(const std::string& path, Player& p1)
 			interactive_objects.push_back(std::make_unique<Spikes>(tile, obj["dir"].get<int>(), tiles_in_row));
 		else if (obj["type"] == "enemy")
 			interactive_objects.push_back(std::make_unique<Enemy>(tile, interactive_grid, character_grid, tiles_in_row));
+		else if (obj["type"] == "boss")
+			interactive_objects.push_back(std::make_unique<Boss>(tile, interactive_grid, character_grid, tiles_in_row));
 		else if (obj["type"] == "checkpoint")
 			interactive_objects.push_back(std::make_unique<Checkpoint>(tile_x, tile_y, tile, tiles_in_row));
 		else if (obj["type"] == "you_win")
@@ -153,7 +156,7 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 				interactive_grid[tile].push_back(interactive_objects[i].get());
 			}
 		}
-		else if (interactive_objects[i]->get_object_type() == "enemy")
+		else if (interactive_objects[i]->get_object_type() == "enemy" || interactive_objects[i]->get_object_type() == "boss")
 		{
 
 			interactive_objects[i]->update(dt, 200.f, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid); //in this update character_grid tiles are removing

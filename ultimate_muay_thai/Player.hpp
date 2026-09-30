@@ -108,6 +108,9 @@ protected:
 	sf::SoundBuffer checkpoint_soundbuffer{ "sound/effects/checkpoint_sound.wav" };
 	sf::Sound checkpoint_sound{ checkpoint_soundbuffer };
 
+	sf::SoundBuffer game_over_soundbuffer{ "sound/effects/game_over_sound.wav" };
+	sf::Sound game_over_sound{ game_over_soundbuffer };
+
 	sf::SoundBuffer gem_soundbuffer{ "sound/effects/gem_sound.wav" };
 	sf::Sound gem_sound{ gem_soundbuffer };
 

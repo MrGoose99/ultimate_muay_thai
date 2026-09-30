@@ -211,7 +211,11 @@ void Game::animations_update(sf::Time& dt)
 			player.update_character_animation(dt);
 		}
 		else if (status == Game_status::Cutscene)
-		player.update_cutscenes(dt, status, level->camera);
+		{
+			player.update_cutscenes(dt, status, level->camera);
+			if(player.get_pistol_mode() && pistol_mode_music.getStatus() != sf::SoundSource::Status::Playing) pistol_mode_music.play();
+		}
+
 	}
 }
 
@@ -223,7 +227,7 @@ void Game::position_update(sf::Time& dt)
 		//PLAYER
 		if (status == Game_status::Running || status == Game_status::Game_over)
 		{
-
+			if (background_music.getStatus() != sf::SoundSource::Status::Playing && !player.get_pistol_mode()) background_music.play();
 			player.check_pressed(dt);
 			level->update_interactive_objects(dt, player.get_character_hitbox(), player.get_player_position(), player, level->get_tiles_in_row());
 			player.apply_platform_velocity();
@@ -234,6 +238,7 @@ void Game::position_update(sf::Time& dt)
 			player.check_velocity_x(dt, level->get_collision_array(), level->get_interactive_grid(), level->get_tiles_in_level(), level->get_tiles_in_row(), level->get_character_grid());
 			player.character_position_update();
 			if (player.get_pistol_mode() && !player.get_player_dead()) player.pistol_mode_check(dt);
+			else pistol_mode_music.stop();
 			if (player.get_attacked() && !player.get_player_dead()) player.check_attacked(dt);
 			else player.attack(dt);
 			player.check_hp(main_menu, status, current_level, level, background_music);
@@ -248,6 +253,7 @@ void Game::position_update(sf::Time& dt)
 				{
 					level = nullptr;
 					background_music.stop();
+					pistol_mode_music.stop();
 					current_level = 0;
 					main_menu->main_menu_set_up();
 					status = Game_status::Main_menu();
@@ -263,6 +269,7 @@ void Game::position_update(sf::Time& dt)
 		else if (status == Game_status::Cutscene)
 		{
 			player.character_position_update();
+			background_music.pause();
 		}
 
 		if (level != nullptr)
@@ -282,6 +289,8 @@ void Game::position_update(sf::Time& dt)
 	{
 		main_menu->main_menu_sound();
 		main_menu->update_menu_fighter_animation(dt);
+		background_music.stop();
+		pistol_mode_music.stop();
 	}
 
 }

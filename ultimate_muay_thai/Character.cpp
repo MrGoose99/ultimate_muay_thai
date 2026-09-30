@@ -173,22 +173,10 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 							{
 								if (checking_rect.position.y + checking_rect.size.y < checking_tile.position.y + checking_tile.size.y / 4)
 								{
-									if (checking_rect.position.x <= checking_tile.position.x)
-									{
-										on_ground = 0;
-										velocity_x = -600.f;
-										velocity_y = -300.f;
-										is_jumping = 1;
-										return 0;
-									}
-									else if (checking_rect.position.x + checking_rect.size.x > checking_tile.position.x + checking_tile.size.x)
-									{
-										on_ground = 0;
-										velocity_x = 600.f;
-										velocity_y = -300.f;
-										is_jumping = 1;
-										return 0;
-									}
+									on_ground = 0;
+									velocity_y = -400.f;
+									is_jumping = 1;
+									return 0;
 								}
 								return 1;
 							}
@@ -471,4 +459,16 @@ const bool Character::get_character_is_dying() const
 bool Character::get_right_side() const
 {
 	return right_side;
+}
+
+void Character::set_boss_hitbox_active(bool flag)
+{
+	boss_hitbox_active = flag;
+}
+
+
+
+bool Character::get_boss_hitbox_active()
+{
+	return boss_hitbox_active;
 }

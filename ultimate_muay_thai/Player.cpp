@@ -502,6 +502,7 @@ void Player::check_player_events(const std::optional<sf::Event>& event, sf::Time
 				animation_stage = 0;
 				time_animation = sf::seconds(0.f);
 				shooting_latency += dt;
+
 				gunshot_sound.play();
 			}
 		}
@@ -880,7 +881,13 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 						{
 							block_hit_sound.play();
 						}
-						}
+					}
+					else if (checking_rect.findIntersection(character_grid[index][i]->get_character_hitbox()) && character_grid[index][i]->get_character_name() == "boss" && character_grid[index][i]->get_boss_hitbox_active())
+					{
+						hp -= 4;
+						attacked = true;
+						character_grid[index][i]->set_boss_hitbox_active(false);
+					}
 				}
 				
 			}
@@ -1131,6 +1138,7 @@ void Player::check_hp(std::unique_ptr<Main_menu>& main_menu, Game_status& game_s
 		respawn();
 	else if (player_dead && lifes == 0)
 	{
+		if (game_over_sound.getStatus() != sf::SoundSource::Status::Playing) game_over_sound.play();
 		game_status = Game_status::Game_over;
 		main_menu->game_over_menu_set_up();
 		main_menu->set_menu_status(Main_menu::Menu_status::Game_over_menu);
