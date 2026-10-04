@@ -15,11 +15,10 @@
 			"y": 2
 		},
 
-
 	"objects": [
 
 		{
-			"type": "enemy",
+			"type": "boss",
 			"x": 5,
 			"y": 0
 		},
@@ -31,11 +30,6 @@
 		{
 			"type": "spiked_roller",
 			"x": 11,
-			"y": 2
-		},
-		{
-			"type": "you_win",
-			"x": 13,
 			"y": 2
 		}
 	]

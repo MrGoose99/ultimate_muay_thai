@@ -766,6 +766,14 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 							}
 							spike_hurt_sound.play();
 						}
+						else if (interactive_grid[index][i]->get_object_type() == "orb") //ORB
+						{
+							hp -= 2;
+							if(blast_hit_sound.getStatus() != sf::SoundSource::Status::Playing)
+							{
+								blast_hit_sound.play();
+							}
+						}
 
 					}
 					
@@ -857,6 +865,25 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 								block_hit_sound.play();
 							}
 						}
+						else if (interactive_grid[index][i]->get_object_type() == "boss") //ENEMY
+						{
+
+								interactive_grid[index][i]->decrease_hp(get_damage());
+								attackbox_active = false;
+								interactive_grid[index][i]->set_punched(1);
+								if (interactive_grid[index][i]->get_hp() <= 0)
+								{
+									if (!interactive_grid[index][i]->get_is_dying())
+									{
+										enemy_hit_sounds[2].play();
+									}
+									interactive_grid[index][i]->set_is_dying(true);
+
+								}
+								if (!interactive_grid[index][i]->get_is_dying() && !interactive_grid[index][i]->get_boss_immortality())
+									enemy_hit_sounds[rand() % 2].play();
+							
+						}
 
 							
 					}
@@ -882,8 +909,9 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 							block_hit_sound.play();
 						}
 					}
-					else if (checking_rect.findIntersection(character_grid[index][i]->get_character_hitbox()) && character_grid[index][i]->get_character_name() == "boss" && character_grid[index][i]->get_boss_hitbox_active())
+					else if (checking_rect.findIntersection(character_grid[index][i]->get_character_hitbox()) && character_grid[index][i]->get_boss_hitbox_active())
 					{
+						std::cout << "BOSS HIT!\n";
 						hp -= 4;
 						attacked = true;
 						character_grid[index][i]->set_boss_hitbox_active(false);
@@ -1160,6 +1188,7 @@ void Player::check_hp(std::unique_ptr<Main_menu>& main_menu, Game_status& game_s
 void Player::respawn()
 {
 	hp = max_hp;
+	special_points = 0;
 	lifes--;
 	player_dead = false;
 	character_position = respawn_position;
@@ -1168,7 +1197,6 @@ void Player::respawn()
 
 void Player::set_start_respawn(sf::Vector2f pos)
 {
-	std::cout << "POS_X: " << pos.x << " POS_Y: " << pos.y << std::endl;
 	respawn_position = pos;
 	character_position = pos;
 	character_sprite.setPosition(pos);

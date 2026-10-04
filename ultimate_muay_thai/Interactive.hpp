@@ -44,6 +44,10 @@ protected:
 	//to turning enemy into gem
 	bool gem_spawned = { false };
 
+	//boss
+	bool blasting = { false };
+	bool immortality = { false };
+
 public:
 	void virtual update(sf::Time& dt, float moving_speed, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::unique_ptr<Interactive>>& interactive_objects, short int tiles_in_row, Player& p1, std::vector<bool>& collision_array, const int& tiles_in_level, std::vector<std::vector<Character*>>& character_grid) = 0; //updating the status of the interactive object (position, interactive)
 	void virtual texture_update(sf::Time& dt) = 0;
@@ -67,6 +71,8 @@ public:
 	const bool& get_gem_spawned() const;
 	const sf::FloatRect get_checkpoint_rect() const;
 	const bool get_checkpoint_is_drawing() const;
+	bool get_boss_blasting();
+	bool get_boss_immortality();
 
 	//setters
 	void set_status(bool stat);
@@ -78,5 +84,5 @@ public:
 	void set_by_bullet(const bool flag);
 	void set_gem_spawned(bool flag);
 	void set_checkpoint_is_drawing();
-
+	void set_boss_blasting(bool flag);
 };

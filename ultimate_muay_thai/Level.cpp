@@ -16,6 +16,7 @@
 #include "Checkpoint.hpp"
 #include "You_win.hpp"
 #include "Boss.hpp"
+#include "Orb.hpp"
 
 
 using json = nlohmann::json;
@@ -158,8 +159,8 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 		}
 		else if (interactive_objects[i]->get_object_type() == "enemy" || interactive_objects[i]->get_object_type() == "boss")
 		{
-
-			interactive_objects[i]->update(dt, 200.f, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid); //in this update character_grid tiles are removing
+			if(interactive_objects[i]->get_object_type() == "enemy") interactive_objects[i]->update(dt, 200.f, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid); //in this update character_grid tiles are removing
+			else if (interactive_objects[i]->get_object_type() == "boss") interactive_objects[i]->update(dt, 100.f, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid);
 			if (interactive_objects[i]->get_hp() <= 0 && !interactive_objects[i]->get_gem_spawned())
 			{
 				sf::Sprite obj_sprite = interactive_objects[i]->get_object_sprite();
@@ -180,10 +181,32 @@ void Level::update_interactive_objects(sf::Time& dt, sf::FloatRect& player_hitbo
 				i--;
 				continue;
 			}
+			if (interactive_objects[i]->get_boss_blasting())
+			{
+				int tile = interactive_objects[i]->get_tile_number();
+				bool right;
+				sf::Vector2f pos;
+				if (p1.get_player_position().x > interactive_objects[i]->get_object_sprite().getGlobalBounds().position.x)
+				{
+					pos.x = interactive_objects[i]->get_object_sprite().getGlobalBounds().position.x + (interactive_objects[i]->get_object_sprite().getLocalBounds().size.x);
+					right = true;
+				}
+				else
+				{
+					pos.x = interactive_objects[i]->get_object_sprite().getGlobalBounds().position.x;
+					right = false;
+				}
+				pos.y = interactive_objects[i]->get_object_sprite().getGlobalBounds().position.y + (interactive_objects[i]->get_object_sprite().getLocalBounds().size.y / 128 * 28);
+				interactive_objects.push_back(std::make_unique<Orb>(tile, right, tiles_in_row, pos));
+				interactive_objects[i]->set_boss_blasting(false);				
+			}
 		}
-		else if (interactive_objects[i]->get_object_type() == "bullet")
+		else if (interactive_objects[i]->get_object_type() == "bullet" || interactive_objects[i]->get_object_type() == "orb")
 		{
-			interactive_objects[i]->update(dt, 1600.f, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid);
+			float speed;
+			if (interactive_objects[i]->get_object_type() == "bullet") speed = 1600.f;
+			else speed = 1000.f;
+			interactive_objects[i]->update(dt, speed, interactive_grid, interactive_objects, tiles_in_row, p1, collision_array, tiles_in_level, character_grid);
 			if (interactive_objects[i]->get_destroyed())
 			{
 				std::vector<int> act_tiles = interactive_objects[i]->get_actual_tiles();

@@ -102,6 +102,19 @@ void Bullet::update(sf::Time& dt, float moving_speed, std::vector<std::vector<In
 							return;
 						}
 					}
+					else if (moving_objects[index][i]->get_object_type() == "boss")
+					{
+						sf::FloatRect checking_tile = { moving_objects[index][i]->get_object_sprite().getGlobalBounds() };
+						if (checking_tile.findIntersection(checking_rect))
+						{
+							if (moving_objects[index][i]->get_boss_immortality() == 0)
+							{
+								moving_objects[index][i]->decrease_hp(6);
+							}
+							this->set_destroyed(1);
+							return;
+						}
+					}
 
 				}
 			}

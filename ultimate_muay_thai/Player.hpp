@@ -83,6 +83,9 @@ protected:
 	sf::SoundBuffer kick_shout_soundbuffer{ "sound/effects/kick_shout.wav" };
 	sf::Sound kick_shout_sound{ kick_shout_soundbuffer };
 
+	sf::SoundBuffer blast_hit_soundbuffer{ "sound/effects/boss_blast_hit.wav" };
+	sf::Sound blast_hit_sound{ blast_hit_soundbuffer };
+
 	//interaction_sounds
 	sf::SoundBuffer punching_bag_attack_soundbuffer{ "sound/effects/punching_bag_attack.wav" };
 	sf::Sound punching_bag_attack_sound{ punching_bag_attack_soundbuffer };

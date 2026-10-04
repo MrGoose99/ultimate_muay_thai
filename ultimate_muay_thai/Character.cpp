@@ -121,6 +121,7 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 	else debug2.setFillColor(sf::Color::Green);
 	////////////////
 
+	sf::FloatRect actual_rect = { hitbox.position, hitbox.size };
 	sf::FloatRect checking_rect = { {position.x + character_sprite.getLocalBounds().size.x / 2 - hitbox.size.x / 2, position.y + character_sprite.getLocalBounds().size.y / 8}, hitbox.size};
 	int left = checking_rect.position.x / 128.f;
 	int right = (checking_rect.position.x + hitbox.size.x) / 128.f;
@@ -178,6 +179,10 @@ bool Character::check_character_collision(const sf::Vector2f position, const int
 									is_jumping = 1;
 									return 0;
 								}
+								if (actual_rect.findIntersection(checking_tile)) //prevent from stucking in the enemy (f.ex. after bosses rush)
+									return 0;
+
+
 								return 1;
 							}
 						}
@@ -472,3 +477,7 @@ bool Character::get_boss_hitbox_active()
 {
 	return boss_hitbox_active;
 }
+
+
+
+

@@ -18,7 +18,7 @@ int Interactive::get_hp()&
 
 void Interactive::decrease_hp(short int points)
 {
-	hp -= points;
+	if(!immortality) hp -= points;
 }
 
 const short int Interactive::get_tile_number()&
@@ -130,4 +130,21 @@ const bool Interactive::get_checkpoint_is_drawing() const
 {
 	return checkpoint_is_drawing;
 }
+
+void Interactive::set_boss_blasting(bool flag)
+{
+	blasting = flag;
+}
+
+bool Interactive::get_boss_blasting()
+{
+	return blasting;
+}
+
+bool Interactive::get_boss_immortality()
+{
+	return immortality;
+}
+
+
 

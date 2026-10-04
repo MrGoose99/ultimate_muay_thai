@@ -173,6 +173,7 @@
     <ClCompile Include="Main_menu.cpp" />
     <ClCompile Include="Menu_fighter.cpp" />
     <ClCompile Include="Moving_tile.cpp" />
+    <ClCompile Include="Orb.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Punching_bag.cpp" />
     <ClCompile Include="Spiked_roller.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="Main_menu.hpp" />
     <ClInclude Include="Menu_fighter.hpp" />
     <ClInclude Include="Moving_tile.hpp" />
+    <ClInclude Include="Orb.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Punching_bag.hpp" />
     <ClInclude Include="resource.h" />

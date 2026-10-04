@@ -104,7 +104,7 @@ protected:
 	bool character_is_dying = { false };
 
 	//boss
-	bool boss_hitbox_active;
+	bool boss_hitbox_active = { false };
 
 
 
@@ -154,6 +154,7 @@ public:
 	const bool get_character_is_dying() const;
 	bool get_right_side() const;
 	bool get_boss_hitbox_active();
+
 	
 	
 	//setters//////////////////////////////////////////////////////////////////////////////////////
@@ -161,6 +162,7 @@ public:
 	void set_character_position(float pos_x, float pos_y);
 	void set_attacked(bool at);
 	void set_boss_hitbox_active(bool flag);
+
 
 
 
