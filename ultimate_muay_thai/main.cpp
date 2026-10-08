@@ -9,9 +9,8 @@
 using namespace std;
 using namespace sf;
 
-int main()
-{
-	sf::RenderWindow window(VideoMode({ 1920, 1080 }), "Ultimate_Muay_Thai", State::Windowed);
+int main(){
+	sf::RenderWindow window(VideoMode({ 1920, 1080 }), "Ultimate_Muay_Thai", State::Fullscreen);
 	window.setVerticalSyncEnabled(true);
 	window.setMouseCursorVisible(false);
 	Game game;
@@ -31,10 +30,6 @@ int main()
 			{
 				game.checkEvents_running(event, window, dt);
 			}	
-			else if (game.get_status() == Game_status::Paused) //paused
-			{
-				game.checkEvents_paused(event, window);
-			}
 			else if (game.get_status() == Game_status::Main_menu) //main_menu
 			{
 				game.checkEvents_main_menu(event, window);

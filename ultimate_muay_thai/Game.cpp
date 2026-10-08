@@ -19,20 +19,6 @@ Game::Game()
 	background_music.setLooping(true);
 }
 
-void Game::checkEvents_paused(const std::optional<sf::Event>& event, sf::RenderWindow& window)
-{
-	if (event->is<sf::Event::Closed>()) // closing the window by every possible way (but not from keyboard)
-		window.close();
-
-	if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
-	{
-		if (keyPressed->scancode == sf::Keyboard::Scancode::P)
-		{
-			run();
-		}
-	}
-}
-
 void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::RenderWindow& window, sf::Time& dt)
 {
 	if (event->is<sf::Event::Closed>()) // closing the window by every possible way (but not from keyboard)
@@ -66,6 +52,11 @@ void Game::checkEvents_running(const std::optional<sf::Event>& event, sf::Render
 			status = Game_status::In_game_menu;
 			main_menu->button_in_game_menu();
 			return;
+		}
+		if (keyPressed->scancode == sf::Keyboard::Scancode::O)
+		{
+			if (hud.get_controls_active()) hud.set_controls_active(false);
+			else hud.set_controls_active(true);
 		}
 		if(!player.get_player_dead())player.check_player_events(event, dt, status);
 

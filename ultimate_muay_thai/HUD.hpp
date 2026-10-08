@@ -17,6 +17,12 @@ private:
 	sf::RectangleShape hp_bar; //health points bar
 	sf::RectangleShape special_bar; //special bar
 
+	sf::Texture controls_texture{ "textures/controls.png" };
+	sf::Sprite controls_sprite{ controls_texture };
+
+	sf::Texture o_button_texture{ "textures/o_button.png" };
+	sf::Sprite o_button_sprite{ o_button_texture };
+
 	//MAX SIZE
 	const float special_bar_max_size_x = 203.f;
 
@@ -24,6 +30,7 @@ private:
 
 	//bool
 	bool up_down = false;
+	bool controls_active = { false };
 
 public:
 	//constructor//////////////////////////////////////////////////////////////////////////////////////
@@ -35,4 +42,8 @@ public:
 	//drawing//////////////////////////////////////////////////////////////////////////////////////
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override; //drawing the HUD
 
+	//getters//////////////////////////////////////////////////////////////////////////////////////
+	bool get_controls_active() const; //returning the status of the controls
+	//setters//////////////////////////////////////////////////////////////////////////////////////
+	void set_controls_active(const bool status); //setting the status of the controls
 };

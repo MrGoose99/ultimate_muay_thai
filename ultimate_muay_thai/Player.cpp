@@ -773,6 +773,7 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 							{
 								blast_hit_sound.play();
 							}
+							interactive_grid[index][i]->set_destroyed(true); 
 						}
 
 					}
@@ -911,10 +912,11 @@ void Player::check_player_collisions_with_interactive(const int tiles_in_row, co
 					}
 					else if (checking_rect.findIntersection(character_grid[index][i]->get_character_hitbox()) && character_grid[index][i]->get_boss_hitbox_active())
 					{
-						std::cout << "BOSS HIT!\n";
 						hp -= 4;
 						attacked = true;
 						character_grid[index][i]->set_boss_hitbox_active(false);
+						if (player_hit_sounds[0].getStatus() != sf::SoundSource::Status::Playing)
+							player_hit_sounds[0].play();
 					}
 				}
 				

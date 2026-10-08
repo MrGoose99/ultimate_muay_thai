@@ -68,10 +68,6 @@ protected:
 	sf::Sound boss_shout_sounds[3] = { sf::Sound{ boss_shout_1_soundbuffer }, sf::Sound{ boss_shout_2_soundbuffer }, sf::Sound{ boss_shout_3_soundbuffer } };
 
 
-
-
-
-
 public:
 
 	Boss(int starting, std::vector<std::vector<Interactive*>>& moving_objects, std::vector<std::vector<Character*>>& character_grid, int tiles_in_row);

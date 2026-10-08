@@ -29,6 +29,9 @@ HUD::HUD()
 		head.setPosition({ head_pos_x, head_pos_y });
 		head_pos_x += 71.f;
 	}
+	//CONTROLS
+	controls_sprite.setPosition({ 0.f, 0.f });
+	o_button_sprite.setPosition({ 12.f, 988.f });
 
 }
 
@@ -65,6 +68,9 @@ void HUD::hud_update(short int hp, short int max_hp, short int spec, short int m
 		up_down = 0;
 	}
 
+	if (controls_active) o_button_sprite.setPosition({ 12.f, 429.f });
+	else o_button_sprite.setPosition({ 12.f, 988.f });
+
 	for (auto& head : heads)
 	{
 		head.setColor(sf::Color(255, 255, 255, 0));
@@ -84,8 +90,20 @@ void HUD::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(hp_bar, states);
 	target.draw(special_bar, states);
 	target.draw(hud_shape, states);
+	target.draw(o_button_sprite, states);
+	if (controls_active) target.draw(controls_sprite, states);
 	for (const auto& head : heads)
 	{
 		target.draw(head, states);
 	}
+}
+
+bool HUD::get_controls_active() const
+{
+	return controls_active;
+}
+
+void HUD::set_controls_active(const bool status)
+{
+	controls_active = status;
 }

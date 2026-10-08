@@ -28,6 +28,7 @@ protected:
 	sf::Text start_game_text{ pixeled_font };
 	sf::Text settings_text{ pixeled_font };
 	sf::Text exit_text{ pixeled_font };
+	sf::Text author_text{ pixeled_font };
 
 	Punching_bag punching_bag{ 1,1 };
 

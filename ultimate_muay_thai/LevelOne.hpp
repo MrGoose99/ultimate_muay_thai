@@ -14,7 +14,7 @@
 class LevelOne : public Level
 {
 protected:
-	sf::Texture background{ "textures/level_1_background.png" }; //background of the level
+	sf::Texture background{ "textures/level_1_background_new.png" }; //background of the level
 	sf::Texture tileset{ "tilesets/tileset_lvl_1.png" }; //tileset of level
 
 public:

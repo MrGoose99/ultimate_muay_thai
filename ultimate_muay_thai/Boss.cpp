@@ -36,6 +36,7 @@ Boss::Boss(int starting, std::vector<std::vector<Interactive*>>& moving_objects,
 
 	aura_sprite.setOrigin({ 64.f, 64.f });
 
+
 	//Audio
 	boss_panting_sound.setLooping(true);
 }
@@ -310,17 +311,16 @@ void Boss::state_update(Player& p1)
 	}
 	else
 	{
+		if (std::abs(p1.get_player_position().x - character_position.x) >= 2200.f || std::abs(p1.get_player_position().y - character_position.y) >= 1100.f)
+			boss_state = BossState::None;
+
 		switch (boss_state)
 		{
 		case BossState::None:
 			if (std::abs(p1.get_player_position().x - character_position.x) < 2200.f || std::abs(p1.get_player_position().y - character_position.y) < 1100.f)
 				boss_state = BossState::Walking;
 			break;
-
 		case BossState::Walking:
-			if (std::abs(p1.get_player_position().x - character_position.x) >= 2200.f || std::abs(p1.get_player_position().y - character_position.y) >= 1100.f)
-				boss_state = BossState::None;
-
 			if (random_attack == 1)
 			{
 				boss_state = BossState::Rush;

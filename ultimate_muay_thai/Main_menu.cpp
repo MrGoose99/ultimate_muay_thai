@@ -52,6 +52,12 @@ Main_menu::Main_menu()
 	exit_text.setCharacterSize(45);
 	exit_text.setPosition({ 381,981 });
 
+	author_text.setFont(pixeled_font);
+	author_text.setString("by KAMIL WIECHNIK");
+	author_text.setFillColor(sf::Color({108, 92, 55}));
+	author_text.setCharacterSize(20);
+	author_text.setPosition({ 1574, 1036 });
+
 	active_button = 1;
 
 	punching_bag.set_position({ 1460,0 });
@@ -92,6 +98,12 @@ void Main_menu::main_menu_set_up()
 	exit_text.setFillColor(sf::Color::Black);
 	exit_text.setCharacterSize(45);
 	exit_text.setPosition({ 381,981 });
+
+	author_text.setFont(pixeled_font);
+	author_text.setString("by KAMIL WIECHNIK");
+	author_text.setFillColor(sf::Color({ 108, 92, 55, 1 }));
+	author_text.setCharacterSize(20);
+	author_text.setPosition({ 1474, 1036 });
 
 	active_button = 1;
 
@@ -744,6 +756,7 @@ void Main_menu::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		target.draw(start_game_text, states);
 		target.draw(settings_text, states);
 		target.draw(exit_text, states);
+		target.draw(author_text, states);
 
 		target.draw(logo_sprite, states);
 
@@ -764,6 +777,7 @@ void Main_menu::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		target.draw(start_game_text, states);
 		target.draw(settings_text, states);
 		target.draw(exit_text, states);
+		target.draw(author_text, states);
 
 		target.draw(logo_sprite, states);
 
@@ -794,6 +808,7 @@ void Main_menu::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		target.draw(start_game_text, states);
 		target.draw(settings_text, states);
 		target.draw(exit_text, states);
+		target.draw(author_text, states);
 
 		target.draw(logo_sprite, states);
 

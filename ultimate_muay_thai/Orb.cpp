@@ -22,13 +22,6 @@ void Orb::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Inter
 	float pos_x = orb_sprite.getPosition().x;
 	float pos_y = orb_sprite.getPosition().y;
 
-	sf::FloatRect actual_rect = { orb_sprite.getPosition(), orb_sprite.getLocalBounds().size };
-	if (actual_rect.findIntersection(p1.get_character_hitbox()))
-	{
-		this->set_destroyed(true);
-		return;
-	}
-
 	if (Orb::direction)
 		pos_x += moving_speed * dt.asSeconds();
 	else
@@ -85,7 +78,6 @@ void Orb::update(sf::Time& dt, float moving_speed, std::vector<std::vector<Inter
 						sf::FloatRect checking_tile = { moving_objects[index][i]->get_object_sprite().getGlobalBounds() };
 						if (checking_tile.findIntersection(checking_rect))
 						{
-							moving_objects[index][i]->set_destroyed(true);
 							this->set_destroyed(true);
 							return;
 						}
